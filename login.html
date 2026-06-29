@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>הדרך ל-50K · התחברות</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* ---------- מסך התחברות (רכיבים ייחודיים · יורש :root מ-portal.css) ---------- */
+    body{padding:0;min-height:100svh;display:grid;place-items:center}
+    .auth-wrap{width:100%;max-width:420px;padding:24px 18px;margin:0 auto}
+
+    .auth-logo{text-align:center;margin-bottom:26px}
+    .auth-logo .name{font-size:30px;font-weight:800;color:var(--text-strong);letter-spacing:-.5px}
+    .auth-logo .tag{font-size:14px;color:var(--text-dim);margin-top:6px}
+
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:22px 20px}
+
+    /* טאבים */
+    .tabs{display:flex;gap:6px;background:var(--input-bg);border:1px solid var(--line);border-radius:var(--radius-pill);padding:4px;margin-bottom:22px}
+    .tabs button{flex:1;min-height:44px;border:none;background:transparent;color:var(--text-dim);font-family:inherit;font-size:15px;font-weight:600;border-radius:var(--radius-pill);cursor:pointer;transition:.2s}
+    .tabs button.on{background:var(--btn-bg);color:var(--btn-text);font-weight:700}
+
+    /* שדות */
+    .field{margin-bottom:14px}
+    .field label{display:block;font-size:13px;color:var(--text-dim);margin-bottom:6px;font-weight:500}
+    .field input{width:100%;min-height:48px;background:var(--input-bg);border:1px solid var(--line);border-radius:12px;color:var(--text);font-family:inherit;font-size:16px;padding:0 14px;direction:rtl;transition:border-color .2s}
+    .field input::placeholder{color:var(--text-faint)}
+    .field input:focus{outline:none;border-color:rgba(247,247,247,.45)}
+    .field input.err{border-color:#a35151}
+
+    .btn-primary{width:100%;min-height:50px;background:var(--btn-bg);color:var(--btn-text);font-family:inherit;font-size:16px;font-weight:700;border:none;border-radius:var(--radius-pill);cursor:pointer;margin-top:8px}
+    .btn-primary:active{opacity:.85}
+
+    .err-msg{color:#d98a8a;font-size:13px;text-align:center;margin-top:12px;min-height:18px}
+
+    .note{text-align:center;color:var(--text-faint);font-size:12px;margin-top:16px}
+
+    .hide{display:none}
+  </style>
+</head>
+<body>
+  <div class="auth-wrap">
+
+    <div class="auth-logo">
+      <div class="name">הדרך ל-50K</div>
+      <div class="tag">המסע שלך מתחיל כאן</div>
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <button id="tab-login" class="on" type="button">כניסה</button>
+        <button id="tab-signup" type="button">הרשמה</button>
+      </div>
+
+      <!-- כניסה -->
+      <form id="form-login" novalidate>
+        <div class="field">
+          <label for="login-email">אימייל</label>
+          <input id="login-email" type="email" inputmode="email" autocomplete="email" placeholder="name@email.com">
+        </div>
+        <div class="field">
+          <label for="login-pass">סיסמה</label>
+          <input id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <button class="btn-primary" type="submit">כניסה למסע</button>
+        <div class="err-msg" id="login-err"></div>
+      </form>
+
+      <!-- הרשמה -->
+      <form id="form-signup" class="hide" novalidate>
+        <div class="field">
+          <label for="signup-name">שם מלא</label>
+          <input id="signup-name" type="text" autocomplete="name" placeholder="השם שלך">
+        </div>
+        <div class="field">
+          <label for="signup-email">אימייל</label>
+          <input id="signup-email" type="email" inputmode="email" autocomplete="email" placeholder="name@email.com">
+        </div>
+        <div class="field">
+          <label for="signup-pass">סיסמה</label>
+          <input id="signup-pass" type="password" autocomplete="new-password" placeholder="בחר סיסמה">
+        </div>
+        <button class="btn-primary" type="submit">פתח חשבון</button>
+        <div class="err-msg" id="signup-err"></div>
+      </form>
+
+      <div class="note">התחברות אמיתית תחובר ל-Supabase</div>
+    </div>
+
+    <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script src="data/content.js"></script>
+  <script>
+    (function(){
+      // שם המוצר מתוך מקור-האמת היחיד (fallback למקרה שלא נטען)
+      try{
+        var pn = window.COURSE && window.COURSE.brand && window.COURSE.brand.productName;
+        if(pn){ document.querySelector('.auth-logo .name').textContent = pn; document.title = pn + ' · התחברות'; }
+      }catch(e){}
+
+      var tabLogin  = document.getElementById('tab-login');
+      var tabSignup = document.getElementById('tab-signup');
+      var formLogin = document.getElementById('form-login');
+      var formSignup= document.getElementById('form-signup');
+
+      function show(which){
+        var login = which === 'login';
+        tabLogin.classList.toggle('on', login);
+        tabSignup.classList.toggle('on', !login);
+        formLogin.classList.toggle('hide', !login);
+        formSignup.classList.toggle('hide', login);
+      }
+      tabLogin.addEventListener('click', function(){ show('login'); });
+      tabSignup.addEventListener('click', function(){ show('signup'); });
+
+      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      function valid(el){
+        var ok = el.value.trim().length > 0;
+        el.classList.toggle('err', !ok);
+        return ok;
+      }
+      function validEmail(el){
+        var ok = EMAIL_RE.test(el.value.trim());
+        el.classList.toggle('err', !ok);
+        return ok;
+      }
+
+      // דמו: ולידציה בסיסית (שדות מלאים + פורמט אימייל) · שומר אימייל ל-localStorage · מעביר הלאה
+      formLogin.addEventListener('submit', function(e){
+        e.preventDefault();
+        var err = document.getElementById('login-err'); err.textContent = '';
+        var email = document.getElementById('login-email');
+        var pass  = document.getElementById('login-pass');
+        var okEmail = validEmail(email), okPass = valid(pass);
+        if(!okEmail || !okPass){
+          err.textContent = !okEmail ? 'נא להזין כתובת אימייל תקינה' : 'נא להזין סיסמה';
+          return;
+        }
+        localStorage.setItem('oriane_user', email.value.trim());
+        window.location.href = 'index.html';
+      });
+
+      formSignup.addEventListener('submit', function(e){
+        e.preventDefault();
+        var err = document.getElementById('signup-err'); err.textContent = '';
+        var name  = document.getElementById('signup-name');
+        var email = document.getElementById('signup-email');
+        var pass  = document.getElementById('signup-pass');
+        var okName = valid(name), okEmail = validEmail(email), okPass = valid(pass);
+        if(!okName || !okEmail || !okPass){
+          err.textContent = !okEmail ? 'נא להזין כתובת אימייל תקינה' : 'נא למלא את כל השדות';
+          return;
+        }
+        localStorage.setItem('oriane_user', email.value.trim());
+        window.location.href = 'onboarding.html';
+      });
+    })();
+  </script>
+</body>
+</html>

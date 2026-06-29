@@ -1,0 +1,99 @@
+/* ============================================================
+   המסע ל-50K · מערכת העיצוב (מקור-אמת יחיד)
+   מיתוג נמדל מהאתר הרשמי של אוריאן (oranbiness) · 2026-06-28
+   Dark · מינימלי · יוקרתי · Inter · RTL
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root, html[data-theme="dark"]{
+  /* === DARK (ברירת מחדל · מיתוג האתר) === */
+  --bg:#0a0a0a; --surface:#1a222e; --surface-2:#1c2635; --surface-3:#2d3e58;
+  --line:rgba(255,255,255,.08);
+  --text:#e0e0e0; --text-dim:#8a93a0; --text-faint:#56606e; --text-strong:#ffffff;
+  --btn-bg:#f7f7f7; --btn-text:#0a0a0a;
+  --input-bg:#070707;
+  --done:#3a8a6d; --active:#f7f7f7;
+  --locked:#39414d; --locked-bg:#121821; --locked-bd:#20293a; --locked-tx:#3a434f;
+  --radius-pill:30px; --radius-card:18px; --maxw:680px;
+}
+html[data-theme="light"]{
+  /* === LIGHT (גרסה בהירה תואמת-מותג · כפתורים כהים בהיפוך) === */
+  --bg:#f4f6f8; --surface:#ffffff; --surface-2:#eef2f6; --surface-3:#dbe3ec;
+  --line:rgba(15,30,45,.12);
+  --text:#2a3744; --text-dim:#5e6c7b; --text-faint:#8b98a6; --text-strong:#0a0a0a;
+  --btn-bg:#1c2635; --btn-text:#ffffff;
+  --input-bg:#eef2f6;
+  --done:#2f8a5f; --active:#1c2635;
+  --locked:#aab4c0; --locked-bg:#eef2f6; --locked-bd:#d8e0e9; --locked-tx:#aab4c0;
+}
+
+/* מתג בהיר/כהה (מוזרק אוטומטית ע"י js/theme.js) */
+.theme-toggle{position:fixed;top:12px;left:12px;z-index:300;width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--line);background:var(--surface);color:var(--text-strong);font-size:17px;cursor:pointer;
+  display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:.15s}
+.theme-toggle:active{transform:scale(.92)}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+body{padding:0 18px 60px;direction:rtl}
+::selection{background:var(--btn-bg);color:var(--btn-text)}
+
+/* ---------- DEV banner ---------- */
+.devbar{background:#3a2d12;border:1px solid #7a5c1e;color:#e8c97a;font-size:12.5px;text-align:center;padding:8px 14px;border-radius:10px;margin:14px auto 0;max-width:var(--maxw)}
+
+/* ---------- Header ---------- */
+.hero{max-width:var(--maxw);margin:22px auto 0;text-align:center}
+.hero .kick{letter-spacing:4px;font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase}
+.hero h1{font-size:34px;font-weight:800;color:var(--text-strong);margin-top:8px;letter-spacing:-.5px}
+.hero .sub{font-size:15px;color:var(--text-dim);margin-top:8px}
+
+/* ---------- Progress ---------- */
+.progress{max-width:var(--maxw);margin:22px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px 20px}
+.progress .row{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:var(--text-dim);margin-bottom:10px}
+.progress .row b{color:var(--text-strong);font-size:15px}
+.bar{height:8px;background:#070707;border-radius:20px;overflow:hidden}
+.bar > i{display:block;height:100%;background:linear-gradient(90deg,#2d3e58,#f7f7f7);border-radius:20px;transition:width .5s}
+
+/* ---------- Journey path ---------- */
+.journey{max-width:var(--maxw);margin:30px auto 0;position:relative}
+.chapter{margin-bottom:28px}
+.chapter-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.chapter-head .tier{font-size:12px;font-weight:700;color:var(--btn-text);background:var(--btn-bg);padding:4px 12px;border-radius:var(--radius-pill)}
+.chapter-head .ctitle{font-size:14px;color:var(--text-dim);font-weight:500}
+
+/* the vertical line connecting stations */
+.stations{position:relative;padding-inline-start:8px}
+.stations::before{content:"";position:absolute;inset-inline-start:23px;top:14px;bottom:14px;width:2px;background:var(--line)}
+
+.station{position:relative;display:flex;gap:16px;align-items:flex-start;padding:6px 0 18px;cursor:pointer}
+.station .dot{flex:none;z-index:2;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:700;border:2px solid var(--locked);background:var(--bg);color:var(--text-dim);transition:.2s}
+.station .body{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:14px 16px;transition:.2s}
+.station .body .name{font-size:15.5px;font-weight:600;color:var(--text)}
+.station .body .meta{font-size:12.5px;color:var(--text-dim);margin-top:3px}
+
+/* states */
+.station.done .dot{border-color:var(--done);background:var(--done);color:#fff}
+.station.done .dot::after{content:"✓"}
+.station.done .dot span{display:none}
+.station.done .body{opacity:.7}
+
+.station.active .dot{border-color:var(--active);background:var(--active);color:var(--btn-text);box-shadow:0 0 0 5px rgba(247,247,247,.12)}
+.station.active .body{border-color:rgba(247,247,247,.45);background:var(--surface-2)}
+.station.active .body .name{color:var(--text-strong);font-weight:700}
+.station.active .cta{margin-top:12px;display:inline-block;background:var(--btn-bg);color:var(--btn-text);font-weight:700;font-size:14px;padding:10px 22px;border-radius:var(--radius-pill);border:none;cursor:pointer}
+
+.station.locked{cursor:not-allowed}
+.station.locked .dot{color:var(--locked)}
+.station.locked .dot::after{content:"🔒";font-size:12px}
+.station.locked .dot span{display:none}
+.station.locked .body{opacity:.45}
+.station.locked .body .name{color:var(--text-dim)}
+
+/* ---------- Footer credit ---------- */
+.credit{text-align:center;color:#56606e;font-size:12.5px;margin:36px auto 0;max-width:var(--maxw)}
+.credit b{color:var(--text-dim)}
+
+@media(max-width:520px){
+  .hero h1{font-size:27px}
+  .station .body{padding:12px 13px}
+}

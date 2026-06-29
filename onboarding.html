@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>המסע ל-50K · שאלון כניסה</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* ---------- רכיבים ייחודיים לשאלון (יורש :root מ-portal.css) ---------- */
+    .wrap{max-width:var(--maxw);margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+
+    /* מסך פתיחה */
+    .intro{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:40px 6px}
+    .intro .emoji{font-size:48px;line-height:1}
+    .intro h1{font-size:30px;font-weight:800;color:var(--text-strong);margin-top:18px;letter-spacing:-.5px}
+    .intro p{font-size:15.5px;color:var(--text-dim);margin-top:14px;max-width:380px;margin-inline:auto}
+    .intro .start{margin-top:30px}
+
+    /* כפתור pill לבן */
+    .pill-btn{display:inline-block;background:var(--btn-bg);color:var(--btn-text);font-weight:700;
+      font-size:16px;font-family:inherit;padding:15px 34px;border-radius:var(--radius-pill);
+      border:none;cursor:pointer;min-height:50px;transition:opacity .15s}
+    .pill-btn:active{opacity:.8}
+    .pill-btn[disabled]{opacity:.4;cursor:not-allowed}
+
+    /* פס התקדמות שאלון */
+    .qprogress{padding:22px 4px 4px}
+    .qprogress .row{display:flex;justify-content:space-between;align-items:baseline;
+      font-size:13px;color:var(--text-dim);margin-bottom:10px}
+    .qprogress .row b{color:var(--text-strong);font-size:14px}
+
+    /* גוף השאלה */
+    .qbody{flex:1;padding:14px 4px 0}
+    .qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:24px 20px}
+    .qcard.highlight{border-color:rgba(247,247,247,.4);background:var(--surface-2)}
+    .qcard .startflag{display:inline-block;font-size:11.5px;font-weight:700;color:var(--btn-text);
+      background:var(--btn-bg);padding:4px 12px;border-radius:var(--radius-pill);margin-bottom:14px}
+    .qcard .qtitle{font-size:21px;font-weight:700;color:var(--text-strong);line-height:1.4;letter-spacing:-.3px}
+
+    /* chips / pills בחירה */
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .chip{flex:1 1 calc(50% - 5px);min-height:52px;display:flex;align-items:center;justify-content:center;
+      text-align:center;background:transparent;color:var(--text);border:1px solid var(--line);
+      border-radius:var(--radius-pill);font-family:inherit;font-size:15px;font-weight:500;
+      padding:12px 16px;cursor:pointer;transition:.15s}
+    .chip:active{transform:scale(.98)}
+    .chip.sel{background:var(--btn-bg);color:var(--btn-text);border-color:var(--btn-bg);font-weight:700}
+
+    /* שדה טקסט */
+    .qtext{width:100%;margin-top:22px;background:var(--input-bg);color:var(--text-strong);
+      border:1px solid var(--line);border-radius:14px;padding:16px;font-family:inherit;
+      font-size:16px;min-height:54px;resize:vertical;line-height:1.5}
+    .qtext:focus{outline:none;border-color:rgba(247,247,247,.4)}
+    .qtext::placeholder{color:var(--text-faint)}
+
+    /* ניווט תחתון */
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:26px 4px 8px}
+    .ghost-btn{background:transparent;color:var(--text-dim);border:none;font-family:inherit;
+      font-size:15px;cursor:pointer;padding:14px 6px;min-height:48px}
+    .ghost-btn[disabled]{opacity:0;pointer-events:none}
+
+    /* התראה עדינה */
+    .toast{position:fixed;inset-inline:0;bottom:22px;display:flex;justify-content:center;
+      pointer-events:none;opacity:0;transform:translateY(10px);transition:.25s;z-index:50}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast span{background:var(--surface-3);color:var(--text-strong);border:1px solid var(--line);
+      font-size:14px;padding:12px 20px;border-radius:var(--radius-pill);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+
+    .hidden{display:none !important}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- ===== מסך פתיחה ===== -->
+    <section id="intro" class="intro">
+      <div class="emoji">🚀</div>
+      <h1>ברוך הבא למסע</h1>
+      <p>4 שאלות קצרות לפני שיוצאים לדרך · כדי שנדע מאיפה אתה יוצא ולאן נצמח יחד.</p>
+      <div class="start">
+        <button class="pill-btn" id="beginBtn">מתחילים ←</button>
+      </div>
+    </section>
+
+    <!-- ===== שאלון ===== -->
+    <section id="survey" class="hidden">
+      <div class="qprogress">
+        <div class="row">
+          <span>שאלון כניסה</span>
+          <span>שאלה <b id="qNow">1</b> מתוך <b id="qTotal">4</b></span>
+        </div>
+        <div class="bar"><i id="qFill" style="width:25%"></i></div>
+      </div>
+
+      <div class="qbody" id="qBody"><!-- מוזרק דינמית --></div>
+
+      <div class="nav">
+        <button class="ghost-btn" id="backBtn" disabled>→ חזרה</button>
+        <button class="pill-btn" id="nextBtn">הבא</button>
+      </div>
+    </section>
+
+    <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+  </div>
+
+  <div class="toast" id="toast"><span></span></div>
+
+  <script src="data/content.js"></script>
+  <script>
+  (function(){
+    const survey  = (window.COURSE && window.COURSE.intakeSurvey) || [];
+    const total   = survey.length;
+    const KEY     = 'oriane_intake';
+    const answers = {};
+
+    // טען תשובות קיימות אם המשתמש חזר
+    try{ Object.assign(answers, JSON.parse(localStorage.getItem(KEY) || '{}')); }catch(e){}
+
+    let idx = 0;
+
+    const introEl = document.getElementById('intro');
+    const surveyEl= document.getElementById('survey');
+    const qBody   = document.getElementById('qBody');
+    const qNow    = document.getElementById('qNow');
+    const qFill   = document.getElementById('qFill');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const toastEl = document.getElementById('toast');
+
+    document.getElementById('qTotal').textContent = total;
+
+    function save(){ try{ localStorage.setItem(KEY, JSON.stringify(answers)); }catch(e){} }
+
+    let toastTimer;
+    function toast(msg){
+      toastEl.querySelector('span').textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>toastEl.classList.remove('show'), 2200);
+    }
+
+    function render(){
+      const q = survey[idx];
+      const isStart = q.id === 'revenue_start';
+      const cur = answers[q.id];
+
+      let inner = '';
+      if(isStart) inner += '<div class="startflag">זו נקודת ההתחלה שלך</div>';
+      inner += '<div class="qtitle">'+ q.q +'</div>';
+
+      if(q.type === 'text'){
+        inner += '<textarea class="qtext" id="qInput" rows="2" placeholder="כתוב כאן..."></textarea>';
+      } else {
+        // range / choice → chips
+        inner += '<div class="chips">';
+        (q.options || []).forEach((opt,i)=>{
+          const sel = (cur === opt) ? ' sel' : '';
+          inner += '<button type="button" class="chip'+sel+'" data-opt="'+i+'">'+ opt +'</button>';
+        });
+        inner += '</div>';
+      }
+
+      qBody.innerHTML = '<div class="qcard'+(isStart?' highlight':'')+'">'+ inner +'</div>';
+
+      // hooks
+      if(q.type === 'text'){
+        const inp = document.getElementById('qInput');
+        inp.value = (typeof cur === 'string') ? cur : '';
+        inp.addEventListener('input', ()=>{ answers[q.id] = inp.value.trim(); save(); });
+      } else {
+        qBody.querySelectorAll('.chip').forEach(ch=>{
+          ch.addEventListener('click', ()=>{
+            const opt = q.options[ +ch.dataset.opt ];
+            answers[q.id] = opt;
+            save();
+            qBody.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+            ch.classList.add('sel');
+          });
+        });
+      }
+
+      // progress + nav state
+      qNow.textContent = idx + 1;
+      qFill.style.width = Math.round(((idx+1)/total)*100) + '%';
+      backBtn.disabled = (idx === 0);
+      nextBtn.textContent = (idx === total - 1) ? 'מתחילים את המסע ←' : 'הבא';
+    }
+
+    function answered(i){
+      const q = survey[i];
+      const v = answers[q.id];
+      return typeof v === 'string' ? v.trim().length > 0 : (v !== undefined && v !== null);
+    }
+
+    document.getElementById('beginBtn').addEventListener('click', ()=>{
+      introEl.classList.add('hidden');
+      surveyEl.classList.remove('hidden');
+      render();
+    });
+
+    backBtn.addEventListener('click', ()=>{ if(idx>0){ idx--; render(); } });
+
+    nextBtn.addEventListener('click', ()=>{
+      if(!answered(idx)){ toast('רגע · נשמח לתשובה לפני שממשיכים 🙂'); return; }
+      if(idx < total - 1){ idx++; render(); return; }
+      // שאלה אחרונה → ולידציה מלאה + מעבר
+      for(let i=0;i<total;i++){
+        if(!answered(i)){ idx = i; render(); toast('נשארה שאלה אחת ללא מענה'); return; }
+      }
+      save();
+      window.location.href = 'index.html';
+    });
+  })();
+  </script>
+  <script src="js/theme.js"></script>
+</body>
+</html>

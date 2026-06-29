@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דשבורד ניהול · הדרך ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  /* ============================================================
+     Dashboard-only styles · dark minimal luxury · reuses portal.css tokens
+     ============================================================ */
+  :root{ --maxw-dash:1080px; --hot:#e8c97a; }
+  body{ padding:0 18px 60px; }
+
+  .wrap{ max-width:var(--maxw-dash); margin:0 auto; }
+
+  /* demo banner */
+  .demobar{
+    background:#3a2d12;border:1px solid #7a5c1e;color:#e8c97a;
+    font-size:13px;font-weight:600;text-align:center;
+    padding:10px 16px;border-radius:12px;margin:16px auto 0;max-width:var(--maxw-dash);
+  }
+
+  .dash-head{max-width:var(--maxw-dash);margin:26px auto 0}
+  .dash-head .kick{letter-spacing:4px;font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase}
+  .dash-head h1{font-size:30px;font-weight:800;color:var(--text-strong);margin-top:6px;letter-spacing:-.5px}
+  .dash-head .sub{font-size:14px;color:var(--text-dim);margin-top:6px}
+
+  /* summary cards */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px}
+  .card .lbl{font-size:12.5px;color:var(--text-dim);font-weight:500}
+  .card .val{font-size:30px;font-weight:800;color:var(--text-strong);margin-top:8px;letter-spacing:-.5px}
+  .card .delta{font-size:12px;color:var(--text-dim);margin-top:4px}
+  .card.hotcard .val{color:var(--hot)}
+
+  /* layout split */
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:24px;align-items:start}
+
+  /* tabs */
+  .tabs{display:flex;gap:8px;margin-top:26px;flex-wrap:wrap}
+  .tab{background:var(--surface);border:1px solid var(--line);color:var(--text-dim);
+    font-size:13.5px;font-weight:600;padding:9px 20px;border-radius:var(--radius-pill);cursor:pointer;transition:.2s}
+  .tab.on{background:var(--btn-bg);color:var(--btn-text);border-color:var(--btn-bg)}
+  .panel{display:none;margin-top:20px}
+  .panel.on{display:block}
+
+  .sec-title{font-size:16px;font-weight:700;color:var(--text-strong);margin-bottom:14px}
+
+  /* tables */
+  .tblcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  thead th{text-align:right;color:var(--text-dim);font-weight:600;font-size:12px;
+    padding:13px 16px;border-bottom:1px solid var(--line);background:var(--surface-2);text-transform:none}
+  tbody td{padding:14px 16px;border-bottom:1px solid var(--line);color:var(--text)}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--surface-3)}
+  td .who{font-weight:600;color:var(--text-strong)}
+
+  /* mini progress bar in table */
+  .mini{display:flex;align-items:center;gap:9px;min-width:120px}
+  .mini .track{flex:1;height:6px;background:var(--input-bg);border-radius:20px;overflow:hidden}
+  .mini .track > i{display:block;height:100%;background:linear-gradient(90deg,var(--surface-3),var(--btn-bg));border-radius:20px}
+  .mini span{font-size:12px;color:var(--text-dim);min-width:34px}
+
+  /* pills / tags */
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:4px 12px;border-radius:var(--radius-pill);white-space:nowrap}
+  .pill.tier{background:var(--surface-3);color:var(--text)}
+  .pill.hot{background:var(--hot);color:#1a1300}
+  .pill.cool{background:transparent;color:var(--text-dim);border:1px solid var(--line)}
+  .pill.ok{background:#1d3a2e;color:#7fd6ab}
+  .pill.pend{background:#3a2d12;color:#e8c97a}
+  .pay-method{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.5px;color:var(--text-dim);
+    border:1px solid var(--line);padding:3px 10px;border-radius:8px}
+
+  /* ---------- bot panel (whatsapp-style) ---------- */
+  .bot{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px;position:sticky;top:16px}
+  .bot .bhead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .bot .avatar{width:38px;height:38px;border-radius:50%;background:var(--btn-bg);color:var(--btn-text);
+    display:grid;place-items:center;font-size:18px;flex:none}
+  .bot .bhead .nm{font-size:14.5px;font-weight:700;color:var(--text-strong)}
+  .bot .bhead .st{font-size:11.5px;color:#7fd6ab}
+
+  .bubble{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;border-top-right-radius:4px;
+    padding:14px 15px;font-size:13.5px;line-height:1.7;color:var(--text)}
+  .bubble .bt{font-weight:700;color:var(--text-strong);margin-bottom:8px;display:block}
+  .bubble ul{list-style:none;margin:0;padding:0}
+  .bubble li{padding:5px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+  .bubble li:last-child{border-bottom:none}
+  .bubble li b{color:var(--text-strong);font-weight:600}
+  .bubble .time{font-size:10.5px;color:var(--text-dim);text-align:left;margin-top:8px}
+
+  .chatlog{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-height:260px;overflow-y:auto}
+  .msg{max-width:90%;font-size:13px;line-height:1.6;padding:10px 13px;border-radius:14px}
+  .msg.user{align-self:flex-start;background:var(--btn-bg);color:var(--btn-text);border-top-left-radius:4px;font-weight:500}
+  .msg.ans{align-self:flex-end;background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-top-right-radius:4px}
+
+  .quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .qbtn{background:transparent;border:1px solid var(--line);color:var(--text-dim);font-size:12.5px;
+    padding:7px 14px;border-radius:var(--radius-pill);cursor:pointer;transition:.2s}
+  .qbtn:hover{border-color:var(--text-dim);color:var(--text)}
+
+  .askrow{display:flex;gap:8px;margin-top:14px}
+  .askrow input{flex:1;background:var(--input-bg);border:1px solid var(--line);color:var(--text);
+    font-family:inherit;font-size:13.5px;padding:11px 14px;border-radius:var(--radius-pill);outline:none}
+  .askrow input::placeholder{color:var(--text-faint)}
+  .askrow button{background:var(--btn-bg);color:var(--btn-text);border:none;font-weight:700;font-size:13.5px;
+    padding:11px 20px;border-radius:var(--radius-pill);cursor:pointer}
+
+  /* mobile: tables -> cards */
+  @media(max-width:860px){
+    .cards{grid-template-columns:repeat(2,1fr)}
+    .grid2{grid-template-columns:1fr}
+    .bot{position:static}
+  }
+  @media(max-width:600px){
+    .dash-head h1{font-size:24px}
+    .card .val{font-size:25px}
+    table thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tbody tr{border:1px solid var(--line);border-radius:14px;margin-bottom:12px;padding:6px 4px;background:var(--surface)}
+    .tblcard{background:transparent;border:none;overflow:visible}
+    tbody td{border-bottom:1px solid var(--line);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+    tbody tr:hover{background:var(--surface)}
+    tbody td::before{content:attr(data-l);color:var(--text-dim);font-size:12px;font-weight:600;flex:none}
+    tbody td:last-child{border-bottom:none}
+    .mini{min-width:auto;width:60%}
+  }
+</style>
+</head>
+<body>
+
+  <div class="demobar">⚙️ נתוני דמו · יוחלפו בנתונים אמיתיים מ-Supabase + Firebase</div>
+
+  <div class="dash-head wrap">
+    <div class="kick">לוח ניהול</div>
+    <h1>שלום, מנהלת הקורס 👋</h1>
+    <div class="sub">תמונת מצב חיה של התלמידים, ההתקדמות וההכנסות במסע ל-50K.</div>
+  </div>
+
+  <!-- summary cards -->
+  <div class="cards wrap">
+    <div class="card"><div class="lbl">סה"כ תלמידים</div><div class="val">8</div><div class="delta">+3 החודש</div></div>
+    <div class="card"><div class="lbl">פעילים השבוע</div><div class="val">5</div><div class="delta">צפו בלפחות שיעור אחד</div></div>
+    <div class="card hotcard"><div class="lbl">חמים 🔥</div><div class="val">3</div><div class="delta">בשלים לליווי אישי</div></div>
+    <div class="card"><div class="lbl">הכנסה מצטברת</div><div class="val">14,400₪</div><div class="delta">דמו · 8 רכישות</div></div>
+  </div>
+
+  <!-- bot + quick stats -->
+  <div class="grid2 wrap">
+    <div>
+      <div class="sec-title">פעולה מהירה</div>
+      <div class="tblcard" style="padding:18px">
+        <div style="font-size:13.5px;color:var(--text-dim);line-height:1.8">
+          הבוט מסכם לך כל בוקר מי נרשם, מי שילם, מי הכי התקדם ומי הבשיל לליווי.
+          שאל אותו כל שאלה על הקורס בעברית פשוטה, או לחץ על אחת השאלות המהירות בצד.
+        </div>
+      </div>
+
+      <div class="sec-title" style="margin-top:24px">3 התלמידים החמים</div>
+      <div class="tblcard">
+        <table>
+          <thead><tr><th>שם</th><th>תחנה</th><th>מדרגת הכנסה</th><th>סטטוס</th></tr></thead>
+          <tbody>
+            <tr><td data-l="שם"><span class="who">דנה</span></td><td data-l="תחנה">11 / 12</td><td data-l="מדרגה">סקיילינג · 50K</td><td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td></tr>
+            <tr><td data-l="שם"><span class="who">יוסי</span></td><td data-l="תחנה">10 / 12</td><td data-l="מדרגה">מנוע שיווקי · 35K</td><td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td></tr>
+            <tr><td data-l="שם"><span class="who">מאיה</span></td><td data-l="תחנה">9 / 12</td><td data-l="מדרגה">30-50 אלף</td><td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- manager bot -->
+    <div class="bot">
+      <div class="bhead">
+        <div class="avatar">🤖</div>
+        <div>
+          <div class="nm">בוט מנהל</div>
+          <div class="st">● מחובר · עונה בזמן אמת</div>
+        </div>
+      </div>
+
+      <div class="bubble">
+        <span class="bt">☀️ סיכום הבוקר</span>
+        <ul>
+          <li>נרשמו אתמול <b>2 תלמידים</b></li>
+          <li>שילמו (דמו) <b>1 · 1,800₪</b></li>
+          <li>הכי התקדמה <b>דנה · תחנה 11</b></li>
+          <li>חמים לליווי <b>3 תלמידים 🔥</b></li>
+        </ul>
+        <div class="time">היום · 08:00</div>
+      </div>
+
+      <div class="chatlog" id="chatlog"></div>
+
+      <div class="quick" id="quick">
+        <button class="qbtn" data-q="כמה נרשמו החודש?">כמה נרשמו החודש?</button>
+        <button class="qbtn" data-q="מי לא סיים פרק 1?">מי לא סיים פרק 1?</button>
+        <button class="qbtn" data-q="מי הכי חם עכשיו?">מי הכי חם עכשיו?</button>
+        <button class="qbtn" data-q="כמה הכנסה החודש?">כמה הכנסה החודש?</button>
+      </div>
+
+      <div class="askrow">
+        <input id="botinput" type="text" placeholder="שאל את הבוט...">
+        <button id="botsend">שלח</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- tabs -->
+  <div class="tabs wrap">
+    <button class="tab on" data-tab="students">👥 תלמידים</button>
+    <button class="tab" data-tab="payments">💳 תשלומים</button>
+  </div>
+
+  <div class="wrap">
+    <!-- STUDENTS -->
+    <div class="panel on" id="tab-students">
+      <div class="tblcard">
+        <table>
+          <thead>
+            <tr><th>שם</th><th>תחנה נוכחית</th><th>מדרגת הכנסה</th><th>התקדמות</th><th>סטטוס</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-l="שם"><span class="who">דנה</span></td>
+              <td data-l="תחנה">11 / 12</td>
+              <td data-l="מדרגה"><span class="pill tier">סקיילינג · 50K</span></td>
+              <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:92%"></i></div><span>92%</span></div></td>
+              <td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td>
+            </tr>
+            <tr>
+              <td data-l="שם"><span class="who">יוסי</span></td>
+              <td data-l="תחנה">10 / 12</td>
+              <td data-l="מדרגה"><span class="pill tier">מנוע שיווקי · 35K</span></td>
+              <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:83%"></i></div><span>83%</span></div></td>
+              <td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td>
+            </tr>
+            <tr>
+              <td data-l="שם"><span class="who">מאיה</span></td>
+              <td data-l="תחנה">9 / 12</td>
+              <td data-l="מדרגה"><span class="pill tier">30-50 אלף</span></td>
+              <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:75%"></i></div><span>75%</span></div></td>
+              <td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td>
+            </tr>
+            <tr>
+              <td data-l="שם"><span class="who">איתי</span></td>
+              <td data-l="תחנה">7 / 12</td>
+              <td data-l="מדרגה"><span class="pill tier">10-30 אלף</span></td>
+              <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:58%"></i></div><span>58%</span></div></td>
+              <td data-l="סטטוס"><span class="pill cool">בתהליך</span></td>
+            </tr>
+            <tr>
+              <td data-l="שם"><span class="who">נועה</span></td>
+              <td data-l="תחנה">5 / 12</td>
+              <td data-l="מדרגה"><span class="pill tier">10-30 אלף</span></td>
+              <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:42%"></i></div><span>42%</span></div></td>
+              <td data-l="סטטוס"><span class="pill cool">בתהליך</span></td>
+            </tr>
+            <tr>
+              <td data-l="שם"><span class="who">עומר</span></td>
+              <td data-l="תחנה">3 / 12</td>
+              <td data-l="מדרגה"><span class="pill tier">עד 10K</span></td>
+              <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:25%"></i></div><span>25%</span></div></td>
+              <td data-l="סטטוס"><span class="pill cool">בתהליך</span></td>
+            </tr>
+            <tr>
+              <td data-l="שם"><span class="who">שירה</span></td>
+              <td data-l="תחנה">2 / 12</td>
+              <td data-l="מדרגה"><span class="pill tier">עד 10K</span></td>
+              <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:17%"></i></div><span>17%</span></div></td>
+              <td data-l="סטטוס"><span class="pill cool">חדשה</span></td>
+            </tr>
+            <tr>
+              <td data-l="שם"><span class="who">רון</span></td>
+              <td data-l="תחנה">1 / 12</td>
+              <td data-l="מדרגה"><span class="pill tier">עד 10K</span></td>
+              <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:8%"></i></div><span>8%</span></div></td>
+              <td data-l="סטטוס"><span class="pill cool">חדש</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:12px">
+        כלל "חם": תחנה 10 ומעלה <b>או</b> מדרגת הכנסה 30-50K ומעלה → התלמיד בשל לליווי אישי 🔥
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="panel" id="tab-payments">
+      <div class="tblcard">
+        <table>
+          <thead>
+            <tr><th>שם</th><th>סכום</th><th>תאריך</th><th>אמצעי</th><th>סטטוס</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-l="שם"><span class="who">דנה</span></td><td data-l="סכום">1,800₪</td><td data-l="תאריך">27.06.26</td><td data-l="אמצעי"><span class="pay-method">GROW</span></td><td data-l="סטטוס"><span class="pill ok">שולם</span></td></tr>
+            <tr><td data-l="שם"><span class="who">יוסי</span></td><td data-l="סכום">1,800₪</td><td data-l="תאריך">24.06.26</td><td data-l="אמצעי"><span class="pay-method">GROW</span></td><td data-l="סטטוס"><span class="pill ok">שולם</span></td></tr>
+            <tr><td data-l="שם"><span class="who">מאיה</span></td><td data-l="סכום">1,800₪</td><td data-l="תאריך">21.06.26</td><td data-l="אמצעי"><span class="pay-method">GROW</span></td><td data-l="סטטוס"><span class="pill ok">שולם</span></td></tr>
+            <tr><td data-l="שם"><span class="who">איתי</span></td><td data-l="סכום">1,800₪</td><td data-l="תאריך">18.06.26</td><td data-l="אמצעי"><span class="pay-method">GROW</span></td><td data-l="סטטוס"><span class="pill ok">שולם</span></td></tr>
+            <tr><td data-l="שם"><span class="who">נועה</span></td><td data-l="סכום">1,800₪</td><td data-l="תאריך">14.06.26</td><td data-l="אמצעי"><span class="pay-method">GROW</span></td><td data-l="סטטוס"><span class="pill ok">שולם</span></td></tr>
+            <tr><td data-l="שם"><span class="who">עומר</span></td><td data-l="סכום">1,800₪</td><td data-l="תאריך">10.06.26</td><td data-l="אמצעי"><span class="pay-method">GROW</span></td><td data-l="סטטוס"><span class="pill ok">שולם</span></td></tr>
+            <tr><td data-l="שם"><span class="who">שירה</span></td><td data-l="סכום">1,800₪</td><td data-l="תאריך">07.06.26</td><td data-l="אמצעי"><span class="pay-method">GROW</span></td><td data-l="סטטוס"><span class="pill ok">שולם</span></td></tr>
+            <tr><td data-l="שם"><span class="who">רון</span></td><td data-l="סכום">1,800₪</td><td data-l="תאריך">02.06.26</td><td data-l="אמצעי"><span class="pay-method">GROW</span></td><td data-l="סטטוס"><span class="pill pend">ממתין לאישור</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:12px">
+        סה"כ נגבה (דמו): <b style="color:var(--text-strong)">14,400₪</b> · אמצעי סליקה: GROW
+      </div>
+    </div>
+  </div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+
+<script src="data/content.js"></script>
+<script>
+  /* ---------- tabs ---------- */
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
+      t.classList.add('on');
+      document.getElementById('tab-'+t.dataset.tab).classList.add('on');
+    });
+  });
+
+  /* ---------- manager bot (demo answers) ---------- */
+  var ANSWERS = {
+    'כמה נרשמו החודש?':'החודש נרשמו 8 תלמידים חדשים למסע ל-50K (נתון דמו). 5 מתוכם פעילים השבוע.',
+    'מי לא סיים פרק 1?':'שירה ורון עדיין לא סיימו את פרק 1 (תודעה ובסיס). כדאי לשלוח להם תזכורת עדינה (נתון דמו).',
+    'מי הכי חם עכשיו?':'3 תלמידים חמים 🔥: דנה (תחנה 11), יוסי (תחנה 10) ומאיה (מדרגת 30-50K). כולם בשלים לליווי אישי (נתון דמו).',
+    'כמה הכנסה החודש?':'ההכנסה המצטברת החודש עומדת על 14,400₪ מ-8 רכישות דרך GROW (נתון דמו).'
+  };
+  var DEFAULT_ANS = 'זו תצוגת דמו. כשנחבר את Supabase + Firebase הבוט ישלוף את התשובה האמיתית מהנתונים החיים. נסה אחת מהשאלות המהירות למעלה.';
+
+  var log = document.getElementById('chatlog');
+  function push(cls, text){
+    var d = document.createElement('div');
+    d.className = 'msg ' + cls;
+    d.textContent = text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+  function ask(q){
+    if(!q) return;
+    push('user', q);
+    var a = ANSWERS[q] || DEFAULT_ANS;
+    setTimeout(function(){ push('ans', a); }, 280);
+  }
+
+  document.querySelectorAll('.qbtn').forEach(function(b){
+    b.addEventListener('click', function(){ ask(b.dataset.q); });
+  });
+  var inp = document.getElementById('botinput');
+  document.getElementById('botsend').addEventListener('click', function(){ ask(inp.value.trim()); inp.value=''; });
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ ask(inp.value.trim()); inp.value=''; } });
+</script>
+<script src="js/theme.js"></script>
+</body>
+</html>

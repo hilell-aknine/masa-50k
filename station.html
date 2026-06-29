@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>תחנה · המסע ל-50K</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* ---------- רכיבים ייחודיים למסך התחנה ---------- */
+    .wrap{max-width:var(--maxw);margin:0 auto}
+
+    /* תווית פרק + מדרגה */
+    .st-tags{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px auto 0}
+    .st-tags .tier{font-size:12px;font-weight:700;color:var(--btn-text);background:var(--btn-bg);padding:4px 12px;border-radius:var(--radius-pill)}
+    .st-tags .ctitle{font-size:13px;color:var(--text-dim);font-weight:500}
+
+    .st-title{font-size:26px;font-weight:800;color:var(--text-strong);letter-spacing:-.4px;margin:14px auto 4px}
+    .st-dur{font-size:13px;color:var(--text-dim);margin-bottom:18px}
+
+    /* אזור וידאו 16:9 */
+    .video{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius-card);overflow:hidden;background:var(--input-bg);border:1px solid var(--line)}
+    .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .video.ph{display:grid;place-items:center;border:2px dashed var(--surface-3);background:var(--surface)}
+    .video.ph .phtxt{color:var(--text-dim);font-size:14.5px;text-align:center;padding:0 24px}
+
+    /* תיאור */
+    .st-desc{font-size:15px;color:var(--text);margin:20px auto 0;line-height:1.7}
+    .st-desc.empty{color:var(--text-dim);opacity:.6;font-style:italic}
+
+    /* מה תפיק מהתחנה */
+    .gains{margin:22px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px 20px}
+    .gains h3{font-size:14px;font-weight:700;color:var(--text-strong);margin-bottom:12px}
+    .gains ul{list-style:none}
+    .gains li{position:relative;font-size:14px;color:var(--text);padding:6px 24px 6px 0;line-height:1.6}
+    .gains li::before{content:"✓";position:absolute;inset-inline-start:0;top:6px;color:var(--btn-bg);font-weight:800;font-size:13px}
+
+    /* חוברת עבודה */
+    .workbook{margin:18px auto 0}
+    .btn-wb{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:12px 20px;border-radius:var(--radius-pill);min-height:44px;text-decoration:none}
+    .btn-wb.on{background:var(--surface-2);color:var(--text-strong);border:1px solid var(--line)}
+    .btn-wb.off{background:var(--surface);color:var(--text-dim);border:1px solid var(--line);opacity:.6;cursor:not-allowed}
+
+    /* פעולות */
+    .actions{margin:30px auto 0;display:flex;flex-direction:column;gap:12px}
+    .btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--btn-bg);color:var(--btn-text);font-weight:800;font-size:16px;padding:16px 24px;border-radius:var(--radius-pill);border:none;cursor:pointer;min-height:54px;width:100%}
+    .btn-primary:active{transform:translateY(1px)}
+    .btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--text-dim);font-weight:600;font-size:14px;padding:12px 18px;border-radius:var(--radius-pill);border:1px solid var(--line);text-decoration:none;min-height:44px}
+
+    /* ניווט תחנה קודמת/הבאה */
+    .stepnav{display:flex;justify-content:space-between;gap:10px;margin:22px auto 0}
+    .stepnav a,.stepnav span{flex:1;text-align:center;font-size:13.5px;padding:12px 10px;border-radius:var(--radius-card);min-height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+    .stepnav a{color:var(--text);background:var(--surface);text-decoration:none}
+    .stepnav span{color:var(--text-dim);opacity:.4;background:transparent}
+
+    /* מסך נעול */
+    .locked-card{max-width:var(--maxw);margin:60px auto 0;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:42px 26px}
+    .locked-card .ic{font-size:42px}
+    .locked-card h2{font-size:21px;font-weight:800;color:var(--text-strong);margin-top:16px}
+    .locked-card p{font-size:14.5px;color:var(--text-dim);margin-top:10px;line-height:1.6}
+    .locked-card .btn-secondary{margin-top:26px}
+
+    @media(max-width:520px){
+      .st-title{font-size:22px}
+      .btn-primary{font-size:15px}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="devbar">⚙️ דמו פנימי · התוכן יתווסף מהשיעורים</div>
+
+  <main id="app" class="wrap"></main>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+
+  <script src="data/content.js"></script>
+  <script>
+  (function(){
+    var PROGRESS_KEY = 'oriane_journey_progress';
+
+    // ---------- פרמטר ?id ----------
+    var params = new URLSearchParams(location.search);
+    var id = parseInt(params.get('id'), 10);
+
+    var stations = (window.COURSE && window.COURSE.allStations) || [];
+    var total = stations.length;
+    var station = stations.find(function(s){ return s.id == id; });
+
+    var done = parseInt(localStorage.getItem(PROGRESS_KEY), 10);
+    if (isNaN(done)) done = 3;
+
+    var app = document.getElementById('app');
+
+    function esc(t){
+      var d = document.createElement('div');
+      d.textContent = t == null ? '' : t;
+      return d.innerHTML;
+    }
+
+    // ---------- תחנה לא קיימת ----------
+    if (!station) {
+      app.innerHTML =
+        '<div class="locked-card">' +
+          '<div class="ic">🧭</div>' +
+          '<h2>התחנה לא נמצאה</h2>' +
+          '<p>לא הצלחנו לאתר את התחנה המבוקשת.</p>' +
+          '<a class="btn-secondary" href="index.html">→ חזרה למפה</a>' +
+        '</div>';
+      document.title = 'תחנה · המסע ל-50K';
+      return;
+    }
+
+    // ---------- נעילת התקדמות ----------
+    if (station.id > done + 1) {
+      app.innerHTML =
+        '<div class="locked-card">' +
+          '<div class="ic">🔒</div>' +
+          '<h2>התחנה הזו עדיין נעולה</h2>' +
+          '<p>סיים את התחנה הקודמת כדי לפתוח אותה.</p>' +
+          '<a class="btn-secondary" href="index.html">→ חזרה למפה</a>' +
+        '</div>';
+      document.title = 'נעול · המסע ל-50K';
+      return;
+    }
+
+    // ---------- תחנה פתוחה ----------
+    document.title = 'תחנה ' + station.id + ' · המסע ל-50K';
+
+    // אזור וידאו
+    var videoHtml;
+    if (station.youtubeId) {
+      videoHtml =
+        '<div class="video">' +
+          '<iframe src="https://www.youtube.com/embed/' + encodeURIComponent(station.youtubeId) + '" ' +
+            'title="' + esc(station.name) + '" allowfullscreen ' +
+            'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>' +
+        '</div>';
+    } else {
+      videoHtml =
+        '<div class="video ph"><div class="phtxt">🎬 כאן ייכנס הסרטון של התחנה</div></div>';
+    }
+
+    // תיאור
+    var descHtml = station.desc
+      ? '<p class="st-desc">' + esc(station.desc) + '</p>'
+      : '<p class="st-desc empty">תיאור התחנה יתווסף עם התוכן</p>';
+
+    // מה תפיק מהתחנה (מסגרת כללית, ללא תוכן שיעור ספציפי)
+    var gains = [
+      'הבנה ברורה של "' + station.name + '" ואיך הוא מתחבר ליעד ה-50K',
+      'כלים מעשיים שאפשר ליישם כבר אחרי הצפייה',
+      'צעדים קונקרטיים שמקדמים אותך לתחנה הבאה במסע',
+      'נקודת מדידה לראות איפה אתה עומד היום ולאן ממשיכים'
+    ];
+    var gainsHtml =
+      '<div class="gains">' +
+        '<h3>מה תפיק מהתחנה</h3>' +
+        '<ul>' +
+          gains.map(function(g){ return '<li>' + esc(g) + '</li>'; }).join('') +
+        '</ul>' +
+      '</div>';
+
+    // חוברת עבודה
+    var wbHtml = station.workbookUrl
+      ? '<a class="btn-wb on" href="' + esc(station.workbookUrl) + '" download target="_blank" rel="noopener">📘 הורד חוברת עבודה</a>'
+      : '<span class="btn-wb off">📘 חוברת עבודה · תתווסף</span>';
+
+    // משך
+    var durHtml = station.durationMin
+      ? '<div class="st-dur">⏱ כ-' + esc(station.durationMin) + ' דק׳</div>'
+      : '';
+
+    // ניווט קודם/הבא
+    var prevId = station.id - 1;
+    var nextId = station.id + 1;
+    var prevHtml = prevId >= 1
+      ? '<a href="station.html?id=' + prevId + '">→ התחנה הקודמת</a>'
+      : '<span>→ התחנה הקודמת</span>';
+    // הבאה זמינה רק אם לא חורגת מהנעילה הנוכחית
+    var nextHtml = (nextId <= total && nextId <= done + 1)
+      ? '<a href="station.html?id=' + nextId + '">התחנה הבאה ←</a>'
+      : '<span>התחנה הבאה ←</span>';
+
+    app.innerHTML =
+      '<div class="st-tags">' +
+        '<span class="tier">' + esc(station.tier) + '</span>' +
+        '<span class="ctitle">' + esc(station.chapterTitle) + '</span>' +
+      '</div>' +
+      '<h1 class="st-title">תחנה ' + station.id + ' · ' + esc(station.name) + '</h1>' +
+      durHtml +
+      videoHtml +
+      descHtml +
+      gainsHtml +
+      '<div class="workbook">' + wbHtml + '</div>' +
+      '<div class="actions">' +
+        '<button class="btn-primary" id="finishBtn">סיימתי את התחנה ✓ · לתחנה הבאה</button>' +
+        '<a class="btn-secondary" href="index.html">→ חזרה למפה</a>' +
+      '</div>' +
+      '<div class="stepnav">' + prevHtml + nextHtml + '</div>';
+
+    // ---------- סיום תחנה ----------
+    document.getElementById('finishBtn').addEventListener('click', function(){
+      localStorage.setItem(PROGRESS_KEY, Math.max(done, station.id));
+      location.href = 'index.html';
+    });
+  })();
+  </script>
+  <script src="js/theme.js"></script>
+</body>
+</html>
