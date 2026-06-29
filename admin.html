@@ -25,23 +25,26 @@
     <div class="lock">🔐</div>
     <h1>כניסת מנהל</h1>
     <div class="sub">אזור ניהול הקורס · גישה מורשית בלבד</div>
-    <input id="pass" type="password" placeholder="סיסמת מנהל" autocomplete="off">
+    <input id="email" type="email" placeholder="אימייל מנהל" autocomplete="off" style="text-align:center;letter-spacing:0;margin-top:14px">
+    <input id="pass" type="password" placeholder="סיסמה" autocomplete="off">
     <button onclick="enter()">כניסה לדשבורד</button>
     <div class="err" id="err"></div>
     <div class="note">דמו · בגרסה המלאה הכניסה מאובטחת דרך Supabase לפי הרשאת admin בלבד.</div>
     <a class="back" href="index.html">→ חזרה למסע</a>
   </div>
 
+  <script src="js/users.js"></script>
   <script>
-    // דמו בלבד · בפרודקשן ההזדהות עוברת ל-Supabase Auth (role=admin)
-    var ADMIN_PASS = 'oriane2026';
+    // דמו · בפרודקשן ההזדהות עוברת ל-Supabase Auth (role=admin)
     function enter(){
-      var v = document.getElementById('pass').value;
-      if (v === ADMIN_PASS){
-        try { localStorage.setItem('oriane_admin','1'); } catch(e){}
+      var email = document.getElementById('email').value;
+      var pass  = document.getElementById('pass').value;
+      var u = window.authUser ? window.authUser(email, pass) : null;
+      if (u && u.role === 'admin'){
+        try { localStorage.setItem('oriane_user', u.email); localStorage.setItem('oriane_admin','1'); localStorage.setItem('oriane_role','admin'); } catch(e){}
         location.href = 'dashboard.html';
       } else {
-        document.getElementById('err').textContent = 'סיסמה שגויה';
+        document.getElementById('err').textContent = u ? 'אין הרשאת מנהל לחשבון זה' : 'אימייל או סיסמה שגויים';
       }
     }
     document.getElementById('pass').addEventListener('keydown', function(e){ if(e.key==='Enter') enter(); });

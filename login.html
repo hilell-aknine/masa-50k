@@ -94,6 +94,7 @@
   </div>
 
   <script src="js/theme.js"></script>
+  <script src="js/users.js"></script>
   <script src="data/content.js"></script>
   <script>
     (function(){
@@ -142,7 +143,14 @@
           err.textContent = !okEmail ? 'נא להזין כתובת אימייל תקינה' : 'נא להזין סיסמה';
           return;
         }
-        localStorage.setItem('oriane_user', email.value.trim());
+        var u = window.authUser ? window.authUser(email.value, pass.value) : null;
+        if(!u){
+          err.textContent = 'אימייל או סיסמה שגויים';
+          return;
+        }
+        localStorage.setItem('oriane_user', u.email);
+        localStorage.setItem('oriane_role', u.role || 'student');
+        if(u.role === 'admin'){ localStorage.setItem('oriane_admin','1'); }
         window.location.href = 'index.html';
       });
 
