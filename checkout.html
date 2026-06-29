@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>אבטחת המקום במסע · הדרך ל-50K</title>
 <link rel="stylesheet" href="css/portal.css">
+<script src="js/icons.js"></script>
 <style>
   /* ---------- מקומי: מסך תשלום בלבד (יורש :root מ-portal.css) ---------- */
   body{padding:0 18px 60px;min-height:100vh}
@@ -65,13 +66,13 @@
 <body>
 
 <div class="devbar" style="background:#3a2d12;border:1px solid #7a5c1e;color:#e8c97a;font-size:12.5px;text-align:center;padding:8px 14px;border-radius:10px;margin:14px auto 0;max-width:440px">
-  ⚙️ דמו · סליקת GROW אמיתית תחובר עם המפתח של המנחה (webhook → פתיחת גישה אוטומטית)
+  דמו · סליקת GROW אמיתית תחובר עם המפתח של המנחה (webhook → פתיחת גישה אוטומטית)
 </div>
 
 <div class="co">
   <div class="co-head">
     <div class="kick">אבטחת המקום שלך</div>
-    <h1>כמעט בדרך 🚀</h1>
+    <h1>כמעט בדרך <span data-ic="spark"></span></h1>
     <div class="sub">עוד צעד אחד ואתה בפנים · התחנה הראשונה מחכה</div>
   </div>
 
@@ -103,13 +104,13 @@
   <div class="coupon-msg" id="couponMsg"></div>
 
   <div class="trust">
-    <div class="ti"><span class="ic">🔒</span><span><b>סליקה ישראלית מאובטחת דרך GROW.</b> פרטי האשראי מוצפנים ומעובדים בתקן מאובטח, ולא נשמרים אצלנו.</span></div>
-    <div class="ti"><span class="ic">⚡</span><span><b>הגישה למסע נפתחת אוטומטית</b> מיד אחרי אישור התשלום. לא צריך לחכות לאף אחד.</span></div>
-    <div class="ti"><span class="ic">🛡️</span><span>תשלום חד-פעמי או 24 תשלומים, בלי ריבית ובלי הצמדה. אפשר לבטל לפי מדיניות ההחזרים.</span></div>
+    <div class="ti"><span class="ic" data-ic="lock"></span><span><b>סליקה ישראלית מאובטחת דרך GROW.</b> פרטי האשראי מוצפנים ומעובדים בתקן מאובטח, ולא נשמרים אצלנו.</span></div>
+    <div class="ti"><span class="ic" data-ic="zap"></span><span><b>הגישה למסע נפתחת אוטומטית</b> מיד אחרי אישור התשלום. לא צריך לחכות לאף אחד.</span></div>
+    <div class="ti"><span class="ic" data-ic="shield"></span><span>תשלום חד-פעמי או 24 תשלומים, בלי ריבית ובלי הצמדה. אפשר לבטל לפי מדיניות ההחזרים.</span></div>
   </div>
 
-  <button class="pay" onclick="pay()">לתשלום מאובטח דרך GROW 🔒</button>
-  <span class="secure">🔒 התשלום מאובטח בסליקת GROW · הגישה למסע נפתחת אוטומטית מיד לאחר התשלום.</span>
+  <button class="pay" onclick="pay()">לתשלום מאובטח דרך GROW <span data-ic="lock"></span></button>
+  <span class="secure"><span data-ic="lock"></span> התשלום מאובטח בסליקת GROW · הגישה למסע נפתחת אוטומטית מיד לאחר התשלום.</span>
   <p class="policy">בלחיצה על הכפתור אתה מאשר את תנאי השימוש ומדיניות הפרטיות. שביעות הרצון שלך חשובה לנו · ניתן לבטל לפי מדיניות ההחזרים.</p>
   <a class="back" href="landing.html">→ חזרה לדף המכירה</a>
 </div>

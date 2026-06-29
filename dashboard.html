@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>דשבורד ניהול · הדרך ל-50K</title>
 <link rel="stylesheet" href="css/portal.css">
+<script src="js/icons.js"></script>
 <style>
   /* ============================================================
      Dashboard-only styles · dark minimal luxury · reuses portal.css tokens
@@ -132,11 +133,11 @@
 </head>
 <body>
 
-  <div class="demobar">⚙️ נתוני דמו · יוחלפו בנתונים אמיתיים מ-Supabase + Firebase</div>
+  <div class="demobar">נתוני דמו · יוחלפו בנתונים אמיתיים מ-Supabase + Firebase</div>
 
   <div class="dash-head wrap">
     <div class="kick">לוח ניהול</div>
-    <h1>שלום, מנהלת הקורס 👋</h1>
+    <h1>שלום, מנהלת הקורס</h1>
     <div class="sub">תמונת מצב חיה של התלמידים, ההתקדמות וההכנסות במסע ל-50K.</div>
   </div>
 
@@ -144,7 +145,7 @@
   <div class="cards wrap">
     <div class="card"><div class="lbl">סה"כ תלמידים</div><div class="val">8</div><div class="delta">+3 החודש</div></div>
     <div class="card"><div class="lbl">פעילים השבוע</div><div class="val">5</div><div class="delta">צפו בלפחות שיעור אחד</div></div>
-    <div class="card hotcard"><div class="lbl">חמים 🔥</div><div class="val">3</div><div class="delta">בשלים לליווי אישי</div></div>
+    <div class="card hotcard"><div class="lbl">חמים <span data-ic="flame"></span></div><div class="val">3</div><div class="delta">בשלים לליווי אישי</div></div>
     <div class="card"><div class="lbl">הכנסה מצטברת</div><div class="val">14,400₪</div><div class="delta">דמו · 8 רכישות</div></div>
   </div>
 
@@ -164,9 +165,9 @@
         <table>
           <thead><tr><th>שם</th><th>תחנה</th><th>מדרגת הכנסה</th><th>סטטוס</th></tr></thead>
           <tbody>
-            <tr><td data-l="שם"><span class="who">דנה</span></td><td data-l="תחנה">11 / 12</td><td data-l="מדרגה">סקיילינג · 50K</td><td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td></tr>
-            <tr><td data-l="שם"><span class="who">יוסי</span></td><td data-l="תחנה">10 / 12</td><td data-l="מדרגה">מנוע שיווקי · 35K</td><td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td></tr>
-            <tr><td data-l="שם"><span class="who">מאיה</span></td><td data-l="תחנה">9 / 12</td><td data-l="מדרגה">30-50 אלף</td><td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td></tr>
+            <tr><td data-l="שם"><span class="who">דנה</span></td><td data-l="תחנה">11 / 12</td><td data-l="מדרגה">סקיילינג · 50K</td><td data-l="סטטוס"><span class="pill hot"><span data-ic="flame"></span> בשל לליווי</span></td></tr>
+            <tr><td data-l="שם"><span class="who">יוסי</span></td><td data-l="תחנה">10 / 12</td><td data-l="מדרגה">מנוע שיווקי · 35K</td><td data-l="סטטוס"><span class="pill hot"><span data-ic="flame"></span> בשל לליווי</span></td></tr>
+            <tr><td data-l="שם"><span class="who">מאיה</span></td><td data-l="תחנה">9 / 12</td><td data-l="מדרגה">30-50 אלף</td><td data-l="סטטוס"><span class="pill hot"><span data-ic="flame"></span> בשל לליווי</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -175,7 +176,7 @@
     <!-- manager bot -->
     <div class="bot">
       <div class="bhead">
-        <div class="avatar">🤖</div>
+        <div class="avatar"><span data-ic="brain"></span></div>
         <div>
           <div class="nm">בוט מנהל</div>
           <div class="st">● מחובר · עונה בזמן אמת</div>
@@ -188,7 +189,7 @@
           <li>נרשמו אתמול <b>2 תלמידים</b></li>
           <li>שילמו (דמו) <b>1 · 1,800₪</b></li>
           <li>הכי התקדמה <b>דנה · תחנה 11</b></li>
-          <li>חמים לליווי <b>3 תלמידים 🔥</b></li>
+          <li>חמים לליווי <b>3 תלמידים <span data-ic="flame"></span></b></li>
         </ul>
         <div class="time">היום · 08:00</div>
       </div>
@@ -211,8 +212,8 @@
 
   <!-- tabs -->
   <div class="tabs wrap">
-    <button class="tab on" data-tab="students">👥 תלמידים</button>
-    <button class="tab" data-tab="payments">💳 תשלומים</button>
+    <button class="tab on" data-tab="students"><span data-ic="cap"></span> תלמידים</button>
+    <button class="tab" data-tab="payments">תשלומים</button>
   </div>
 
   <div class="wrap">
@@ -229,21 +230,21 @@
               <td data-l="תחנה">11 / 12</td>
               <td data-l="מדרגה"><span class="pill tier">סקיילינג · 50K</span></td>
               <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:92%"></i></div><span>92%</span></div></td>
-              <td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td>
+              <td data-l="סטטוס"><span class="pill hot"><span data-ic="flame"></span> בשל לליווי</span></td>
             </tr>
             <tr>
               <td data-l="שם"><span class="who">יוסי</span></td>
               <td data-l="תחנה">10 / 12</td>
               <td data-l="מדרגה"><span class="pill tier">מנוע שיווקי · 35K</span></td>
               <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:83%"></i></div><span>83%</span></div></td>
-              <td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td>
+              <td data-l="סטטוס"><span class="pill hot"><span data-ic="flame"></span> בשל לליווי</span></td>
             </tr>
             <tr>
               <td data-l="שם"><span class="who">מאיה</span></td>
               <td data-l="תחנה">9 / 12</td>
               <td data-l="מדרגה"><span class="pill tier">30-50 אלף</span></td>
               <td data-l="התקדמות"><div class="mini"><div class="track"><i style="width:75%"></i></div><span>75%</span></div></td>
-              <td data-l="סטטוס"><span class="pill hot">🔥 בשל לליווי</span></td>
+              <td data-l="סטטוס"><span class="pill hot"><span data-ic="flame"></span> בשל לליווי</span></td>
             </tr>
             <tr>
               <td data-l="שם"><span class="who">איתי</span></td>
@@ -284,7 +285,7 @@
         </table>
       </div>
       <div style="font-size:12px;color:var(--text-dim);margin-top:12px">
-        כלל "חם": תחנה 10 ומעלה <b>או</b> מדרגת הכנסה 30-50K ומעלה → התלמיד בשל לליווי אישי 🔥
+        כלל "חם": תחנה 10 ומעלה <b>או</b> מדרגת הכנסה 30-50K ומעלה → התלמיד בשל לליווי אישי <span data-ic="flame"></span>
       </div>
     </div>
 
@@ -331,7 +332,7 @@
   var ANSWERS = {
     'כמה נרשמו החודש?':'החודש נרשמו 8 תלמידים חדשים למסע ל-50K (נתון דמו). 5 מתוכם פעילים השבוע.',
     'מי לא סיים פרק 1?':'שירה ורון עדיין לא סיימו את פרק 1 (תודעה ובסיס). כדאי לשלוח להם תזכורת עדינה (נתון דמו).',
-    'מי הכי חם עכשיו?':'3 תלמידים חמים 🔥: דנה (תחנה 11), יוסי (תחנה 10) ומאיה (מדרגת 30-50K). כולם בשלים לליווי אישי (נתון דמו).',
+    'מי הכי חם עכשיו?':'3 תלמידים חמים <span data-ic="flame"></span>: דנה (תחנה 11), יוסי (תחנה 10) ומאיה (מדרגת 30-50K). כולם בשלים לליווי אישי (נתון דמו).',
     'כמה הכנסה החודש?':'ההכנסה המצטברת החודש עומדת על 14,400₪ מ-8 רכישות דרך GROW (נתון דמו).'
   };
   var DEFAULT_ANS = 'זו תצוגת דמו. כשנחבר את Supabase + Firebase הבוט ישלוף את התשובה האמיתית מהנתונים החיים. נסה אחת מהשאלות המהירות למעלה.';
@@ -340,7 +341,7 @@
   function push(cls, text){
     var d = document.createElement('div');
     d.className = 'msg ' + cls;
-    d.textContent = text;
+    if(cls === 'ans'){ d.innerHTML = text; } else { d.textContent = text; }
     log.appendChild(d);
     log.scrollTop = log.scrollHeight;
   }

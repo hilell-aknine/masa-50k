@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>תחנה · המסע ל-50K</title>
   <link rel="stylesheet" href="css/portal.css">
+  <script src="js/icons.js"></script>
   <style>
     /* ---------- רכיבים ייחודיים למסך התחנה ---------- */
     .wrap{max-width:var(--maxw);margin:0 auto}
@@ -112,7 +113,7 @@
     if (!station) {
       app.innerHTML =
         '<div class="locked-card">' +
-          '<div class="ic">🧭</div>' +
+          '<div class="ic"><span data-ic="compass"></span></div>' +
           '<h2>התחנה לא נמצאה</h2>' +
           '<p>לא הצלחנו לאתר את התחנה המבוקשת.</p>' +
           '<a class="btn-secondary" href="index.html">→ חזרה למפה</a>' +
@@ -125,7 +126,7 @@
     if (station.id > done + 1) {
       app.innerHTML =
         '<div class="locked-card">' +
-          '<div class="ic">🔒</div>' +
+          '<div class="ic"><span data-ic="lock"></span></div>' +
           '<h2>התחנה הזו עדיין נעולה</h2>' +
           '<p>סיים את התחנה הקודמת כדי לפתוח אותה.</p>' +
           '<a class="btn-secondary" href="index.html">→ חזרה למפה</a>' +
@@ -148,7 +149,7 @@
         '</div>';
     } else {
       videoHtml =
-        '<div class="video ph"><div class="phtxt">🎬 כאן ייכנס הסרטון של התחנה</div></div>';
+        '<div class="video ph"><div class="phtxt"><span data-ic="play"></span> כאן ייכנס הסרטון של התחנה</div></div>';
     }
 
     // תיאור
@@ -173,12 +174,12 @@
 
     // חוברת עבודה
     var wbHtml = station.workbookUrl
-      ? '<a class="btn-wb on" href="' + esc(station.workbookUrl) + '" download target="_blank" rel="noopener">📘 הורד חוברת עבודה</a>'
-      : '<span class="btn-wb off">📘 חוברת עבודה · תתווסף</span>';
+      ? '<a class="btn-wb on" href="' + esc(station.workbookUrl) + '" download target="_blank" rel="noopener"><span data-ic="book"></span> הורד חוברת עבודה</a>'
+      : '<span class="btn-wb off"><span data-ic="book"></span> חוברת עבודה · תתווסף</span>';
 
     // משך
     var durHtml = station.durationMin
-      ? '<div class="st-dur">⏱ כ-' + esc(station.durationMin) + ' דק׳</div>'
+      ? '<div class="st-dur"><span data-ic="clock"></span> כ-' + esc(station.durationMin) + ' דק׳</div>'
       : '';
 
     // ניווט קודם/הבא
@@ -195,7 +196,7 @@
     // ההערות שלי (נשמרות לכל משתתף בנפרד)
     var notesHtml =
       '<div class="notes">' +
-        '<div class="nh"><h3>📝 ההערות שלי</h3><span class="saved" id="notesSaved">נשמר ✓</span></div>' +
+        '<div class="nh"><h3><span data-ic="note"></span> ההערות שלי</h3><span class="saved" id="notesSaved">נשמר ✓</span></div>' +
         '<textarea id="notesArea" placeholder="כתוב כאן הערות, תובנות או שאלות מהתחנה הזו..."></textarea>' +
         '<div class="hint">נשמר אוטומטית · פרטי לך בלבד</div>' +
       '</div>';

@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>הדרך ל-50K</title>
 <link rel="stylesheet" href="css/portal.css">
+<script src="js/icons.js"></script>
 <style>
   /* ---------- מפת המסע · שביל מתפתל (וריאציה 2, מעודן) ---------- */
   body{background:var(--bg);padding:0 0 50px}
@@ -81,7 +82,7 @@
 </head>
 <body>
 
-<div class="devbar">⚙️ דמו פנימי · שמות התחנות זמניים · יושלמו מתוכן הקורס</div>
+<div class="devbar">דמו פנימי · שמות התחנות זמניים · יושלמו מתוכן הקורס</div>
 
 <div class="wrap">
   <div class="head">
@@ -186,7 +187,7 @@
     document.getElementById('pval').textContent = `${done} / ${TOTAL} הושלמו`;
     document.getElementById('pfill').style.width = (done / TOTAL * 100) + '%';
     const left = TOTAL - done;
-    document.getElementById('goalSub').textContent = left > 0 ? `עוד ${left} תחנות והגעת לפסגה` : 'הגעת לפסגה · 50K 🎉';
+    document.getElementById('goalSub').textContent = left > 0 ? `עוד ${left} תחנות והגעת לפסגה` : 'הגעת לפסגה · 50K';
   }
 
   render();

@@ -39,15 +39,15 @@
 
   var fab = document.createElement('button');
   fab.className = 'ait-fab';
-  fab.innerHTML = '<span class="d"></span>🎓 המורה שלך';
+  fab.innerHTML = '<span class="d"></span><span data-ic="cap"></span> המורה שלך';
 
   var panel = document.createElement('div');
   panel.className = 'ait-panel';
   panel.innerHTML =
-      '<div class="ait-head"><div class="av">🎓</div><div><div class="nm">המורה הדיגיטלי</div><div class="st">כאן לכל שאלה על השיעור</div></div><button class="x" aria-label="סגור">×</button></div>'
+      '<div class="ait-head"><div class="av"><span data-ic="cap"></span></div><div><div class="nm">המורה הדיגיטלי</div><div class="st">כאן לכל שאלה על השיעור</div></div><button class="x" aria-label="סגור">×</button></div>'
     + '<div class="ait-body" id="aitBody"></div>'
     + '<div class="ait-note">תצוגת דמו · בגרסה המלאה המורה עונה לפי תוכן השיעור</div>'
-    + '<div class="ait-foot"><input id="aitInput" placeholder="שאל אותי כל דבר..." autocomplete="off"><button id="aitSend" aria-label="שלח">➤</button></div>';
+    + '<div class="ait-foot"><input id="aitInput" placeholder="שאל אותי כל דבר..." autocomplete="off"><button id="aitSend" aria-label="שלח"><span data-ic="send"></span></button></div>';
 
   function ready() {
     document.body.appendChild(fab);
