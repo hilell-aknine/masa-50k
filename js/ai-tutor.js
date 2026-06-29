@@ -55,11 +55,28 @@
     var body = panel.querySelector('#aitBody');
     var input = panel.querySelector('#aitInput');
 
-    function add(text, who) {
+    // ----- זיכרון שיחה פר-תלמיד (נשמר ונטען) -----
+    var user = 'guest';
+    try { user = localStorage.getItem('oriane_user') || 'guest'; } catch(e){}
+    var HKEY = 'oriane_tutor_' + user;
+    var history = [];
+    try { history = JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch(e){}
+    function saveHist(){ try { localStorage.setItem(HKEY, JSON.stringify(history)); } catch(e){} }
+
+    function paint(text, who) {
       var m = document.createElement('div'); m.className = 'ait-msg ' + who; m.textContent = text;
       body.appendChild(m); body.scrollTop = body.scrollHeight; return m;
     }
-    function open() { panel.classList.add('open'); fab.style.display = 'none'; if (!body.children.length) add('היי, אני המורה הדיגיטלי שלך 🎓\nאפשר לשאול אותי כל שאלה על השיעור ואני אעזור לך להבין וליישם.', 'bot'); setTimeout(function(){ input.focus(); }, 80); }
+    function add(text, who) { paint(text, who); history.push({ t:text, w:who }); saveHist(); }
+
+    function open() {
+      panel.classList.add('open'); fab.style.display = 'none';
+      if (!body.children.length) {
+        if (history.length) { history.forEach(function(h){ paint(h.t, h.w); }); }
+        else { add('היי, אני המורה הדיגיטלי שלך 🎓\nאפשר לשאול אותי כל שאלה על השיעור ואני אעזור לך להבין וליישם.', 'bot'); }
+      }
+      setTimeout(function(){ input.focus(); }, 80);
+    }
     function close() { panel.classList.remove('open'); fab.style.display = 'flex'; }
     function send() {
       var v = (input.value || '').trim(); if (!v) return;

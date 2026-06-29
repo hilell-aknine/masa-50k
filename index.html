@@ -60,7 +60,9 @@
   .node.locked .lk{position:absolute;top:-3px;inset-inline-end:-3px;width:22px;height:22px;border-radius:50%;background:var(--bg);border:1px solid var(--locked-bd);display:flex;align-items:center;justify-content:center;color:#46505e}
   .node.locked .lk svg{display:block}
 
-  .label-card{position:absolute;top:50%;transform:translateY(-50%);width:150px;pointer-events:none}
+  .node:not(.locked){cursor:pointer}
+  .label-card{position:absolute;top:50%;transform:translateY(-50%);width:150px}
+  .node.locked .label-card{pointer-events:none}
   .node.p-r .label-card{inset-inline-start:104px;text-align:start}
   .node.p-l .label-card{inset-inline-end:104px;text-align:end}
   .label-card .lt{font-size:14px;font-weight:700;color:var(--text-strong);line-height:1.3}
@@ -163,7 +165,7 @@
         const tag = state === 'active' ? 'עכשיו' : (state === 'locked' ? 'נעול' : 'תחנה');
         const mark = state === 'done' ? '<div class="check">✓</div>' : (state === 'locked' ? lockIcon() : '');
         const ls = state === 'active' ? '<div class="ls">התחנה הפעילה שלך</div>' : (s.desc ? `<div class="ls">${s.desc}</div>` : '');
-        const cta = state === 'active' ? `<button class="enter-pill" onclick="event.stopPropagation();go(${s.id})">היכנס לתחנה</button>` : '';
+        const cta = state === 'active' ? `<button class="enter-pill" onclick="go(${s.id})">היכנס לתחנה</button>` : '';
         const node = document.createElement('div');
         node.className = `node ${state} p-${pos}`;
         node.innerHTML = `
