@@ -60,6 +60,16 @@
     .locked-card p{font-size:14.5px;color:var(--text-dim);margin-top:10px;line-height:1.6}
     .locked-card .btn-secondary{margin-top:26px}
 
+    /* ההערות שלי */
+    .notes{margin:22px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px 20px}
+    .notes .nh{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .notes h3{font-size:14px;font-weight:700;color:var(--text-strong)}
+    .notes .saved{margin-inline-start:auto;font-size:12px;color:var(--done);opacity:0;transition:.2s}
+    .notes .saved.on{opacity:1}
+    .notes textarea{width:100%;min-height:110px;resize:vertical;background:var(--input-bg);border:1px solid var(--line);border-radius:12px;padding:13px 15px;color:var(--text);font-family:Inter,sans-serif;font-size:14px;line-height:1.6;outline:none}
+    .notes textarea::placeholder{color:var(--text-faint)}
+    .notes .hint{font-size:11.5px;color:var(--text-faint);margin-top:8px}
+
     @media(max-width:520px){
       .st-title{font-size:22px}
       .btn-primary{font-size:15px}
@@ -182,6 +192,14 @@
       ? '<a href="station.html?id=' + nextId + '">התחנה הבאה ←</a>'
       : '<span>התחנה הבאה ←</span>';
 
+    // ההערות שלי (נשמרות לכל משתתף בנפרד)
+    var notesHtml =
+      '<div class="notes">' +
+        '<div class="nh"><h3>📝 ההערות שלי</h3><span class="saved" id="notesSaved">נשמר ✓</span></div>' +
+        '<textarea id="notesArea" placeholder="כתוב כאן הערות, תובנות או שאלות מהתחנה הזו..."></textarea>' +
+        '<div class="hint">נשמר אוטומטית · פרטי לך בלבד</div>' +
+      '</div>';
+
     app.innerHTML =
       '<div class="st-tags">' +
         '<span class="tier">' + esc(station.tier) + '</span>' +
@@ -193,6 +211,7 @@
       descHtml +
       gainsHtml +
       '<div class="workbook">' + wbHtml + '</div>' +
+      notesHtml +
       '<div class="actions">' +
         '<button class="btn-primary" id="finishBtn">סיימתי את התחנה ✓ · לתחנה הבאה</button>' +
         '<a class="btn-secondary" href="index.html">→ חזרה למפה</a>' +
@@ -204,6 +223,22 @@
       localStorage.setItem(PROGRESS_KEY, Math.max(done, station.id));
       location.href = 'index.html';
     });
+
+    // ---------- ההערות שלי (פר-משתתף · פר-תחנה) ----------
+    var noteUser = localStorage.getItem('oriane_user') || 'guest';
+    var notesKey = 'oriane_notes_' + noteUser + '_' + station.id;
+    var area = document.getElementById('notesArea');
+    var savedTag = document.getElementById('notesSaved');
+    if (area) {
+      area.value = localStorage.getItem(notesKey) || '';
+      var noteTmr;
+      area.addEventListener('input', function(){
+        localStorage.setItem(notesKey, area.value);
+        savedTag.classList.add('on');
+        clearTimeout(noteTmr);
+        noteTmr = setTimeout(function(){ savedTag.classList.remove('on'); }, 1200);
+      });
+    }
   })();
   </script>
   <script src="js/theme.js"></script>
