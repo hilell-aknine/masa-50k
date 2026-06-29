@@ -2,240 +2,258 @@
 <html lang="he" dir="rtl">
 <head>
   <meta name="robots" content="noindex, nofollow">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>הדרך ל-50K · המסע</title>
-<link rel="stylesheet" href="css/portal.css">
-<script src="js/icons.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>הדרך ל-50K · המסע</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;800;900&family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="js/icons.js"></script>
 <style>
-  /* ---------- מקומי: רכיבי דף המכירה בלבד (יורש :root מ-portal.css) ---------- */
-  body{padding:0 18px 0}
-  .wrap{max-width:var(--maxw);margin:0 auto}
+  /* ============================================================
+     דף מכירה · Dark Editorial Luxury
+     סריף יוקרתי + זהב מהלוגו + רקע אטמוספרי · יורש טוקנים מ-portal.css
+     ============================================================ */
+  :root{ --serif:'Frank Ruhl Libre',serif; --sans:'Heebo',sans-serif; --acc:#bd9540; --acc-soft:rgba(189,149,64,.14); }
 
-  /* sections */
-  section{padding:64px 0;border-bottom:1px solid var(--line)}
-  section:last-of-type{border-bottom:none}
-  .eyebrow{letter-spacing:4px;font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;margin-bottom:14px}
-  h2.title{font-size:26px;font-weight:800;color:var(--text-strong);letter-spacing:-.4px;margin-bottom:14px}
-  p.lead{font-size:15.5px;color:var(--text-dim);line-height:1.75}
-  p.lead + p.lead{margin-top:14px}
+  html,body{font-family:var(--sans)}
+  body{padding:0;overflow-x:hidden;position:relative}
 
-  /* pill button */
-  .pill{display:inline-block;background:var(--btn-bg);color:var(--btn-text);font-weight:700;font-size:16px;
-        padding:15px 38px;border-radius:var(--radius-pill);border:none;cursor:pointer;text-decoration:none;
-        min-height:44px;line-height:1.4}
+  /* grain overlay · נותן מרקם בשני המצבים */
+  body::after{
+    content:"";position:fixed;inset:0;z-index:9;pointer-events:none;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap{max-width:600px;margin:0 auto;padding:0 20px}
+
+  /* sections + rhythm (פסים מתחלפים) */
+  section{padding:74px 0;position:relative}
+  section.alt{background:var(--surface-2)}
+  .eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--sans);letter-spacing:3px;font-size:11px;
+           font-weight:700;color:var(--acc);text-transform:uppercase;margin-bottom:18px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--acc);opacity:.7}
+  h2.title{font-family:var(--serif);font-size:clamp(26px,6.6vw,36px);font-weight:800;color:var(--text-strong);
+           letter-spacing:-.5px;line-height:1.15;margin-bottom:18px}
+  p.lead{font-size:16px;color:var(--text-dim);line-height:1.85}
+  p.lead + p.lead{margin-top:16px}
+
+  .pill{display:inline-flex;align-items:center;justify-content:center;background:var(--btn-bg);color:var(--btn-text);
+        font-family:var(--sans);font-weight:700;font-size:16px;padding:16px 40px;border-radius:var(--radius-pill);
+        border:none;cursor:pointer;text-decoration:none;min-height:52px;line-height:1.2;transition:transform .15s,box-shadow .25s}
+  .pill:hover{box-shadow:0 10px 30px rgba(0,0,0,.3)}
   .pill:active{transform:translateY(1px)}
 
   /* ---------- HERO ---------- */
-  .lp-hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:48px 0 70px;border-bottom:1px solid var(--line);position:relative}
-  .lp-hero .kick{letter-spacing:4px;font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase}
-  .lp-hero h1{font-size:clamp(38px,9vw,62px);font-weight:800;color:var(--text-strong);letter-spacing:-1px;line-height:1.06;margin:24px auto 18px;max-width:600px}
-  .lp-hero .sub{font-size:clamp(15px,4.2vw,18px);color:var(--text-dim);max-width:540px;margin:0 auto 32px;line-height:1.7}
-  .lp-hero .reassure{display:block;font-size:13px;color:var(--text-dim);margin-top:16px}
-  .portrait{width:188px;height:188px;margin:0 auto;border-radius:50%;border:1px solid var(--line);
-            background:var(--surface-2);display:grid;place-items:center;color:var(--text-dim);font-size:13px;text-align:center;overflow:hidden}
-  .scrolldown{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:var(--text-faint);font-size:18px;animation:bob 1.8s infinite}
-  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+  .lp-hero{min-height:96vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+           text-align:center;padding:54px 20px 78px;position:relative;overflow:hidden}
+  .lp-hero::before{content:"";position:absolute;top:-18%;left:50%;width:min(720px,120vw);height:620px;
+    transform:translateX(-50%);pointer-events:none;
+    background:radial-gradient(ellipse at center,var(--acc-soft),transparent 62%)}
+  /* "50K" ענק דקורטיבי ברקע */
+  .ghost{position:absolute;inset-block-start:50%;inset-inline-start:50%;transform:translate(50%,-54%);
+         font-family:var(--serif);font-weight:900;font-size:min(46vw,340px);line-height:.8;color:var(--text-strong);
+         opacity:.035;pointer-events:none;white-space:nowrap;z-index:0}
+  .lp-hero > *{position:relative;z-index:1}
+  .portrait{width:172px;height:172px;margin:0 auto;border-radius:50%;overflow:hidden;
+            box-shadow:0 0 0 1px var(--line),0 0 0 7px var(--acc-soft),0 18px 50px rgba(0,0,0,.35)}
+  .portrait img{width:100%;height:100%;object-fit:cover;display:block}
+  .lp-hero h1{font-family:var(--serif);font-size:clamp(40px,10vw,72px);font-weight:800;color:var(--text-strong);
+              letter-spacing:-1.5px;line-height:1.02;margin:28px auto 20px;max-width:9ch}
+  .lp-hero .sub{font-size:clamp(15px,4.2vw,18px);color:var(--text-dim);max-width:520px;margin:0 auto 34px;line-height:1.75}
+  .lp-hero .reassure{display:block;font-size:12.5px;color:var(--text-faint);margin-top:18px;letter-spacing:.3px}
+  .scrolldown{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:var(--text-faint);animation:bob 1.9s infinite}
+  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
 
-  /* navy panel */
-  .panel{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-card);padding:34px 28px;margin:0 -8px}
+  /* load reveal · חשיפה מדורגת */
+  .rise{opacity:0;transform:translateY(22px);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .d1{animation-delay:.05s}.d2{animation-delay:.18s}.d3{animation-delay:.32s}.d4{animation-delay:.46s}.d5{animation-delay:.6s}
 
-  /* tier cards (4 chapters) */
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:20px 18px;min-height:120px;display:flex;flex-direction:column;gap:12px}
-  .card .tier{align-self:flex-start;font-size:12px;font-weight:700;color:var(--btn-text);background:var(--btn-bg);padding:4px 13px;border-radius:var(--radius-pill)}
-  .card .ctitle{font-size:16px;font-weight:600;color:var(--text-strong);line-height:1.4}
-  .emph{text-align:center;margin-top:24px;font-size:14px;color:var(--text-dim);font-weight:500}
-  .emph b{color:var(--text-strong)}
+  /* scroll reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
 
-  /* how it works: 3 steps */
-  ol.steps{list-style:none;margin-top:26px;display:flex;flex-direction:column;gap:16px}
-  ol.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px 18px}
-  ol.steps .num{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;background:var(--btn-bg);color:var(--btn-text)}
-  ol.steps .stitle{font-size:16px;font-weight:600;color:var(--text-strong);margin-bottom:4px}
-  ol.steps .sdesc{font-size:14px;color:var(--text-dim);line-height:1.65}
+  /* panel */
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:36px 30px;
+         box-shadow:0 1px 0 rgba(255,255,255,.02) inset}
+  .emph{text-align:center;margin-top:26px;font-family:var(--serif);font-size:17px;color:var(--text-dim);font-weight:700}
+  .emph b{color:var(--acc)}
 
-  /* who-for list */
-  ul.fit{list-style:none;margin-top:22px;display:flex;flex-direction:column;gap:14px}
-  ul.fit li{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--text)}
-  ul.fit li::before{content:"·";color:var(--btn-bg);font-weight:800;font-size:22px;line-height:1}
+  /* tier cards · מדרגות הכנסה כמספרים גרפיים */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
+  .card{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:22px 20px;position:relative;overflow:hidden;transition:transform .25s,border-color .25s}
+  .card::before{content:"";position:absolute;top:0;inset-inline:0;height:2px;background:linear-gradient(90deg,var(--acc),transparent)}
+  .card:hover{transform:translateY(-3px);border-color:var(--acc)}
+  .card .tier{font-family:var(--serif);font-size:24px;font-weight:800;color:var(--acc);background:none;padding:0;letter-spacing:-.3px}
+  .card .ctitle{font-size:15px;font-weight:600;color:var(--text-strong);line-height:1.45;margin-top:8px}
 
-  /* testimonials placeholder */
-  .testi-ph{margin-top:22px;background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius-card);
-            padding:34px 22px;text-align:center;color:var(--text-dim);font-size:14px}
+  /* steps */
+  ol.steps{list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:14px}
+  ol.steps li{display:flex;gap:18px;align-items:flex-start;padding:8px 2px}
+  ol.steps .num{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+    font-family:var(--serif);font-weight:800;font-size:19px;color:var(--acc);border:1px solid var(--acc);background:var(--acc-soft)}
+  ol.steps .stitle{font-size:17px;font-weight:700;color:var(--text-strong);margin-bottom:4px}
+  ol.steps .sdesc{font-size:14.5px;color:var(--text-dim);line-height:1.7}
 
-  /* price */
-  .price{text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:26px 22px;margin:26px -8px 0}
-  .price .label{font-size:13px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
-  .price .val{font-size:30px;font-weight:800;color:var(--text-strong)}
-  .price .note{font-size:13px;color:var(--text-dim);margin-top:8px;line-height:1.7}
+  /* who-for */
+  ul.fit{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:16px}
+  ul.fit li{display:flex;gap:13px;align-items:flex-start;font-size:15.5px;color:var(--text);line-height:1.6}
+  ul.fit li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--acc);margin-top:9px}
+
+  /* testimonials */
+  .testi-ph{margin-top:24px;background:var(--surface);border:1px dashed var(--line);border-radius:18px;
+            padding:40px 24px;text-align:center;color:var(--text-faint);font-size:14px}
+
+  /* price · כרטיס מודגש */
+  .price{text-align:center;background:var(--surface);border:1px solid var(--acc);border-radius:22px;padding:34px 24px;margin-top:28px;position:relative;overflow:hidden}
+  .price::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0,var(--acc-soft),transparent 60%);pointer-events:none}
+  .price .label{font-size:12px;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+  .price .val{font-family:var(--serif);font-size:54px;font-weight:900;color:var(--text-strong);line-height:1;letter-spacing:-1px}
+  .price .note{font-size:13.5px;color:var(--text-dim);margin-top:14px;line-height:1.8}
 
   /* faq */
-  .faq{margin-top:24px;display:flex;flex-direction:column;gap:12px}
-  .faq details{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:0 18px}
-  .faq summary{list-style:none;cursor:pointer;padding:18px 0;font-size:15.5px;font-weight:600;color:var(--text-strong);
+  .faq{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+  .faq details{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0 20px;transition:border-color .2s}
+  .faq details[open]{border-color:var(--acc)}
+  .faq summary{list-style:none;cursor:pointer;padding:19px 0;font-size:15.5px;font-weight:700;color:var(--text-strong);
               display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px}
   .faq summary::-webkit-details-marker{display:none}
-  .faq summary::after{content:"+";color:var(--text-dim);font-size:22px;font-weight:400;line-height:1}
+  .faq summary::after{content:"+";color:var(--acc);font-size:24px;font-weight:300;line-height:1;transition:transform .2s}
   .faq details[open] summary::after{content:"\2212"}
-  .faq .ans{font-size:14.5px;color:var(--text-dim);line-height:1.75;padding:0 0 18px}
+  .faq .ans{font-size:14.5px;color:var(--text-dim);line-height:1.8;padding:0 0 20px}
 
   .cta-final{text-align:center}
-  .cta-final .secure{display:block;font-size:13px;color:var(--text-dim);margin-top:18px;line-height:1.7}
+  .cta-final .secure{display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;color:var(--text-faint);margin-top:20px;line-height:1.7;flex-wrap:wrap}
+
+  .credit{text-align:center;color:var(--text-faint);font-size:12px;padding:30px 0 40px}
+  .credit b{color:var(--text-dim)}
 
   @media(max-width:520px){
-    .lp-hero h1{font-size:31px}
-    h2.title{font-size:22px}
     .cards{grid-template-columns:1fr}
-    .panel{padding:26px 20px}
+    .panel{padding:28px 22px}
+    section{padding:58px 0}
   }
 </style>
 </head>
 <body>
 
   <!-- ===================== HERO ===================== -->
-  <header class="lp-hero wrap">
-    <div class="portrait" style="padding:0;overflow:hidden"><img src="img/mentor.png" alt="המנחה" style="width:100%;height:100%;object-fit:cover;display:block"></div>
-    <h1 id="hero-slogan">המחזור גדל והרווח עדיין לא זז</h1>
-    <p class="sub">מסע מדורג, תחנה אחרי תחנה, אל 50,000&#8362; הראשונים בחודש. בלי קסמים ובלי קיצורי דרך. סדר ברור שמחבר בין מה שאתה עושה לבין מה שבאמת נשאר לך בבנק.</p>
-    <a class="pill" href="checkout.html">התחל את המסע</a>
-    <span class="reassure">גישה מלאה לכל 12 התחנות &middot; נפתחת מיד לאחר התשלום</span>
+  <header class="lp-hero">
+    <div class="ghost" aria-hidden="true">50K</div>
+    <div class="portrait rise d1"><img src="img/mentor.png" alt="המנחה"></div>
+    <h1 id="hero-slogan" class="rise d2">המחזור גדל והרווח עדיין לא זז</h1>
+    <p class="sub rise d3">מסע מדורג, תחנה אחרי תחנה, אל 50,000&#8362; הראשונים בחודש. בלי קסמים ובלי קיצורי דרך · סדר ברור שמחבר בין מה שאתה עושה לבין מה שבאמת נשאר לך בבנק.</p>
+    <a class="pill rise d4" href="checkout.html">התחל את המסע</a>
+    <span class="reassure rise d5">גישה מלאה לכל 12 התחנות &middot; נפתחת מיד לאחר התשלום</span>
     <div class="scrolldown"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
   </header>
 
   <!-- ===================== הכאב ===================== -->
-  <section class="wrap">
-    <div class="eyebrow">למה אתה כאן</div>
-    <h2 class="title">עובד קשה מתמיד · והרווח תקוע במקום</h2>
-    <p class="lead">
-      אתה מוסיף לקוחות, מוסיף שעות, מוסיף עוד ועוד מאמץ. המחזור באמת גדל,
-      אז למה בסוף החודש המספר שנשאר לך כמעט לא זז?
-    </p>
-    <p class="lead">
-      כי כשאין מבנה, כל לקוח חדש מביא איתו עוד עבודה, עוד הוצאה ועוד לחץ, והרווח נשאר מאחור.
-      זה מתסכל, וזה לא באשמתך. פשוט אף אחד עוד לא נתן לך את הסדר שמתרגם עבודה לרווח.
-      בדיוק את זה המסע הזה בא לסדר.
-    </p>
+  <section class="alt">
+    <div class="wrap reveal">
+      <div class="eyebrow">למה אתה כאן</div>
+      <h2 class="title">עובד קשה מתמיד · והרווח תקוע במקום</h2>
+      <p class="lead">אתה מוסיף לקוחות, מוסיף שעות, מוסיף עוד ועוד מאמץ. המחזור באמת גדל, אז למה בסוף החודש המספר שנשאר לך כמעט לא זז?</p>
+      <p class="lead">כי כשאין מבנה, כל לקוח חדש מביא איתו עוד עבודה, עוד הוצאה ועוד לחץ, והרווח נשאר מאחור. זה מתסכל, וזה לא באשמתך · פשוט אף אחד עוד לא נתן לך את הסדר שמתרגם עבודה לרווח. בדיוק את זה המסע הזה בא לסדר.</p>
+    </div>
   </section>
 
-  <!-- ===================== ההבטחה / מה זה המסע ===================== -->
-  <section class="wrap">
-    <div class="panel">
-      <div class="eyebrow">ההבטחה</div>
-      <h2 class="title">מסע מדורג · מהיסודות ועד 50K</h2>
-      <p class="lead">
-        זה לא עוד קורס שתצבור ולא תיגע בו. זה מסע מדורג שמעלה אותך מדרגה אחרי מדרגה,
-        מהתודעה והבסיס ועד סקיילינג ל-50,000&#8362;. כל מדרגה בונה על הקודמת,
-        וכל תחנה מקרבת אותך ליעד ההכנסה הבא, בקצב שלך.
-      </p>
-      <div class="cards" id="chapter-cards"><!-- מוזרק מ-content.js --></div>
-      <p class="emph"><b>מסע, לא ספריית סרטונים</b> &middot; תחנה אחרי תחנה</p>
+  <!-- ===================== ההבטחה ===================== -->
+  <section>
+    <div class="wrap reveal">
+      <div class="panel">
+        <div class="eyebrow">ההבטחה</div>
+        <h2 class="title">מסע מדורג · מהיסודות ועד 50K</h2>
+        <p class="lead">זה לא עוד קורס שתצבור ולא תיגע בו. זה מסע מדורג שמעלה אותך מדרגה אחרי מדרגה, מהתודעה והבסיס ועד סקיילינג ל-50,000&#8362;. כל מדרגה בונה על הקודמת, וכל תחנה מקרבת אותך ליעד ההכנסה הבא, בקצב שלך.</p>
+        <p class="emph"><b>מסע, לא ספריית סרטונים</b> &middot; תחנה אחרי תחנה</p>
+      </div>
     </div>
   </section>
 
   <!-- ===================== מה במסע (4 המדרגות) ===================== -->
-  <section class="wrap">
-    <div class="eyebrow">מה במסע</div>
-    <h2 class="title">4 המדרגות שלוקחות אותך ל-50K</h2>
-    <p class="lead">
-      המסע בנוי כסולם ברור של ארבע מדרגות הכנסה. בכל מדרגה אתה לומד בדיוק את מה שצריך
-      כדי לעבור לשלב הבא, ולא טיפה יותר. ככה אתה מתקדם בלי להיתקע ובלי הצפה.
-    </p>
-    <div class="cards" id="chapter-cards-2"><!-- מוזרק מ-content.js --></div>
+  <section class="alt">
+    <div class="wrap reveal">
+      <div class="eyebrow">מה במסע</div>
+      <h2 class="title">4 המדרגות שלוקחות אותך ל-50K</h2>
+      <p class="lead">המסע בנוי כסולם ברור של ארבע מדרגות הכנסה. בכל מדרגה אתה לומד בדיוק את מה שצריך כדי לעבור לשלב הבא, ולא טיפה יותר. ככה אתה מתקדם בלי להיתקע ובלי הצפה.</p>
+      <div class="cards" id="chapter-cards"><!-- מוזרק מ-content.js --></div>
+    </div>
   </section>
 
-  <!-- ===================== איך זה עובד (3 צעדים) ===================== -->
-  <section class="wrap">
-    <div class="eyebrow">איך זה עובד</div>
-    <h2 class="title">שלושה צעדים פשוטים</h2>
-    <ol class="steps">
-      <li>
-        <span class="num">1</span>
-        <div>
-          <div class="stitle">בוחרים את נקודת ההתחלה</div>
-          <div class="sdesc">ממלאים שאלון קצר שמראה איפה העסק שלך עומד היום, ומאיזו מדרגה נכון לך להתחיל את המסע.</div>
-        </div>
-      </li>
-      <li>
-        <span class="num">2</span>
-        <div>
-          <div class="stitle">מתקדמים תחנה אחרי תחנה</div>
-          <div class="sdesc">כל תחנה היא צעד אחד ברור: צופים, מיישמים, ועוברים הלאה. בלי קפיצות, בלי בלגן, רק קדימה.</div>
-        </div>
-      </li>
-      <li>
-        <span class="num">3</span>
-        <div>
-          <div class="stitle">עולים מדרגה בהכנסה</div>
-          <div class="sdesc">עם כל מדרגה שאתה משלים, ההכנסה גדלה והמנוע שלך הופך עצמאי יותר, עד היעד של 50,000&#8362; בחודש.</div>
-        </div>
-      </li>
-    </ol>
+  <!-- ===================== איך זה עובד ===================== -->
+  <section>
+    <div class="wrap reveal">
+      <div class="eyebrow">איך זה עובד</div>
+      <h2 class="title">שלושה צעדים פשוטים</h2>
+      <ol class="steps">
+        <li><span class="num">1</span><div><div class="stitle">בוחרים את נקודת ההתחלה</div><div class="sdesc">ממלאים שאלון קצר שמראה איפה העסק שלך עומד היום, ומאיזו מדרגה נכון לך להתחיל את המסע.</div></div></li>
+        <li><span class="num">2</span><div><div class="stitle">מתקדמים תחנה אחרי תחנה</div><div class="sdesc">כל תחנה היא צעד אחד ברור: צופים, מיישמים, ועוברים הלאה. בלי קפיצות, בלי בלגן, רק קדימה.</div></div></li>
+        <li><span class="num">3</span><div><div class="stitle">עולים מדרגה בהכנסה</div><div class="sdesc">עם כל מדרגה שאתה משלים, ההכנסה גדלה והמנוע שלך הופך עצמאי יותר, עד היעד של 50,000&#8362; בחודש.</div></div></li>
+      </ol>
+    </div>
   </section>
 
   <!-- ===================== למי זה מתאים ===================== -->
-  <section class="wrap">
-    <div class="eyebrow">למי זה מתאים</div>
-    <h2 class="title">יזמים ובעלי עסקים בדרך ל-50K</h2>
-    <ul class="fit">
-      <li>בעלי עסק שהמחזור שלהם מתחת ל-50,000&#8362; בחודש ורוצים לפרוץ את התקרה.</li>
-      <li>פרילנסרים ונותני שירות שעובדים קשה אבל מרגישים שהרווח לא משקף את המאמץ.</li>
-      <li>יזמים שמחפשים סדר ומבנה · לא עוד תוכן, אלא דרך ברורה צעד-אחר-צעד.</li>
-      <li>מי שמוכן ללכת תחנה אחרי תחנה, ליישם, ולא לדלג ישר לסוף.</li>
-    </ul>
+  <section class="alt">
+    <div class="wrap reveal">
+      <div class="eyebrow">למי זה מתאים</div>
+      <h2 class="title">יזמים ובעלי עסקים בדרך ל-50K</h2>
+      <ul class="fit">
+        <li>בעלי עסק שהמחזור שלהם מתחת ל-50,000&#8362; בחודש ורוצים לפרוץ את התקרה.</li>
+        <li>פרילנסרים ונותני שירות שעובדים קשה אבל מרגישים שהרווח לא משקף את המאמץ.</li>
+        <li>יזמים שמחפשים סדר ומבנה · לא עוד תוכן, אלא דרך ברורה צעד-אחר-צעד.</li>
+        <li>מי שמוכן ללכת תחנה אחרי תחנה, ליישם, ולא לדלג ישר לסוף.</li>
+      </ul>
+    </div>
   </section>
 
-  <!-- ===================== עדויות (placeholder) ===================== -->
-  <section class="wrap">
-    <div class="eyebrow">מה אומרים</div>
-    <h2 class="title">סיפורים מהשטח</h2>
-    <div class="testi-ph">[ מקום לעדויות ] &middot; כאן ייכנסו סיפורי הצלחה אמיתיים של בוגרי המסע</div>
+  <!-- ===================== עדויות ===================== -->
+  <section>
+    <div class="wrap reveal">
+      <div class="eyebrow">מה אומרים</div>
+      <h2 class="title">סיפורים מהשטח</h2>
+      <div class="testi-ph">[ מקום לעדויות ] &middot; כאן ייכנסו סיפורי הצלחה אמיתיים של בוגרי המסע</div>
+    </div>
   </section>
 
   <!-- ===================== מחיר ===================== -->
-  <section class="wrap">
-    <div class="eyebrow">השקעה</div>
-    <h2 class="title">מחיר אחד · גישה מלאה</h2>
-    <div class="price">
-      <div class="label">מחיר המסע</div>
-      <div class="val">1,800&#8362;</div>
-      <div class="note">או עד 24 תשלומים נוחים &middot; סליקה מאובטחת דרך GROW.<br>גישה לכל 12 התחנות וכל המדרגות, מהיום הראשון.</div>
+  <section class="alt">
+    <div class="wrap reveal">
+      <div class="eyebrow">השקעה</div>
+      <h2 class="title">מחיר אחד · גישה מלאה</h2>
+      <div class="price">
+        <div class="label">מחיר המסע</div>
+        <div class="val">1,800&#8362;</div>
+        <div class="note">או עד 24 תשלומים נוחים &middot; סליקה מאובטחת דרך GROW.<br>גישה לכל 12 התחנות וכל המדרגות, מהיום הראשון.</div>
+      </div>
     </div>
   </section>
 
   <!-- ===================== שאלות נפוצות ===================== -->
-  <section class="wrap">
-    <div class="eyebrow">שאלות נפוצות</div>
-    <h2 class="title">מה שחשוב לדעת לפני שמתחילים</h2>
-    <div class="faq">
-      <details>
-        <summary>צריך ניסיון או עסק קיים כדי להתחיל?</summary>
-        <div class="ans">לא חובה. המסע מתחיל ממדרגת היסודות, אז גם אם אתה רק בתחילת הדרך תוכל לעלות שלב אחרי שלב. מי שכבר יש לו עסק פעיל פשוט מתחיל גבוה יותר במסלול.</div>
-      </details>
-      <details>
-        <summary>כמה זמן לוקח לעבור את כל המסע?</summary>
-        <div class="ans">הקצב הוא שלך. כל תחנה היא צעד עצמאי שאפשר ליישם בזמן שמתאים לך. הגישה נשארת פתוחה, כך שתוכל להתקדם מהר או בנחת, בלי לחץ של זמן.</div>
-      </details>
-      <details>
-        <summary>איך משלמים ומתי נפתחת הגישה?</summary>
-        <div class="ans">התשלום עובר בסליקה מאובטחת דרך GROW, בתשלום אחד או עד 24 תשלומים. הגישה למסע נפתחת אוטומטית מיד לאחר התשלום, בלי המתנה.</div>
-      </details>
-      <details>
-        <summary>במה זה שונה מעוד קורס דיגיטלי?</summary>
-        <div class="ans">רוב הקורסים זורקים עליך עשרות שעות תוכן ומשאירים אותך לבד. כאן זה מסע מדורג: כל תחנה מובילה לבאה, וכל מדרגה מחוברת ליעד הכנסה ברור. אתה תמיד יודע איפה אתה ומה הצעד הבא.</div>
-      </details>
+  <section>
+    <div class="wrap reveal">
+      <div class="eyebrow">שאלות נפוצות</div>
+      <h2 class="title">מה שחשוב לדעת לפני שמתחילים</h2>
+      <div class="faq">
+        <details><summary>צריך ניסיון או עסק קיים כדי להתחיל?</summary><div class="ans">לא חובה. המסע מתחיל ממדרגת היסודות, אז גם אם אתה רק בתחילת הדרך תוכל לעלות שלב אחרי שלב. מי שכבר יש לו עסק פעיל פשוט מתחיל גבוה יותר במסלול.</div></details>
+        <details><summary>כמה זמן לוקח לעבור את כל המסע?</summary><div class="ans">הקצב הוא שלך. כל תחנה היא צעד עצמאי שאפשר ליישם בזמן שמתאים לך. הגישה נשארת פתוחה, כך שתוכל להתקדם מהר או בנחת, בלי לחץ של זמן.</div></details>
+        <details><summary>איך משלמים ומתי נפתחת הגישה?</summary><div class="ans">התשלום עובר בסליקה מאובטחת דרך GROW, בתשלום אחד או עד 24 תשלומים. הגישה למסע נפתחת אוטומטית מיד לאחר התשלום, בלי המתנה.</div></details>
+        <details><summary>במה זה שונה מעוד קורס דיגיטלי?</summary><div class="ans">רוב הקורסים זורקים עליך עשרות שעות תוכן ומשאירים אותך לבד. כאן זה מסע מדורג: כל תחנה מובילה לבאה, וכל מדרגה מחוברת ליעד הכנסה ברור. אתה תמיד יודע איפה אתה ומה הצעד הבא.</div></details>
+      </div>
     </div>
   </section>
 
   <!-- ===================== CTA סופי ===================== -->
-  <section class="wrap cta-final">
-    <div class="eyebrow">מוכן להתחיל</div>
-    <h2 class="title">התחנה הראשונה מחכה לך</h2>
-    <p class="lead">העבודה הקשה שאתה כבר משקיע ראויה לתרגם לרווח. הצעד הראשון הוא הכי פשוט שיש.</p>
-    <a class="pill" href="checkout.html" style="margin-top:24px">התחל את המסע</a>
-    <span class="secure">
-      <span data-ic="lock"></span> התשלום מאובטח בסליקת GROW &middot; הגישה למסע נפתחת אוטומטית מיד לאחר התשלום.
-    </span>
+  <section class="cta-final">
+    <div class="wrap reveal">
+      <div class="eyebrow" style="justify-content:center">מוכן להתחיל</div>
+      <h2 class="title">התחנה הראשונה מחכה לך</h2>
+      <p class="lead">העבודה הקשה שאתה כבר משקיע ראויה לתרגם לרווח. הצעד הראשון הוא הכי פשוט שיש.</p>
+      <a class="pill" href="checkout.html" style="margin-top:26px">התחל את המסע</a>
+      <span class="secure"><span data-ic="lock"></span> התשלום מאובטח בסליקת GROW &middot; הגישה למסע נפתחת אוטומטית מיד לאחר התשלום.</span>
+    </div>
   </section>
 
   <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
@@ -245,37 +263,25 @@
     (function(){
       var C = window.COURSE || {};
       var brand = C.brand || {};
-
-      // סלוגן + CTA מתוך מקור-האמת
       if (brand.slogan)  document.getElementById('hero-slogan').textContent = brand.slogan;
-      if (brand.ctaPrimary){
-        document.querySelectorAll('.pill').forEach(function(b){ b.textContent = brand.ctaPrimary; });
-      }
+      if (brand.ctaPrimary){ document.querySelectorAll('.pill').forEach(function(b){ b.textContent = brand.ctaPrimary; }); }
       if (brand.productName) document.title = brand.productName + ' · המסע';
 
-      // 4 כרטיסי מדרגה מתוך chapters[] (מוזרק לשני הסקשנים)
-      function renderCards(boxId){
-        var box = document.getElementById(boxId);
-        if (!box) return;
-        (C.chapters || []).forEach(function(ch){
-          var card = document.createElement('div');
-          card.className = 'card';
-          var tier = document.createElement('span');
-          tier.className = 'tier';
-          tier.textContent = ch.tier || '';
-          var title = document.createElement('div');
-          title.className = 'ctitle';
-          title.textContent = ch.title || '';
-          card.appendChild(tier);
-          card.appendChild(title);
-          box.appendChild(card);
-        });
-      }
-      renderCards('chapter-cards');
-      renderCards('chapter-cards-2');
+      var box = document.getElementById('chapter-cards');
+      if (box) (C.chapters || []).forEach(function(ch){
+        var card = document.createElement('div'); card.className = 'card';
+        var tier = document.createElement('span'); tier.className = 'tier'; tier.textContent = ch.tier || '';
+        var title = document.createElement('div'); title.className = 'ctitle'; title.textContent = ch.title || '';
+        card.appendChild(tier); card.appendChild(title); box.appendChild(card);
+      });
+
+      // scroll reveal
+      var io = new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold:.12 });
+      document.querySelectorAll('.reveal').forEach(function(e){ io.observe(e); });
     })();
   </script>
   <script src="js/theme.js"></script>
-
 </body>
 </html>
