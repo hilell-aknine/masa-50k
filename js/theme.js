@@ -5,8 +5,8 @@
    ============================================================ */
 (function () {
   var KEY = 'oriane_theme';
-  var saved = 'dark';
-  try { saved = localStorage.getItem(KEY) || 'dark'; } catch (e) {}
+  var saved = 'light';
+  try { saved = localStorage.getItem(KEY) || 'light'; } catch (e) {}
   document.documentElement.setAttribute('data-theme', saved);
 
   function icon(t) { return t === 'dark' ? '☀' : '☾'; }

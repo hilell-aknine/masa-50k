@@ -46,7 +46,7 @@
   .circle .num{font-size:22px;font-weight:800;color:var(--text-strong);line-height:1}
   .circle .tag{font-size:9px;color:var(--text-dim);margin-top:3px;font-weight:600}
 
-  .node.done .circle{background:var(--surface-2);border-color:#3a4b66}
+  .node.done .circle{background:var(--surface-2);border-color:var(--gold)}
   .node.done .circle .num{color:var(--text-dim)}
   .node.done .check{position:absolute;top:-6px;inset-inline-end:-6px;width:24px;height:24px;border-radius:50%;background:var(--btn-bg);color:var(--btn-text);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
 
@@ -57,8 +57,8 @@
 
   .node.locked .circle{background:var(--locked-bg);border-color:var(--locked-bd)}
   .node.locked .circle .num{color:var(--locked-tx)}
-  .node.locked .circle .tag{color:#2d3540}
-  .node.locked .lk{position:absolute;top:-3px;inset-inline-end:-3px;width:22px;height:22px;border-radius:50%;background:var(--bg);border:1px solid var(--locked-bd);display:flex;align-items:center;justify-content:center;color:#46505e}
+  .node.locked .circle .tag{color:var(--locked-tx)}
+  .node.locked .lk{position:absolute;top:-3px;inset-inline-end:-3px;width:22px;height:22px;border-radius:50%;background:var(--bg);border:1px solid var(--locked-bd);display:flex;align-items:center;justify-content:center;color:var(--locked-tx)}
   .node.locked .lk svg{display:block}
 
   .node:not(.locked){cursor:pointer}
@@ -156,7 +156,7 @@
       const { d, h } = buildTrack(positions);
       const path = document.createElement('div');
       path.className = 'path';
-      path.innerHTML = `<svg class="track" viewBox="0 0 100 ${h}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#2d3e58" stroke-width="0.7" stroke-dasharray="2.5 2.5" stroke-linecap="round"/></svg>`;
+      path.innerHTML = `<svg class="track" viewBox="0 0 100 ${h}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#C4A47C" stroke-width="0.7" stroke-dasharray="2.5 2.5" stroke-linecap="round"/></svg>`;
       const nodes = document.createElement('div');
       nodes.className = 'nodes';
 

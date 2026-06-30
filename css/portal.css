@@ -3,10 +3,22 @@
    מיתוג נמדל מהאתר הרשמי של הלקוחה · 2026-06-28
    Dark · מינימלי · יוקרתי · Inter · RTL
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800&display=swap');
 
-:root, html[data-theme="dark"]{
-  /* === DARK (ברירת מחדל · מיתוג האתר) === */
+:root, html[data-theme="light"]{
+  /* === WARM LUXURY (ברירת מחדל · מיתוג ORAN COHEN GROUP) === */
+  --bg:#F1EADE; --surface:#FBF6ED; --surface-2:#F4ECDD; --surface-3:#DDCBB0;
+  --line:rgba(154,106,71,.18);
+  --text:#2C2520; --text-dim:#6B5D4F; --text-faint:#8C7B66; --text-strong:#2C2520;
+  --btn-bg:#9A6A47; --btn-text:#FBF6ED;
+  --input-bg:#F6EFE2;
+  --done:#9A6A47; --active:#9A6A47;
+  --locked:#B5A488; --locked-bg:#EFE6D5; --locked-bd:#DDCBB0; --locked-tx:#B5A488;
+  --gold:#C29A3D; --serif:'Frank Ruhl Libre',serif;
+  --radius-pill:30px; --radius-card:18px; --maxw:680px;
+}
+html[data-theme="dark"]{
+  /* === DARK · מצב לילה === */
   --bg:#0a0a0a; --surface:#1a222e; --surface-2:#1c2635; --surface-3:#2d3e58;
   --line:rgba(255,255,255,.08);
   --text:#e0e0e0; --text-dim:#8a93a0; --text-faint:#56606e; --text-strong:#ffffff;
@@ -14,17 +26,8 @@
   --input-bg:#070707;
   --done:#3a8a6d; --active:#f7f7f7;
   --locked:#39414d; --locked-bg:#121821; --locked-bd:#20293a; --locked-tx:#3a434f;
+  --gold:#C29A3D; --serif:'Frank Ruhl Libre',serif;
   --radius-pill:30px; --radius-card:18px; --maxw:680px;
-}
-html[data-theme="light"]{
-  /* === LIGHT (גרסה בהירה תואמת-מותג · כפתורים כהים בהיפוך) === */
-  --bg:#f4f6f8; --surface:#ffffff; --surface-2:#eef2f6; --surface-3:#dbe3ec;
-  --line:rgba(15,30,45,.12);
-  --text:#2a3744; --text-dim:#5e6c7b; --text-faint:#8b98a6; --text-strong:#0a0a0a;
-  --btn-bg:#1c2635; --btn-text:#ffffff;
-  --input-bg:#eef2f6;
-  --done:#2f8a5f; --active:#1c2635;
-  --locked:#aab4c0; --locked-bg:#eef2f6; --locked-bd:#d8e0e9; --locked-tx:#aab4c0;
 }
 
 /* מתג בהיר/כהה (מוזרק אוטומטית ע"י js/theme.js) */
@@ -34,7 +37,8 @@ html[data-theme="light"]{
 .theme-toggle:active{transform:scale(.92)}
 
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+html,body{background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+h1,h2,h3{font-family:var(--serif)}
 body{padding:0 18px 60px;direction:rtl}
 ::selection{background:var(--btn-bg);color:var(--btn-text)}
 
