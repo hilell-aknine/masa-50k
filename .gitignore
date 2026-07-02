@@ -4,3 +4,7 @@ sandbox/
 .DS_Store
 Thumbs.db
 brand/
+# IP של הלקוחה + חומרי עיצוב פנימיים — לעולם לא לריפו הציבורי
+content-source/
+content-mapping.md
+design/

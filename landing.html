@@ -4,281 +4,394 @@
   <meta name="robots" content="noindex, nofollow">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>הדרך ל-50K · המסע</title>
+  <title>המסע ל-50K</title>
   <link rel="stylesheet" href="css/portal.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;800;900&family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="js/icons.js"></script>
 <style>
   /* ============================================================
-     דף מכירה · Dark Editorial Luxury
-     סריף יוקרתי + זהב מהלוגו + רקע אטמוספרי · יורש טוקנים מ-portal.css
+     דף מכירה · המסע ל-50K · Orian Editorial
+     מבנה + קופי נאמנים לדפי הנחיתה שלה (design/figma-reference)
+     קרם ↔ שחור · אדום = סכין · תואם design/design-system.md
      ============================================================ */
-  :root{ --serif:'Frank Ruhl Libre',serif; --sans:'Heebo',sans-serif; --acc:#bd9540; --acc-soft:rgba(189,149,64,.14); }
-
+  :root{ --serif:'Frank Ruhl Libre',serif; --sans:'Heebo',sans-serif; }
   html,body{font-family:var(--sans)}
-  body{padding:0;overflow-x:hidden;position:relative}
+  body{padding:0;overflow-x:hidden}
 
-  /* grain overlay · נותן מרקם בשני המצבים */
-  body::after{
-    content:"";position:fixed;inset:0;z-index:9;pointer-events:none;opacity:.04;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  .wrap-n{max-width:720px;margin:0 auto;padding:0 22px}
+  section{padding:clamp(56px,8vw,104px) 0;position:relative}
+  section.alt{background:var(--surface)}
 
-  .wrap{max-width:600px;margin:0 auto;padding:0 20px}
+  h1,h2{font-family:var(--serif);font-weight:900;color:var(--text-strong);letter-spacing:-.02em;margin:0}
+  h2{font-size:clamp(26px,4.6vw,42px);line-height:1.12;margin-bottom:18px}
+  .red{color:var(--accent)}
+  p.lead{font-size:16.5px;color:var(--text-dim);line-height:1.85;margin:0}
+  p.lead + p.lead{margin-top:14px}
+  .center{text-align:center}
 
-  /* sections + rhythm (פסים מתחלפים) */
-  section{padding:74px 0;position:relative}
-  section.alt{background:var(--surface-2)}
-  .eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--sans);letter-spacing:3px;font-size:11px;
-           font-weight:700;color:var(--acc);text-transform:uppercase;margin-bottom:18px}
-  .eyebrow::before{content:"";width:26px;height:1px;background:var(--acc);opacity:.7}
-  h2.title{font-family:var(--serif);font-size:clamp(26px,6.6vw,36px);font-weight:800;color:var(--text-strong);
-           letter-spacing:-.5px;line-height:1.15;margin-bottom:18px}
-  p.lead{font-size:16px;color:var(--text-dim);line-height:1.85}
-  p.lead + p.lead{margin-top:16px}
+  /* כפתורים (מלבניים 10px + חץ ‹) */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-family:var(--sans);
+       font-weight:600;font-size:16px;padding:15px 30px;min-height:48px;border-radius:10px;border:1.5px solid var(--btn-bg);
+       background:var(--btn-bg);color:var(--btn-text);cursor:pointer;text-decoration:none;line-height:1.2;
+       transition:transform .2s cubic-bezier(.16,1,.3,1)}
+  .btn:hover{transform:translateY(-2px)}
+  .btn .ar{font-size:1.25em;line-height:0}
+  .btn--ondark{background:#fff;border-color:#fff;color:#000}
+  .btn-note{display:block;font-size:12.5px;color:var(--text-faint);margin-top:12px;line-height:1.7}
 
-  .pill{display:inline-flex;align-items:center;justify-content:center;background:var(--btn-bg);color:var(--btn-text);
-        font-family:var(--sans);font-weight:700;font-size:16px;padding:16px 40px;border-radius:var(--radius-pill);
-        border:none;cursor:pointer;text-decoration:none;min-height:52px;line-height:1.2;transition:transform .15s,box-shadow .25s}
-  .pill:hover{box-shadow:0 10px 30px rgba(0,0,0,.3)}
-  .pill:active{transform:translateY(1px)}
+  /* ---------- פס אזהרה ---------- */
+  .warnbar{background:#000;color:#fff;text-align:center;padding:13px 18px;min-height:44px;
+           display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap;
+           font-weight:500;font-size:14px;letter-spacing:.01em}
+  .warnbar strong{color:var(--accent);font-weight:700}
 
   /* ---------- HERO ---------- */
-  .lp-hero{min-height:96vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
-           text-align:center;padding:54px 20px 78px;position:relative;overflow:hidden}
-  .lp-hero::before{content:"";position:absolute;top:-18%;left:50%;width:min(720px,120vw);height:620px;
-    transform:translateX(-50%);pointer-events:none;
-    background:radial-gradient(ellipse at center,var(--acc-soft),transparent 62%)}
-  /* "50K" ענק דקורטיבי ברקע */
-  .ghost{position:absolute;inset-block-start:50%;inset-inline-start:50%;transform:translate(50%,-54%);
-         font-family:var(--serif);font-weight:900;font-size:min(46vw,340px);line-height:.8;color:var(--text-strong);
-         opacity:.035;pointer-events:none;white-space:nowrap;z-index:0}
-  .lp-hero > *{position:relative;z-index:1}
-  .portrait{width:172px;height:172px;margin:0 auto;border-radius:50%;overflow:hidden;
-            box-shadow:0 0 0 1px var(--line),0 0 0 7px var(--acc-soft),0 18px 50px rgba(0,0,0,.35)}
-  .portrait img{width:100%;height:100%;object-fit:cover;display:block}
-  .lp-hero h1{font-family:var(--serif);font-size:clamp(40px,10vw,72px);font-weight:800;color:var(--text-strong);
-              letter-spacing:-1.5px;line-height:1.02;margin:28px auto 20px;max-width:9ch}
-  .lp-hero .sub{font-size:clamp(15px,4.2vw,18px);color:var(--text-dim);max-width:520px;margin:0 auto 34px;line-height:1.75}
-  .lp-hero .reassure{display:block;font-size:12.5px;color:var(--text-faint);margin-top:18px;letter-spacing:.3px}
-  .scrolldown{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:var(--text-faint);animation:bob 1.9s infinite}
-  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+  .hero{position:relative;overflow:hidden;background:var(--bg);padding:clamp(48px,7vw,88px) 0 0}
+  .hero .mark{position:absolute;inset-inline-start:-3%;top:8%;font-family:var(--serif);font-weight:900;
+       font-size:clamp(6rem,19vw,16rem);color:var(--watermark);white-space:nowrap;pointer-events:none;user-select:none;line-height:1}
+  .hero-grid{position:relative;display:grid;grid-template-columns:1fr;gap:28px;align-items:center}
+  @media(min-width:820px){ .hero-grid{grid-template-columns:1fr 1fr;gap:44px} }
+  .hero h1{font-size:clamp(34px,5.6vw,58px);line-height:1.06;max-width:15ch}
+  .hero .sub{font-size:clamp(15.5px,2vw,18px);color:var(--text-dim);line-height:1.75;margin:20px 0 0;max-width:46ch}
+  .hero .sub .paren{display:block;margin-top:10px;font-size:.92em;color:var(--text-faint)}
+  .hero-photo{justify-self:center;width:min(340px,74vw);aspect-ratio:4/5;overflow:hidden;position:relative}
+  .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 
-  /* load reveal · חשיפה מדורגת */
-  .rise{opacity:0;transform:translateY(22px);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
-  @keyframes rise{to{opacity:1;transform:none}}
-  .d1{animation-delay:.05s}.d2{animation-delay:.18s}.d3{animation-delay:.32s}.d4{animation-delay:.46s}.d5{animation-delay:.6s}
+  /* פס CTA כהה מתחת ל-Hero */
+  .ctaband{background:#000;color:#fff;margin-top:clamp(28px,4vw,48px)}
+  .ctaband .in{max-width:1080px;margin:0 auto;padding:22px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+  .ctaband p{margin:0;font-size:14.5px;line-height:1.7;max-width:56ch}
+  .ctaband strong{color:var(--accent)}
 
-  /* scroll reveal */
+  /* ---------- אם נמאס לכם (גריד אייקוני קו) ---------- */
+  .pains{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:26px 34px;margin-top:38px}
+  .pain{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+  .pain .ico{width:54px;height:54px;border:1px solid var(--line);border-radius:12px;background:var(--surface);
+       display:flex;align-items:center;justify-content:center;color:var(--text-strong);font-size:24px}
+  .pain .t{font-weight:700;font-size:15.5px;color:var(--text-strong);line-height:1.4}
+  .pain .d{font-size:13.5px;color:var(--text-dim);line-height:1.65;max-width:30ch}
+
+  /* ---------- checklist strip ---------- */
+  .checkstrip{background:var(--surface);border-block:1px solid var(--line);padding:18px 22px;margin-top:34px;
+       display:flex;flex-wrap:wrap;gap:14px 36px;justify-content:center}
+  .checkstrip span{display:inline-flex;gap:9px;align-items:center;font-size:14.5px;font-weight:600;color:var(--text-strong)}
+  .checkstrip svg{flex:none}
+
+  /* ---------- סקשן כהה (סטוריטלינג) ---------- */
+  .dark{background:#000;color:#EDE9E2}
+  .dark h2{color:#fff}
+  .dark p.lead{color:#A8A29A}
+  .split{display:grid;grid-template-columns:1fr;gap:30px;align-items:center}
+  @media(min-width:820px){ .split{grid-template-columns:1fr 1.2fr;gap:48px} }
+  .split .photo{justify-self:center;width:min(320px,70vw);aspect-ratio:4/5;overflow:hidden;border-radius:14px;
+       background:linear-gradient(160deg,#222,#0a0a0a)}
+  .split .photo img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+  .dark .sub-h{font-weight:700;color:#fff;font-size:15.5px;margin:18px 0 4px}
+
+  /* ---------- מספר כאב ---------- */
+  .painnum{font-family:var(--serif);font-weight:900;font-size:clamp(30px,5.4vw,52px);line-height:1.1;letter-spacing:-.02em;color:var(--accent);margin-bottom:6px}
+  .painnum-sub{font-family:var(--serif);font-weight:900;font-size:clamp(22px,3.6vw,34px);color:var(--text-strong);line-height:1.2;margin-bottom:22px}
+  .minis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:22px;margin-top:34px}
+  .mini .t{font-weight:700;font-size:15px;color:var(--text-strong);margin-bottom:6px}
+  .mini .d{font-size:13.5px;color:var(--text-dim);line-height:1.7}
+
+  /* ---------- ציטוט ---------- */
+  .quote{font-family:var(--serif);font-weight:700;font-size:clamp(20px,3.4vw,30px);line-height:1.5;color:var(--text-strong);
+       max-width:26ch;margin:0 auto;text-align:center}
+  .quote::before{content:"״";color:var(--accent);font-size:1.4em}
+
+  /* ---------- מבנה המסע (4 מדרגות) ---------- */
+  .rungs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:34px}
+  .rung{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:22px 20px;position:relative;overflow:hidden}
+  .rung::before{content:"";position:absolute;top:0;inset-inline:0;height:2px;background:var(--text-strong)}
+  .rung .tier{font-family:var(--serif);font-size:24px;font-weight:900;color:var(--text-strong);letter-spacing:-.3px}
+  .rung .ctitle{font-size:14.5px;font-weight:600;color:var(--text-dim);line-height:1.5;margin-top:8px}
+
+  /* ---------- עדויות ---------- */
+  .tcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:36px}
+  .tcard{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/5;background:linear-gradient(160deg,#2a2a2a,#0d0d0d);color:#fff}
+  .tcard .who{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12.5px;letter-spacing:.1em;color:rgba(255,255,255,.3)}
+  .tcard .q{position:absolute;inset-inline:13px;bottom:13px;background:rgba(0,0,0,.35);backdrop-filter:blur(12px);
+       -webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:14px}
+  .tcard .q p{margin:0 0 .5rem;font-size:14px;line-height:1.55;font-weight:500}
+  .tcard .q .nm{font-size:12.5px;color:rgba(255,255,255,.6)}
+  .t-note{font-size:12.5px;color:var(--text-faint);text-align:center;margin-top:14px}
+
+  /* ---------- 3 כרטיסי "הרגע" ---------- */
+  .moments{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:36px}
+  .moment{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/5;background:linear-gradient(160deg,#26221c,#0d0c0a);color:#fff}
+  .moment img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85}
+  .moment .cap{position:absolute;inset-inline:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.88) 40%);padding:44px 16px 16px}
+  .moment .cap .t{font-weight:700;font-size:14.5px;line-height:1.5}
+  .moment .cap .d{font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.6;margin-top:4px}
+
+  /* ---------- בולטים ממוספרים בסקשן כהה ---------- */
+  ul.darklist{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-direction:column;gap:16px}
+  ul.darklist li{display:flex;gap:12px;align-items:flex-start}
+  ul.darklist .chev{flex:none;color:var(--accent);font-weight:800;font-size:18px;line-height:1.3}
+  ul.darklist .t{font-weight:700;color:#fff;font-size:15.5px}
+  ul.darklist .d{font-size:13.5px;color:#A8A29A;line-height:1.7;margin-top:3px}
+
+  /* ---------- למי מתאים ---------- */
+  ul.fit{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px 34px}
+  ul.fit li{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--text);line-height:1.65}
+  ul.fit svg{flex:none;margin-top:2px}
+
+  /* ---------- זה החלק שאף אחד לא מדבר עליו ---------- */
+  .secret{max-width:640px;margin:26px auto 0;display:flex;flex-direction:column;gap:14px;text-align:center}
+  .secret .line{font-size:15px;color:var(--text);line-height:1.75}
+  .secret .line b{color:#1E8F4E;font-weight:700}
+  .secret .close{border-top:1px solid var(--line);margin-top:14px;padding-top:20px;font-size:14px;color:var(--text-dim);line-height:1.85}
+
+  /* ---------- מחיר ---------- */
+  .price{max-width:520px;margin:34px auto 0;text-align:center;background:var(--surface);border:1.5px solid var(--text-strong);border-radius:14px;padding:36px 26px}
+  .price .label{font-size:12px;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+  .price .val{font-family:var(--serif);font-size:56px;font-weight:900;color:var(--text-strong);line-height:1;letter-spacing:-1px}
+  .price .note{font-size:13.5px;color:var(--text-dim);margin-top:16px;line-height:1.85}
+
+  /* ---------- סקשן סיום כהה ---------- */
+  .final{background:#000;color:#fff;text-align:center}
+  .final h2{color:#fff;font-size:clamp(26px,4.4vw,40px)}
+  .final p.lead{color:#A8A29A;max-width:52ch;margin:0 auto}
+  .final .small{font-size:12.5px;color:rgba(255,255,255,.45);margin-top:16px;line-height:1.8}
+
+  /* אנימציית גילוי */
   .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
 
-  /* panel */
-  .panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:36px 30px;
-         box-shadow:0 1px 0 rgba(255,255,255,.02) inset}
-  .emph{text-align:center;margin-top:26px;font-family:var(--serif);font-size:17px;color:var(--text-dim);font-weight:700}
-  .emph b{color:var(--acc)}
-
-  /* tier cards · מדרגות הכנסה כמספרים גרפיים */
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
-  .card{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:22px 20px;position:relative;overflow:hidden;transition:transform .25s,border-color .25s}
-  .card::before{content:"";position:absolute;top:0;inset-inline:0;height:2px;background:linear-gradient(90deg,var(--acc),transparent)}
-  .card:hover{transform:translateY(-3px);border-color:var(--acc)}
-  .card .tier{font-family:var(--serif);font-size:24px;font-weight:800;color:var(--acc);background:none;padding:0;letter-spacing:-.3px}
-  .card .ctitle{font-size:15px;font-weight:600;color:var(--text-strong);line-height:1.45;margin-top:8px}
-
-  /* steps */
-  ol.steps{list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:14px}
-  ol.steps li{display:flex;gap:18px;align-items:flex-start;padding:8px 2px}
-  ol.steps .num{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
-    font-family:var(--serif);font-weight:800;font-size:19px;color:var(--acc);border:1px solid var(--acc);background:var(--acc-soft)}
-  ol.steps .stitle{font-size:17px;font-weight:700;color:var(--text-strong);margin-bottom:4px}
-  ol.steps .sdesc{font-size:14.5px;color:var(--text-dim);line-height:1.7}
-
-  /* who-for */
-  ul.fit{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:16px}
-  ul.fit li{display:flex;gap:13px;align-items:flex-start;font-size:15.5px;color:var(--text);line-height:1.6}
-  ul.fit li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--acc);margin-top:9px}
-
-  /* testimonials */
-  .testi-ph{margin-top:24px;background:var(--surface);border:1px dashed var(--line);border-radius:18px;
-            padding:40px 24px;text-align:center;color:var(--text-faint);font-size:14px}
-
-  /* price · כרטיס מודגש */
-  .price{text-align:center;background:var(--surface);border:1px solid var(--acc);border-radius:22px;padding:34px 24px;margin-top:28px;position:relative;overflow:hidden}
-  .price::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0,var(--acc-soft),transparent 60%);pointer-events:none}
-  .price .label{font-size:12px;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
-  .price .val{font-family:var(--serif);font-size:54px;font-weight:900;color:var(--text-strong);line-height:1;letter-spacing:-1px}
-  .price .note{font-size:13.5px;color:var(--text-dim);margin-top:14px;line-height:1.8}
-
-  /* faq */
-  .faq{margin-top:26px;display:flex;flex-direction:column;gap:10px}
-  .faq details{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0 20px;transition:border-color .2s}
-  .faq details[open]{border-color:var(--acc)}
-  .faq summary{list-style:none;cursor:pointer;padding:19px 0;font-size:15.5px;font-weight:700;color:var(--text-strong);
-              display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px}
-  .faq summary::-webkit-details-marker{display:none}
-  .faq summary::after{content:"+";color:var(--acc);font-size:24px;font-weight:300;line-height:1;transition:transform .2s}
-  .faq details[open] summary::after{content:"\2212"}
-  .faq .ans{font-size:14.5px;color:var(--text-dim);line-height:1.8;padding:0 0 20px}
-
-  .cta-final{text-align:center}
-  .cta-final .secure{display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;color:var(--text-faint);margin-top:20px;line-height:1.7;flex-wrap:wrap}
-
-  .credit{text-align:center;color:var(--text-faint);font-size:12px;padding:30px 0 40px}
-  .credit b{color:var(--text-dim)}
-
-  @media(max-width:520px){
-    .cards{grid-template-columns:1fr}
-    .panel{padding:28px 22px}
-    section{padding:58px 0}
-  }
+  .credit{text-align:center;color:var(--text-faint);font-size:12px;padding:28px 0 38px;font-family:var(--serif);font-weight:700}
 </style>
 </head>
 <body>
 
+  <!-- ===================== פס אזהרה ===================== -->
+  <div class="warnbar"><strong>אזהרה:</strong><span>המסע הזה מיועד רק לבעלי עסקים שנמאס להם לעבוד בפרך ומוכנים לשבור את תקרת הזכוכית של עצמם.</span></div>
+
   <!-- ===================== HERO ===================== -->
-  <header class="lp-hero">
-    <div class="ghost" aria-hidden="true">50K</div>
-    <div class="portrait rise d1"><img src="img/mentor.png" alt="המנחה"></div>
-    <h1 id="hero-slogan" class="rise d2">המחזור גדל והרווח עדיין לא זז</h1>
-    <p class="sub rise d3">מסע מדורג, תחנה אחרי תחנה, אל 50,000&#8362; הראשונים בחודש. בלי קסמים ובלי קיצורי דרך · סדר ברור שמחבר בין מה שאתה עושה לבין מה שבאמת נשאר לך בבנק.</p>
-    <a class="pill rise d4" href="checkout.html">התחל את המסע</a>
-    <span class="reassure rise d5">גישה מלאה לכל 12 התחנות &middot; נפתחת מיד לאחר התשלום</span>
-    <div class="scrolldown"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
+  <header class="hero">
+    <div class="mark" aria-hidden="true">ORIAN COHEN</div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <h1>יש יזמים שעובדים קשה ודורכים במקום</h1>
+          <p class="sub">ויש בעלי עסקים שבונים עסק רווחי ומכפילים הכנסות בהחלטה של רגע.
+            <span class="paren">(אם אתם מחפשים קסמים שיווקיים או עוד קורס שתפתחו ולא תסיימו · המסע הזה לא בשבילכם).</span>
+          </p>
+          <div style="margin-top:28px">
+            <a class="btn" href="checkout.html">אני רוצה להתחיל את המסע ל-50K <span class="ar">‹</span></a>
+            <span class="btn-note">גישה מלאה לכל 12 התחנות · נפתחת מיד לאחר התשלום</span>
+          </div>
+        </div>
+        <div class="hero-photo"><img src="img/mentor.png" alt="המנחה"></div>
+      </div>
+    </div>
+    <div class="ctaband">
+      <div class="in">
+        <p><strong>בתוך המסע:</strong> תהליך מדורג שלוקח אתכם מהמקום שבו אתם תקועים היום · אל 50,000&#8362; בחודש, תחנה אחרי תחנה.</p>
+        <a class="btn btn--ondark" href="checkout.html">להתחלת המסע <span class="ar">‹</span></a>
+      </div>
+    </div>
   </header>
 
-  <!-- ===================== הכאב ===================== -->
-  <section class="alt">
-    <div class="wrap reveal">
-      <div class="eyebrow">למה אתה כאן</div>
-      <h2 class="title">עובד קשה מתמיד · והרווח תקוע במקום</h2>
-      <p class="lead">אתה מוסיף לקוחות, מוסיף שעות, מוסיף עוד ועוד מאמץ. המחזור באמת גדל, אז למה בסוף החודש המספר שנשאר לך כמעט לא זז?</p>
-      <p class="lead">כי כשאין מבנה, כל לקוח חדש מביא איתו עוד עבודה, עוד הוצאה ועוד לחץ, והרווח נשאר מאחור. זה מתסכל, וזה לא באשמתך · פשוט אף אחד עוד לא נתן לך את הסדר שמתרגם עבודה לרווח. בדיוק את זה המסע הזה בא לסדר.</p>
-    </div>
-  </section>
-
-  <!-- ===================== ההבטחה ===================== -->
+  <!-- ===================== אם נמאס לכם ===================== -->
   <section>
     <div class="wrap reveal">
-      <div class="panel">
-        <div class="eyebrow">ההבטחה</div>
-        <h2 class="title">מסע מדורג · מהיסודות ועד 50K</h2>
-        <p class="lead">זה לא עוד קורס שתצבור ולא תיגע בו. זה מסע מדורג שמעלה אותך מדרגה אחרי מדרגה, מהתודעה והבסיס ועד סקיילינג ל-50,000&#8362;. כל מדרגה בונה על הקודמת, וכל תחנה מקרבת אותך ליעד ההכנסה הבא, בקצב שלך.</p>
-        <p class="emph"><b>מסע, לא ספריית סרטונים</b> &middot; תחנה אחרי תחנה</p>
+      <h2 class="center">אם נמאס לכם</h2>
+      <div class="pains">
+        <div class="pain"><div class="ico"><span data-ic="target"></span></div><div class="t">לגלגל מחזורים גדולים</div><div class="d">אבל לא לראות את הכסף נשאר בבנק בסוף החודש.</div></div>
+        <div class="pain"><div class="ico"><span data-ic="zap"></span></div><div class="t">לתמחר את השירות שלכם בזול</div><div class="d">ולא להעז לבקש את מה שאתם באמת שווים.</div></div>
+        <div class="pain"><div class="ico"><span data-ic="compass"></span></div><div class="t">לנהל את העסק מכאוס</div><div class="d">בלי לדעת מה באמת מכניס ומה רק שורף לכם זמן.</div></div>
+        <div class="pain"><div class="ico"><span data-ic="clock"></span></div><div class="t">להגיע לסוף חודש שחוק</div><div class="d">כשאתם עובדים בשביל העסק · במקום שהעסק יעבוד בשבילכם.</div></div>
+        <div class="pain"><div class="ico"><span data-ic="shield"></span></div><div class="t">להתמודד עם חוסר ודאות פיננסית</div><div class="d">חודש טוב, חודש רע · ואף פעם לא לדעת מה יהיה מחר.</div></div>
+        <div class="pain"><div class="ico"><span data-ic="flame"></span></div><div class="t">להגיע לסוף חודש כשאתם מרוקנים</div><div class="d">עובדים כמו שכירים בעסק של עצמכם, בלי מוצא באופק.</div></div>
       </div>
     </div>
   </section>
 
-  <!-- ===================== מה במסע (4 המדרגות) ===================== -->
+  <!-- ===================== אז הגיע הזמן לעצור הכל ===================== -->
   <section class="alt">
-    <div class="wrap reveal">
-      <div class="eyebrow">מה במסע</div>
-      <h2 class="title">4 המדרגות שלוקחות אותך ל-50K</h2>
-      <p class="lead">המסע בנוי כסולם ברור של ארבע מדרגות הכנסה. בכל מדרגה אתה לומד בדיוק את מה שצריך כדי לעבור לשלב הבא, ולא טיפה יותר. ככה אתה מתקדם בלי להיתקע ובלי הצפה.</p>
-      <div class="cards" id="chapter-cards"><!-- מוזרק מ-content.js --></div>
+    <div class="wrap-n reveal center">
+      <h2>אז הגיע הזמן <span class="red">לעצור הכל</span></h2>
+      <p class="lead">להפסיק את המרדף היומיומי ולראות סוף-סוף תמונה שלמה: מה עובד, מה שורף אתכם, ומה הדבר האחד שיזיז את המספר בבנק.</p>
+      <div class="checkstrip">
+        <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1E8F4E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg> לסלול דרך שתגרום לקהל הנכון לשלם לכם יותר</span>
+        <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1E8F4E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg> לנהל כסף בצורה שמייצרת ודאות ושקט</span>
+        <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1E8F4E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg> לבנות מנוע שמביא לקוחות גם כשאתם ישנים</span>
+      </div>
+      <div style="margin-top:30px">
+        <a class="btn" href="checkout.html">לחצו כאן כדי להתחיל את המסע <span class="ar">‹</span></a>
+        <span class="btn-note">12 תחנות · 4 מדרגות הכנסה · מתקדמים רק כשמיישמים</span>
+      </div>
     </div>
   </section>
 
-  <!-- ===================== איך זה עובד ===================== -->
+  <!-- ===================== האמת שאתם מפחדים ממנה ===================== -->
+  <section class="dark">
+    <div class="wrap reveal">
+      <div class="split">
+        <div class="photo"><img src="img/mentor.png" alt=""></div>
+        <div>
+          <h2>האמת שאתם מפחדים ממנה<br>והיא חונקת לכם <span class="red">את הרווח בעסק</span></h2>
+          <p class="lead">רוב בעלי העסקים בטוחים שהבעיה שלהם היא עוד לקוחות, עוד שיווק, עוד שעות עבודה. אז הם רצים מהר יותר · ונשארים באותו מקום.</p>
+          <div class="sub-h">בפועל?</div>
+          <p class="lead">הבעיה כמעט אף פעם לא בכמות העבודה. היא בסדר: תמחור שלא משקף ערך, הרגלים שמנהלים אתכם, והחלטות שמתקבלות מהישרדות במקום מאסטרטגיה.</p>
+          <div class="sub-h">והתוצאה?</div>
+          <p class="lead">עסק שנראה מבחוץ מצליח · ומבפנים מרגיש כמו משרה שאי אפשר להתפטר ממנה.</p>
+          <p class="lead" style="margin-top:18px;color:#EDE9E2">(אני יודעת. גם אני הייתי שם.)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 738,000 ===================== -->
+  <section>
+    <div class="wrap-n reveal">
+      <div class="painnum">מחובות של 738,000 ש"ח</div>
+      <div class="painnum-sub">לעסקים של מיליון + בשנה.</div>
+      <p class="lead">זו לא סיסמה. זו הדרך שעברתי בעצמי: מנקודה שבה הכול קרס, דרך בנייה מחדש של הזהות, התמחור וההרגלים · ועד עסקים שמייצרים מיליון פלוס בשנה, בשיטה שאפשר לחזור עליה.</p>
+      <p class="lead">את הדרך הזו פירקתי לשלבים, והיא בדיוק מה שמחכה לכם בפנים.</p>
+      <div class="minis">
+        <div class="mini"><div class="t">אתם לא צריכים עוד לקוחות</div><div class="d">אתם צריכים מבנה שהופך את הלקוחות שכבר יש לרווח אמיתי.</div></div>
+        <div class="mini"><div class="t">אתם לא תקועים בגלל חוסר ידע</div><div class="d">אתם תקועים בגלל הרגלים ותודעה שנבנו בהישרדות.</div></div>
+        <div class="mini"><div class="t">אתם לא מפחדים לשחרר שליטה</div><div class="d">אתם מפחדים שאין מערכת. כשיש מערכת · משחררים בקלות.</div></div>
+        <div class="mini"><div class="t">אתם לא רחוקים מהמספר</div><div class="d">50K בחודש זו לא פנטזיה. זה סולם · ואפשר לטפס עליו מדרגה-מדרגה.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ציטוט ===================== -->
+  <section class="alt">
+    <div class="wrap reveal">
+      <p class="quote">אני מאמינה שכל אחד יכול להרוויח בדיוק את הסכום שהוא יבקש, ברגע שהוא עושה את קפיצת המדרגה התודעתית מעוסק מורשה לחברה בע"מ</p>
+    </div>
+  </section>
+
+  <!-- ===================== מבנה המסע ===================== -->
+  <section>
+    <div class="wrap reveal center">
+      <h2>המסע בנוי כסולם · 4 מדרגות הכנסה, 12 תחנות</h2>
+      <p class="lead" style="max-width:54ch;margin:0 auto">לא ספריית סרטונים. מפה עם דרך אחת ברורה: בכל רגע פתוחה תחנה אחת, מסיימים אותה ורק אז נפתחת הבאה. ככה מתקדמים באמת · בלי הצפה ובלי לברוח לסוף.</p>
+      <div class="rungs" id="chapter-cards"><!-- מוזרק מ-content.js --></div>
+    </div>
+  </section>
+
+  <!-- ===================== לקוחות שהפכו לחברה בע"מ ===================== -->
+  <section class="alt">
+    <div class="wrap reveal">
+      <h2 class="center">לקוחות שהפכו לחברה בע"מ</h2>
+      <div class="tcards">
+        <div class="tcard"><div class="who">סרטון עדות</div><div class="q"><p>"תוך 4 חודשים עברתי מאפס לקוחות ל-42K בחודש."</p><div class="nm">ד. · מאמנת</div></div></div>
+        <div class="tcard"><div class="who">סרטון עדות</div><div class="q"><p>"הפסקתי לרדוף אחרי לקוחות. עכשיו הם רודפים אחריי."</p><div class="nm">מ. · יועצת</div></div></div>
+        <div class="tcard"><div class="who">סרטון עדות</div><div class="q"><p>"סגרתי את החוב וחציתי את ה-50K בפעם הראשונה."</p><div class="nm">ר. · בעל עסק</div></div></div>
+      </div>
+      <div class="t-note">· כאן ייכנסו סרטוני העדות האמיתיים מהספרייה שלך ·</div>
+    </div>
+  </section>
+
+  <!-- ===================== הטעות ===================== -->
   <section>
     <div class="wrap reveal">
-      <div class="eyebrow">איך זה עובד</div>
-      <h2 class="title">שלושה צעדים פשוטים</h2>
-      <ol class="steps">
-        <li><span class="num">1</span><div><div class="stitle">בוחרים את נקודת ההתחלה</div><div class="sdesc">ממלאים שאלון קצר שמראה איפה העסק שלך עומד היום, ומאיזו מדרגה נכון לך להתחיל את המסע.</div></div></li>
-        <li><span class="num">2</span><div><div class="stitle">מתקדמים תחנה אחרי תחנה</div><div class="sdesc">כל תחנה היא צעד אחד ברור: צופים, מיישמים, ועוברים הלאה. בלי קפיצות, בלי בלגן, רק קדימה.</div></div></li>
-        <li><span class="num">3</span><div><div class="stitle">עולים מדרגה בהכנסה</div><div class="sdesc">עם כל מדרגה שאתה משלים, ההכנסה גדלה והמנוע שלך הופך עצמאי יותר, עד היעד של 50,000&#8362; בחודש.</div></div></li>
-      </ol>
+      <h2 class="center">הטעות שמשאירה אתכם<br>"שכירים" בעסק של עצמכם:</h2>
+      <p class="lead center" style="max-width:56ch;margin:0 auto">למה אתם חייבים לשנות את החשיבה שלכם ולהתנהל כמו מנכ"ל בחברה בע"מ · גם אם אתם עדיין עוסק מורשה עם לקוח אחד.</p>
+      <div class="moments">
+        <div class="moment"><div class="cap"><div class="t">זה הרגע שאתם מפסיקים להתנהג כמו עובדים:</div><div class="d">מפסיקים למכור שעות ומתחילים לנהל תוצאות. מהרגע הזה העסק עובד בשבילכם.</div></div></div>
+        <div class="moment"><div class="cap"><div class="t">זה הרגע שאתם מפסיקים לפחד מחוסר הוודאות וההלוואות:</div><div class="d">כשיש מבנה פיננסי ברור, מספרים מפסיקים להפחיד ומתחילים לשרת אתכם.</div></div></div>
+        <div class="moment"><div class="cap"><div class="t">זה הרגע שאתם מפסיקים למכור את הזמן שלכם:</div><div class="d">בונים נכסים שמוכרים בשבילכם · משפך, מוצר, מותג. הזמן חוזר אליכם.</div></div></div>
+      </div>
     </div>
   </section>
 
-  <!-- ===================== למי זה מתאים ===================== -->
-  <section class="alt">
+  <!-- ===================== מה מחכה לכם בפנים ===================== -->
+  <section class="dark">
     <div class="wrap reveal">
-      <div class="eyebrow">למי זה מתאים</div>
-      <h2 class="title">יזמים ובעלי עסקים בדרך ל-50K</h2>
+      <div class="split">
+        <div>
+          <h2>מה מחכה לכם בתוך המסע ל-50K?</h2>
+          <ul class="darklist">
+            <li><span class="chev">‹</span><div><div class="t">אבולוציה של תמחור וזהות:</div><div class="d">בונים מחדש מי אתם בשוק ולמה משלמים לכם · ומתמחרים בהתאם, בלי להתנצל.</div></div></li>
+            <li><span class="chev">‹</span><div><div class="t">מתודעה הישרדותית לתודעת מנכ"ל:</div><div class="d">עוצרים את ההרגלים הישנים שמנהלים אתכם ומחליפים אותם בהחלטות של בעלים.</div></div></li>
+            <li><span class="chev">‹</span><div><div class="t">מנוע שיווקי שעובד בשבילכם:</div><div class="d">אורגני, ממומן, מותג אישי ומשפך · מערכת אחת שמייצרת לקוחות באופן עקבי.</div></div></li>
+            <li><span class="chev">‹</span><div><div class="t">סקיילינג אמיתי ל-50K:</div><div class="d">מערכות, אוטומציה ו-AI שמאפשרים לגדול · בלי להישרף בדרך.</div></div></li>
+          </ul>
+          <p class="lead" style="margin-top:22px">לא משנה באיזה מצב אתם נמצאים בעסק או בחיים · אפשר לצאת מכל מצב. זו בדיוק הדרך.</p>
+          <div style="margin-top:26px">
+            <a class="btn btn--ondark" href="checkout.html">אני רוצה להתחיל את המסע <span class="ar">‹</span></a>
+          </div>
+        </div>
+        <div class="photo"><img src="img/mentor.png" alt=""></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== למי המסע מתאים ===================== -->
+  <section>
+    <div class="wrap reveal">
+      <h2 class="center">למי המסע הזה מתאים?</h2>
       <ul class="fit">
-        <li>בעלי עסק שהמחזור שלהם מתחת ל-50,000&#8362; בחודש ורוצים לפרוץ את התקרה.</li>
-        <li>פרילנסרים ונותני שירות שעובדים קשה אבל מרגישים שהרווח לא משקף את המאמץ.</li>
-        <li>יזמים שמחפשים סדר ומבנה · לא עוד תוכן, אלא דרך ברורה צעד-אחר-צעד.</li>
-        <li>מי שמוכן ללכת תחנה אחרי תחנה, ליישם, ולא לדלג ישר לסוף.</li>
+        <li><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg> לבעלי עסקים שמחפשים שיטה כדי להתפתח, לבנות מורשת ולשמור על האנרגיה הנכונה שלהם.</li>
+        <li><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg> למי שנמאס לו לראות מחזורים גבוהים שמשאירים שקלים בודדים בבנק.</li>
+        <li><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg> למי שמבין שהבדידות בניהול היא אויב מספר 1 · ורוצה דרך סלולה במקום ניסוי וטעייה.</li>
+        <li><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg> לבעל עסק שיודע שהוא הולך להצליח · ומחפש את המסלול הכי קצר לשם.</li>
       </ul>
     </div>
   </section>
 
-  <!-- ===================== עדויות ===================== -->
-  <section>
+  <!-- ===================== זה החלק שאף אחד לא מדבר עליו ===================== -->
+  <section class="alt">
     <div class="wrap reveal">
-      <div class="eyebrow">מה אומרים</div>
-      <h2 class="title">סיפורים מהשטח</h2>
-      <div class="testi-ph">[ מקום לעדויות ] &middot; כאן ייכנסו סיפורי הצלחה אמיתיים של בוגרי המסע</div>
+      <h2 class="center">זה החלק שאף אחד לא מדבר עליו:</h2>
+      <div class="secret">
+        <div class="line">כשאתם מפסיקים למכור בזול ועושים סדר בבלגן <b>&gt;&gt; ההכנסות שלכם מזנקות.</b></div>
+        <div class="line">כשאתם מנטרלים את הרעשים בראש <b>&gt;&gt; התוצאות מגיעות מהר יותר.</b></div>
+        <div class="line">כשאתם בונים אסטרטגיה ועובדים לפי מפה <b>&gt;&gt; אתם צוברים יתרון, והלקוחות מגיעים אליכם ולא אל המתחרים שלכם.</b></div>
+        <div class="close">המעבר מעסק ששורד לעסק שמוביל הוא לא עניין של מזל ולא של עוד שעות עבודה.<br>הוא תוצאה של החלטה אחת · ללכת בדרך סלולה עד הסוף.<br>קיבלתם את ההחלטה הזו? כל השאר כבר בנוי בפנים.</div>
+      </div>
     </div>
   </section>
 
   <!-- ===================== מחיר ===================== -->
-  <section class="alt">
-    <div class="wrap reveal">
-      <div class="eyebrow">השקעה</div>
-      <h2 class="title">מחיר אחד · גישה מלאה</h2>
-      <div class="price">
-        <div class="label">מחיר המסע</div>
-        <div class="val">1,800&#8362;</div>
-        <div class="note">או עד 24 תשלומים נוחים &middot; סליקה מאובטחת דרך GROW.<br>גישה לכל 12 התחנות וכל המדרגות, מהיום הראשון.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== שאלות נפוצות ===================== -->
   <section>
-    <div class="wrap reveal">
-      <div class="eyebrow">שאלות נפוצות</div>
-      <h2 class="title">מה שחשוב לדעת לפני שמתחילים</h2>
-      <div class="faq">
-        <details><summary>צריך ניסיון או עסק קיים כדי להתחיל?</summary><div class="ans">לא חובה. המסע מתחיל ממדרגת היסודות, אז גם אם אתה רק בתחילת הדרך תוכל לעלות שלב אחרי שלב. מי שכבר יש לו עסק פעיל פשוט מתחיל גבוה יותר במסלול.</div></details>
-        <details><summary>כמה זמן לוקח לעבור את כל המסע?</summary><div class="ans">הקצב הוא שלך. כל תחנה היא צעד עצמאי שאפשר ליישם בזמן שמתאים לך. הגישה נשארת פתוחה, כך שתוכל להתקדם מהר או בנחת, בלי לחץ של זמן.</div></details>
-        <details><summary>איך משלמים ומתי נפתחת הגישה?</summary><div class="ans">התשלום עובר בסליקה מאובטחת דרך GROW, בתשלום אחד או עד 24 תשלומים. הגישה למסע נפתחת אוטומטית מיד לאחר התשלום, בלי המתנה.</div></details>
-        <details><summary>במה זה שונה מעוד קורס דיגיטלי?</summary><div class="ans">רוב הקורסים זורקים עליך עשרות שעות תוכן ומשאירים אותך לבד. כאן זה מסע מדורג: כל תחנה מובילה לבאה, וכל מדרגה מחוברת ליעד הכנסה ברור. אתה תמיד יודע איפה אתה ומה הצעד הבא.</div></details>
+    <div class="wrap reveal center">
+      <h2>ההשקעה במסע</h2>
+      <div class="price">
+        <div class="label">גישה מלאה · תשלום אחד</div>
+        <div class="val">1,800&#8362;</div>
+        <div class="note">או פריסה עד 24 תשלומים · סליקה ישראלית מאובטחת דרך GROW.<br>הגישה לכל 12 התחנות נפתחת אוטומטית מיד לאחר התשלום.</div>
       </div>
     </div>
   </section>
 
-  <!-- ===================== CTA סופי ===================== -->
-  <section class="cta-final">
-    <div class="wrap reveal">
-      <div class="eyebrow" style="justify-content:center">מוכן להתחיל</div>
-      <h2 class="title">התחנה הראשונה מחכה לך</h2>
-      <p class="lead">העבודה הקשה שאתה כבר משקיע ראויה לתרגם לרווח. הצעד הראשון הוא הכי פשוט שיש.</p>
-      <a class="pill" href="checkout.html" style="margin-top:26px">התחל את המסע</a>
-      <span class="secure"><span data-ic="lock"></span> התשלום מאובטח בסליקת GROW &middot; הגישה למסע נפתחת אוטומטית מיד לאחר התשלום.</span>
+  <!-- ===================== סיום ===================== -->
+  <section class="final">
+    <div class="wrap-n reveal">
+      <h2>בואו נבנה ביחד את האימפריה שלכם.</h2>
+      <p class="lead" style="margin-top:14px">התחנה הראשונה כבר מחכה. כל מה שנשאר זה להחליט שהפעם הולכים עד הסוף.</p>
+      <div style="margin-top:30px">
+        <a class="btn btn--ondark" href="checkout.html">אני רוצה להתחיל את המסע ל-50K <span class="ar">‹</span></a>
+      </div>
+      <div class="small"><span data-ic="lock"></span> תשלום מאובטח דרך GROW · הגישה נפתחת מיד · בלי מנוי מתחדש ובלי אותיות קטנות.</div>
     </div>
   </section>
 
-  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+  <div class="credit">נבנה ע"י הלל אקנין.</div>
 
   <script src="data/content.js"></script>
   <script>
     (function(){
       var C = window.COURSE || {};
-      var brand = C.brand || {};
-      if (brand.slogan)  document.getElementById('hero-slogan').textContent = brand.slogan;
-      if (brand.ctaPrimary){ document.querySelectorAll('.pill').forEach(function(b){ b.textContent = brand.ctaPrimary; }); }
-      if (brand.productName) document.title = brand.productName + ' · המסע';
-
       var box = document.getElementById('chapter-cards');
       if (box) (C.chapters || []).forEach(function(ch){
-        var card = document.createElement('div'); card.className = 'card';
-        var tier = document.createElement('span'); tier.className = 'tier'; tier.textContent = ch.tier || '';
+        var card = document.createElement('div'); card.className = 'rung';
+        var tier = document.createElement('div'); tier.className = 'tier'; tier.textContent = ch.tier || '';
         var title = document.createElement('div'); title.className = 'ctitle'; title.textContent = ch.title || '';
         card.appendChild(tier); card.appendChild(title); box.appendChild(card);
       });
-
-      // scroll reveal
       var io = new IntersectionObserver(function(es){
         es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-      }, { threshold:.12 });
+      }, { threshold:.1 });
       document.querySelectorAll('.reveal').forEach(function(e){ io.observe(e); });
     })();
   </script>

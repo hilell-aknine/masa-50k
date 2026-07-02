@@ -156,7 +156,7 @@
       const { d, h } = buildTrack(positions);
       const path = document.createElement('div');
       path.className = 'path';
-      path.innerHTML = `<svg class="track" viewBox="0 0 100 ${h}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#C4A47C" stroke-width="0.7" stroke-dasharray="2.5 2.5" stroke-linecap="round"/></svg>`;
+      path.innerHTML = `<svg class="track" viewBox="0 0 100 ${h}" preserveAspectRatio="none"><path d="${d}" fill="none" style="stroke:var(--locked)" stroke-width="0.7" stroke-dasharray="2.5 2.5" stroke-linecap="round"/></svg>`;
       const nodes = document.createElement('div');
       nodes.className = 'nodes';
 

@@ -4,252 +4,355 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>ORAN COHEN GROUP · לוח מותג</title>
+<title>המסע ל-50K · מערכת עיצוב</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  body { margin: 0; background: #E4D8C3; }
-  @keyframes ocgShimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-  @keyframes ocgFloaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  /* ============================================================
+     לוח מותג · Orian Editorial · מיושם מ-Claude Design handoff
+     (design/claude-design-handoff/50k) · תואם design/design-system.md
+     ============================================================ */
+  :root{
+    --cream-bg:#EDE9E2; --cream-surface:#F5F1EA; --cream-deep:#E2DCD1;
+    --ink:#0B0A08; --ink-soft:#5A554D;
+    --black:#000000; --red:#E8001A; --green:#1E8F4E;
+    --font-display:'Frank Ruhl Libre',serif; --font-body:'Heebo',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--cream-bg);color:var(--ink);font-family:var(--font-body);line-height:1.5;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  ::selection{background:var(--red);color:#fff}
+
+  .wrap{max-width:1080px;margin:0 auto}
+  section{padding:clamp(4rem,8vw,7rem) 1.5rem}
+  .eyebrow{font-weight:600;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.8rem}
+  h1,h2{font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;margin:0}
+  h2{font-size:clamp(2rem,4vw,3.2rem);line-height:1.1;margin-bottom:2.6rem}
+  .red{color:var(--red)}
+
+  /* 5.1 פס אזהרה */
+  .warning-bar{background:var(--black);color:#fff;text-align:center;padding:14px 20px;min-height:44px;
+    display:flex;align-items:center;justify-content:center;gap:.4rem;font-weight:500;font-size:.95rem;letter-spacing:.01em}
+  .warning-bar strong{color:var(--red);font-weight:700}
+
+  /* 5.2 Hero */
+  .hero{position:relative;overflow:hidden;background:var(--cream-bg);padding:clamp(4rem,9vw,7.5rem) 1.5rem clamp(3.5rem,7vw,6rem)}
+  .hero__mark{position:absolute;inset-inline-start:-3%;top:14%;font-family:var(--font-display);font-weight:900;
+    font-size:clamp(6rem,19vw,17rem);color:var(--ink);opacity:.05;white-space:nowrap;pointer-events:none;user-select:none;line-height:1}
+  .hero .wrap{position:relative}
+  .hero h1{font-size:clamp(2.8rem,6.5vw,5rem);line-height:1.04;margin:0 0 1.4rem;max-width:14ch}
+  .hero .lead{font-weight:400;font-size:clamp(1.1rem,2vw,1.4rem);line-height:1.6;color:var(--ink-soft);max-width:44ch;margin:0 0 2.2rem}
+
+  /* 5.3 כפתורים */
+  .btn{display:inline-flex;align-items:center;gap:.55rem;font-family:var(--font-body);font-weight:600;font-size:1rem;
+    padding:14px 26px;min-height:44px;border-radius:10px;border:1.5px solid transparent;cursor:pointer;
+    transition:transform .2s cubic-bezier(.16,1,.3,1)}
+  .btn:hover{transform:translateY(-2px)}
+  .btn__arrow{font-size:1.25em;line-height:0}
+  .btn--primary{background:var(--black);border-color:var(--black);color:#fff}
+  .btn--ghost{background:transparent;border-color:var(--ink);color:var(--ink)}
+  .btn--white{background:#fff;border-color:#fff;color:var(--black)}
+  .btn--ghost-dark{background:transparent;border-color:rgba(255,255,255,.6);color:#fff}
+  .btn--block{width:100%;justify-content:center;font-size:1.05rem;padding:16px 26px;min-height:52px;border:0;margin-top:.6rem}
+
+  .surface{background:var(--cream-surface);border-top:1px solid var(--cream-deep)}
+
+  /* פלטה */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
+  .swatch{border-radius:12px;overflow:hidden;border:1px solid var(--cream-deep);background:#fff}
+  .swatch__chip{height:96px;border-bottom:1px solid rgba(0,0,0,.06)}
+  .swatch__meta{padding:12px 14px}
+  .swatch__role{font-weight:600;font-size:.92rem;margin-bottom:2px}
+  .swatch__hex{font-size:.8rem;color:var(--ink-soft);letter-spacing:.03em;direction:ltr;text-align:right}
+
+  /* חוק האדום */
+  .law-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem}
+  .law-card{background:var(--cream-surface);border:1px solid var(--cream-deep);border-radius:12px;padding:1.6rem}
+  .law-card__head{font-weight:700;font-size:.85rem;letter-spacing:.1em;margin-bottom:1.1rem}
+  .law-card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.7rem;font-size:.98rem;line-height:1.5}
+  .law-card--dont ul{color:var(--ink-soft)}
+  .lead-p{font-size:1.05rem;line-height:1.75;color:var(--ink-soft);max-width:52ch;margin:0 0 2.6rem}
+
+  /* טיפוגרפיה */
+  .type-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem}
+  .type-col{border-top:2px solid var(--ink);padding-top:1.2rem}
+  .type-col__label{font-weight:600;font-size:.78rem;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:1.2rem}
+
+  /* אייקונים */
+  .icons{display:flex;flex-wrap:wrap;gap:1.6rem}
+  .icon-tile{display:flex;flex-direction:column;align-items:center;gap:.55rem;width:88px}
+  .icon-tile__box{width:56px;height:56px;border:1px solid var(--cream-deep);border-radius:12px;background:var(--cream-surface);
+    display:flex;align-items:center;justify-content:center;color:var(--ink)}
+  .icon-tile span{font-size:.82rem;color:var(--ink-soft)}
+
+  /* סקשן כהה */
+  .dark-section{background:var(--black);color:var(--cream-bg);padding:clamp(4.5rem,9vw,8rem) 1.5rem}
+  .dark-section .eyebrow{color:#A8A29A}
+  .dark-section h2{color:#fff;margin-bottom:1rem}
+  .dark-section .lead-p{color:#A8A29A;max-width:50ch;margin-bottom:3rem}
+  .pain{display:flex;flex-wrap:wrap;align-items:baseline;gap:1.2rem}
+  .pain__num{font-family:var(--font-display);font-weight:900;font-size:clamp(3.5rem,10vw,7rem);line-height:.9;letter-spacing:-.03em;color:var(--red)}
+  .pain__txt{font-size:1.15rem;color:var(--cream-bg);max-width:20ch}
+
+  /* כרטיסי עדות */
+  .tcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+  .tcard{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/5;background:linear-gradient(160deg,#2a2a2a,#0d0d0d);color:#fff}
+  .tcard__who{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;letter-spacing:.1em;color:rgba(255,255,255,.28)}
+  .tcard__quote{position:absolute;inset-inline:14px;bottom:14px;background:rgba(0,0,0,.35);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:15px}
+  .tcard__quote p{margin:0 0 .5rem;font-size:.95rem;line-height:1.5;font-weight:500}
+  .tcard__name{font-size:.8rem;color:rgba(255,255,255,.6)}
+
+  /* טופס סיום */
+  .form-dark{background:var(--black);color:#fff}
+  .form-dark .wrap{max-width:560px}
+  .form-dark h2{color:#fff;margin-bottom:2.4rem;font-size:clamp(2rem,4vw,3rem)}
+  .form-dark form{display:flex;flex-direction:column;gap:1.6rem}
+  .field{background:none;border:0;border-bottom:1.5px solid rgba(255,255,255,.35);color:#fff;
+    font-family:var(--font-body);font-size:1.05rem;padding:12px 2px;min-height:44px;outline:none}
+  .field::placeholder{color:rgba(255,255,255,.5)}
+  .field:focus{border-bottom-color:#fff}
+
+  /* היפוך חי */
+  .pv-toggle{display:inline-flex;gap:.5rem;margin-bottom:2rem}
+  .pv-toggle button{font-family:var(--font-body);font-weight:600;font-size:.9rem;padding:9px 20px;min-height:44px;
+    border-radius:10px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+  .pv-toggle button.on{background:var(--black);border-color:var(--black);color:#fff}
+  .pv{border-radius:16px;overflow:hidden;border:1px solid var(--cream-deep);background:var(--cream-surface);
+    padding:clamp(2rem,5vw,3.5rem);transition:background .4s ease,border-color .4s ease}
+  .pv__label{font-weight:600;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:1rem;transition:color .4s}
+  .pv__title{font-family:var(--font-display);font-weight:900;font-size:clamp(2rem,5vw,3.2rem);line-height:1.06;letter-spacing:-.02em;color:var(--ink);margin-bottom:1.2rem;transition:color .4s}
+  .pv__body{font-size:1.05rem;line-height:1.7;color:var(--ink-soft);max-width:40ch;margin:0 0 1.8rem;transition:color .4s}
+  .pv__btn{transition:background .4s,color .4s,border-color .4s}
+  .pv.dark{background:#000;border-color:#1C1C1C}
+  .pv.dark .pv__label{color:#A8A29A}
+  .pv.dark .pv__title{color:#EDE9E2}
+  .pv.dark .pv__body{color:#A8A29A}
+
+  footer{background:var(--cream-bg);border-top:1px solid var(--cream-deep);padding:2.4rem 1.5rem;text-align:center}
+  .credit{font-family:var(--font-display);font-weight:700;font-size:1rem;letter-spacing:.05em;color:var(--ink-soft)}
 </style>
 </head>
 <body>
-<div data-screen-label="Brand Board" dir="rtl" style="width:1400px; max-width:100%; margin:0 auto; background:#F1EADE; font-family:'Heebo',sans-serif; color:#2C2520; position:relative; overflow:hidden; box-shadow:0 40px 120px rgba(44,37,32,0.22);">
 
-  <!-- ============ MASTHEAD ============ -->
-  <header style="position:relative; background:#F1EADE; padding:74px 80px 58px; text-align:center; overflow:hidden;">
-    <div style="position:absolute; top:-160px; right:-100px; width:520px; height:520px; border-radius:50%; background:radial-gradient(circle, rgba(196,164,124,0.4) 0%, rgba(196,164,124,0) 70%); animation:ocgFloaty 28s ease-in-out infinite; pointer-events:none;"></div>
-    <div style="position:absolute; bottom:-180px; left:-80px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle, rgba(194,154,61,0.22) 0%, rgba(194,154,61,0) 70%); animation:ocgFloaty 32s ease-in-out infinite reverse; pointer-events:none;"></div>
-    <svg width="100%" height="100%" style="position:absolute; inset:0; opacity:0.05; mix-blend-mode:multiply; pointer-events:none;">
-      <filter id="ocgGrain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"></feTurbulence></filter>
-      <rect width="100%" height="100%" filter="url(#ocgGrain)"></rect>
-    </svg>
+  <!-- 5.1 · פס אזהרה -->
+  <div class="warning-bar"><strong>אזהרה:</strong><span>הקורס הזה לא בשביל כולם. הוא בשביל מי שמוכן להפסיק להתחבא מאחורי תירוצים.</span></div>
 
-    <div style="position:relative; z-index:2;">
-      <div style="color:#9A6A47; font-size:12px; font-weight:600; letter-spacing:0.4em;">BRAND BOARD · לוח מותג</div>
-      <h1 style="font-family:'Frank Ruhl Libre',serif; font-size:58px; font-weight:700; color:#2C2520; margin:18px 0 4px; letter-spacing:-0.01em;">אוריאן כהן</h1>
-      <div style="font-family:'Frank Ruhl Libre',serif; font-size:18px; font-weight:500; letter-spacing:0.36em; color:#9A6A47;">ORAN COHEN GROUP</div>
-      <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin:26px 0;">
-        <div style="width:80px; height:1px; background:linear-gradient(90deg, rgba(194,154,61,0) 0%, #C29A3D 100%);"></div>
-        <span style="color:#C29A3D; font-size:9px;">◆</span>
-        <div style="width:80px; height:1px; background:linear-gradient(90deg, #C29A3D 0%, rgba(194,154,61,0) 100%);"></div>
+  <!-- 5.2 · Hero -->
+  <section class="hero">
+    <div class="hero__mark" aria-hidden="true">ORIAN COHEN</div>
+    <div class="wrap">
+      <div class="eyebrow">מערכת עיצוב · Design System</div>
+      <h1>המסע ל־<span class="red">50K</span>.</h1>
+      <p class="lead">השפה החזותית של הפורטל. קרם, שחור, אדום · ותו לא. עיתונאי, חד, ללא קישוטים.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:.9rem">
+        <button class="btn btn--primary">אני בפנים <span class="btn__arrow">‹</span></button>
+        <button class="btn btn--ghost">איך זה עובד <span class="btn__arrow">‹</span></button>
       </div>
-      <p style="font-family:'Frank Ruhl Libre',serif; font-style:italic; font-size:27px; font-weight:500; color:#9A6A47; margin:0 0 12px; line-height:1.5;">״המחזור גדל — והרווח עדיין לא זז.״</p>
-      <p style="color:#6B5D4F; font-size:16px; margin:0;">יועץ עסקי · הכנסות ראשונות בצורה מהירה, בטוחה ומדודה</p>
     </div>
-  </header>
-  <div style="height:1px; background:linear-gradient(90deg, rgba(194,154,61,0) 0%, rgba(194,154,61,0.55) 50%, rgba(194,154,61,0) 100%);"></div>
+  </section>
 
-  <!-- ============ CONTENT ============ -->
-  <div style="padding:66px 80px 40px; display:flex; flex-direction:column; gap:72px;">
-
-    <!-- 01 MONOGRAM -->
-    <section>
-      <div style="text-align:center; margin-bottom:44px;">
-        <div style="color:#C29A3D; font-family:'Frank Ruhl Libre',serif; font-size:15px; letter-spacing:0.34em; font-weight:500;">01</div>
-        <h2 style="font-family:'Frank Ruhl Libre',serif; font-size:32px; font-weight:700; color:#2C2520; margin:6px 0 12px;">לוגו · מונוגרמה OC</h2>
-        <div style="width:46px; height:1px; background:#C29A3D; margin:0 auto;"></div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;">
-        <div>
-          <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.18); border-radius:18px; height:210px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(154,106,71,0.1);">
-            <div style="width:120px; height:120px; border-radius:50%; border:1.5px solid #C29A3D; display:flex; align-items:center; justify-content:center; background:#F1EADE; box-shadow:inset 0 0 0 5px rgba(194,154,61,0.16);"><span style="font-family:'Frank Ruhl Libre',serif; font-weight:500; font-size:48px; letter-spacing:0.03em; color:#9A6A47;">OC</span></div>
-          </div>
-          <div style="margin-top:12px; font-size:12.5px; color:#8C7B66; text-align:center;">חותם ראשי · על קרם</div>
-        </div>
-        <div>
-          <div style="background:#9A6A47; border-radius:18px; height:210px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;">
-            <div style="width:120px; height:120px; border-radius:50%; border:1.5px solid #E6C65A; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 5px rgba(230,198,90,0.22);"><span style="font-family:'Frank Ruhl Libre',serif; font-weight:500; font-size:48px; letter-spacing:0.03em; color:#F1EADE;">OC</span></div>
-          </div>
-          <div style="margin-top:12px; font-size:12.5px; color:#8C7B66; text-align:center;">היפוך · על עור קוניאק</div>
-        </div>
-        <div>
-          <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.18); border-radius:18px; height:210px; display:flex; align-items:center; justify-content:center;">
-            <div style="width:104px; height:104px; border-radius:24px; background:linear-gradient(140deg,#C29A3D 0%,#E0BE63 100%); display:flex; align-items:center; justify-content:center; box-shadow:0 14px 36px rgba(194,154,61,0.32);"><span style="font-family:'Frank Ruhl Libre',serif; font-weight:600; font-size:46px; color:#2C2520;">OC</span></div>
-          </div>
-          <div style="margin-top:12px; font-size:12.5px; color:#8C7B66; text-align:center;">אריח זהב · App / Avatar</div>
-        </div>
-        <div>
-          <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.18); border-radius:18px; height:210px; display:flex; align-items:center; justify-content:center; gap:16px; box-shadow:0 8px 24px rgba(154,106,71,0.1);">
-            <div style="width:62px; height:62px; border-radius:50%; border:1.5px solid #C29A3D; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:inset 0 0 0 3px rgba(194,154,61,0.16);"><span style="font-family:'Frank Ruhl Libre',serif; font-weight:500; font-size:26px; color:#9A6A47;">OC</span></div>
-            <div style="border-right:1px solid rgba(154,106,71,0.25); padding-right:16px;"><div style="font-family:'Frank Ruhl Libre',serif; font-size:19px; font-weight:700; color:#2C2520; line-height:1;">אוריאן כהן</div><div style="font-size:10px; letter-spacing:0.2em; color:#9A6A47; margin-top:5px;">CONSULTING GROUP</div></div>
-          </div>
-          <div style="margin-top:12px; font-size:12.5px; color:#8C7B66; text-align:center;">לוקאפ אופקי</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 02 PALETTE -->
-    <section>
-      <div style="text-align:center; margin-bottom:44px;">
-        <div style="color:#C29A3D; font-family:'Frank Ruhl Libre',serif; font-size:15px; letter-spacing:0.34em; font-weight:500;">02</div>
-        <h2 style="font-family:'Frank Ruhl Libre',serif; font-size:32px; font-weight:700; color:#2C2520; margin:6px 0 12px;">פלטת צבעים</h2>
-        <div style="width:46px; height:1px; background:#C29A3D; margin:0 auto;"></div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px;">
-        <div style="text-align:center;"><div style="height:120px; border-radius:16px; background:#F1EADE; border:1px solid rgba(154,106,71,0.2); box-shadow:0 6px 18px rgba(154,106,71,0.1);"></div><div style="margin-top:12px; font-weight:600; font-size:14px; color:#2C2520;">קרם רקע</div><div style="font-family:monospace; font-size:12px; color:#9A6A47; margin-top:3px;">#F1EADE</div><div style="font-size:11.5px; color:#8C7B66; margin-top:4px;">רקע ראשי</div></div>
-        <div style="text-align:center;"><div style="height:120px; border-radius:16px; background:#FBF6ED; border:1px solid rgba(154,106,71,0.2); box-shadow:0 6px 18px rgba(154,106,71,0.1);"></div><div style="margin-top:12px; font-weight:600; font-size:14px; color:#2C2520;">משטח חם</div><div style="font-family:monospace; font-size:12px; color:#9A6A47; margin-top:3px;">#FBF6ED</div><div style="font-size:11.5px; color:#8C7B66; margin-top:4px;">כרטיסים ומשטחים</div></div>
-        <div style="text-align:center;"><div style="height:120px; border-radius:16px; background:#DDCBB0; box-shadow:0 6px 18px rgba(154,106,71,0.12);"></div><div style="margin-top:12px; font-weight:600; font-size:14px; color:#2C2520;">עץ דבש בהיר</div><div style="font-family:monospace; font-size:12px; color:#9A6A47; margin-top:3px;">#DDCBB0</div><div style="font-size:11.5px; color:#8C7B66; margin-top:4px;">טונים חמים · רקע משני</div></div>
-        <div style="text-align:center;"><div style="height:120px; border-radius:16px; background:#C4A47C; box-shadow:0 6px 18px rgba(154,106,71,0.12);"></div><div style="margin-top:12px; font-weight:600; font-size:14px; color:#2C2520;">עץ דבש</div><div style="font-family:monospace; font-size:12px; color:#9A6A47; margin-top:3px;">#C4A47C</div><div style="font-size:11.5px; color:#8C7B66; margin-top:4px;">הדגשות אורגניות</div></div>
-        <div style="text-align:center;"><div style="height:120px; border-radius:16px; background:#9A6A47; box-shadow:0 6px 18px rgba(154,106,71,0.16);"></div><div style="margin-top:12px; font-weight:600; font-size:14px; color:#2C2520;">עור קוניאק</div><div style="font-family:monospace; font-size:12px; color:#9A6A47; margin-top:3px;">#9A6A47</div><div style="font-size:11.5px; color:#8C7B66; margin-top:4px;">רצועות עומק · מותג</div></div>
-        <div style="text-align:center;"><div style="height:120px; border-radius:16px; background:linear-gradient(140deg,#C29A3D,#E0BE63); box-shadow:0 6px 18px rgba(194,154,61,0.22);"></div><div style="margin-top:12px; font-weight:600; font-size:14px; color:#2C2520;">זהב</div><div style="font-family:monospace; font-size:12px; color:#9A6A47; margin-top:3px;">#C29A3D</div><div style="font-size:11.5px; color:#8C7B66; margin-top:4px;">אקסנט יוקרתי · מדוד</div></div>
-        <div style="text-align:center;"><div style="height:120px; border-radius:16px; background:#2C2520; box-shadow:0 6px 18px rgba(44,37,32,0.2);"></div><div style="margin-top:12px; font-weight:600; font-size:14px; color:#2C2520;">טקסט כהה</div><div style="font-family:monospace; font-size:12px; color:#9A6A47; margin-top:3px;">#2C2520</div><div style="font-size:11.5px; color:#8C7B66; margin-top:4px;">טקסט גוף ראשי</div></div>
-        <div style="text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:10px; border:1px dashed rgba(154,106,71,0.3); border-radius:16px;"><div style="font-family:'Frank Ruhl Libre',serif; font-size:30px; color:#9A6A47;">◆</div><div style="font-size:12.5px; color:#8C7B66; line-height:1.5;">חם · אורגני · יוקרתי<br>WARM LUXURY</div></div>
-      </div>
-    </section>
-
-    <!-- 03 TYPOGRAPHY -->
-    <section>
-      <div style="text-align:center; margin-bottom:44px;">
-        <div style="color:#C29A3D; font-family:'Frank Ruhl Libre',serif; font-size:15px; letter-spacing:0.34em; font-weight:500;">03</div>
-        <h2 style="font-family:'Frank Ruhl Libre',serif; font-size:32px; font-weight:700; color:#2C2520; margin:6px 0 12px;">טיפוגרפיה</h2>
-        <div style="width:46px; height:1px; background:#C29A3D; margin:0 auto;"></div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px;">
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:18px; padding:30px 32px; box-shadow:0 8px 24px rgba(154,106,71,0.08);">
-          <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="color:#9A6A47; font-size:11px; font-weight:700; letter-spacing:0.22em;">תצוגה · כותרות</span><span style="font-size:12px; color:#8C7B66;">500 · 700 · 900</span></div>
-          <div style="font-family:'Frank Ruhl Libre',serif; font-size:84px; font-weight:700; color:#9A6A47; line-height:1; margin:14px 0 6px;">אבג Aa</div>
-          <div style="font-family:'Frank Ruhl Libre',serif; font-size:26px; font-weight:500; color:#2C2520;">Frank Ruhl Libre</div>
-          <div style="font-family:'Frank Ruhl Libre',serif; font-size:20px; font-weight:400; color:#8C7B66; margin-top:8px;">אוריאן כהן · ORAN COHEN · 0123</div>
-        </div>
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:18px; padding:30px 32px; box-shadow:0 8px 24px rgba(154,106,71,0.08);">
-          <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="color:#9A6A47; font-size:11px; font-weight:700; letter-spacing:0.22em;">גוף · ממשק</span><span style="font-size:12px; color:#8C7B66;">300 → 800</span></div>
-          <div style="font-family:'Heebo',sans-serif; font-size:84px; font-weight:600; color:#9A6A47; line-height:1; margin:14px 0 6px;">אבג Aa</div>
-          <div style="font-family:'Heebo',sans-serif; font-size:26px; font-weight:600; color:#2C2520;">Heebo</div>
-          <div style="font-family:'Heebo',sans-serif; font-size:15px; font-weight:400; color:#8C7B66; margin-top:8px; line-height:1.6;">הכנסה ראשונה בצורה מדודה — המספרים מדברים בעד עצמם.</div>
-        </div>
-      </div>
-
-      <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:18px; padding:8px 32px; box-shadow:0 8px 24px rgba(154,106,71,0.08);">
-        <div style="display:flex; align-items:baseline; justify-content:space-between; padding:18px 0; border-bottom:1px solid rgba(154,106,71,0.12);"><span style="font-family:'Frank Ruhl Libre',serif; font-size:46px; font-weight:700; color:#2C2520;">כותרת על</span><span style="font-size:13px; color:#8C7B66; font-family:monospace;">Display · 900 · 56px</span></div>
-        <div style="display:flex; align-items:baseline; justify-content:space-between; padding:18px 0; border-bottom:1px solid rgba(154,106,71,0.12);"><span style="font-family:'Frank Ruhl Libre',serif; font-size:34px; font-weight:700; color:#2C2520;">כותרת ראשית</span><span style="font-size:13px; color:#8C7B66; font-family:monospace;">H1 · 700 · 40px</span></div>
-        <div style="display:flex; align-items:baseline; justify-content:space-between; padding:18px 0; border-bottom:1px solid rgba(154,106,71,0.12);"><span style="font-family:'Frank Ruhl Libre',serif; font-size:25px; font-weight:500; color:#2C2520;">כותרת משנה</span><span style="font-size:13px; color:#8C7B66; font-family:monospace;">H2 · 500 · 28px</span></div>
-        <div style="display:flex; align-items:baseline; justify-content:space-between; padding:18px 0; border-bottom:1px solid rgba(154,106,71,0.12);"><span style="font-family:'Heebo',sans-serif; font-size:20px; font-weight:500; color:#2C2520;">פסקת פתיח · Lead</span><span style="font-size:13px; color:#8C7B66; font-family:monospace;">Heebo · 500 · 20px</span></div>
-        <div style="display:flex; align-items:baseline; justify-content:space-between; padding:18px 0; border-bottom:1px solid rgba(154,106,71,0.12);"><span style="font-family:'Heebo',sans-serif; font-size:16px; font-weight:400; color:#2C2520;">טקסט גוף · Body</span><span style="font-size:13px; color:#8C7B66; font-family:monospace;">Heebo · 400 · 16px / 1.7</span></div>
-        <div style="display:flex; align-items:baseline; justify-content:space-between; padding:18px 0;"><span style="font-family:'Heebo',sans-serif; font-size:14px; font-weight:400; color:#8C7B66;">טקסט קטן · Small</span><span style="font-size:13px; color:#8C7B66; font-family:monospace;">Heebo · 400 · 14px</span></div>
-      </div>
-    </section>
-
-    <!-- 04 VOICE WORD CARDS -->
-    <section>
-      <div style="text-align:center; margin-bottom:44px;">
-        <div style="color:#C29A3D; font-family:'Frank Ruhl Libre',serif; font-size:15px; letter-spacing:0.34em; font-weight:500;">04</div>
-        <h2 style="font-family:'Frank Ruhl Libre',serif; font-size:32px; font-weight:700; color:#2C2520; margin:6px 0 12px;">קול המותג · מילות מפתח</h2>
-        <div style="width:46px; height:1px; background:#C29A3D; margin:0 auto;"></div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; padding:28px 26px; box-shadow:0 8px 22px rgba(154,106,71,0.08);"><div style="font-family:'Frank Ruhl Libre',serif; font-size:30px; font-weight:700; color:#9A6A47;">בטוח</div><div style="width:30px; height:1px; background:#C29A3D; margin:12px 0;"></div><p style="font-size:14.5px; color:#6B5D4F; line-height:1.6; margin:0;">צמיחה בלי הימור — כל צעד מבוסס ומוגן מסיכון מיותר.</p></div>
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; padding:28px 26px; box-shadow:0 8px 22px rgba(154,106,71,0.08);"><div style="font-family:'Frank Ruhl Libre',serif; font-size:30px; font-weight:700; color:#9A6A47;">מדוד</div><div style="width:30px; height:1px; background:#C29A3D; margin:12px 0;"></div><p style="font-size:14.5px; color:#6B5D4F; line-height:1.6; margin:0;">המספרים מובילים את ההחלטות — צמיחה שאפשר לכמת.</p></div>
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; padding:28px 26px; box-shadow:0 8px 22px rgba(154,106,71,0.08);"><div style="font-family:'Frank Ruhl Libre',serif; font-size:30px; font-weight:700; color:#9A6A47;">ישיר</div><div style="width:30px; height:1px; background:#C29A3D; margin:12px 0;"></div><p style="font-size:14.5px; color:#6B5D4F; line-height:1.6; margin:0;">בלי סיבובים — אומרים את האמת, גם כשהיא לא נוחה.</p></div>
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; padding:28px 26px; box-shadow:0 8px 22px rgba(154,106,71,0.08);"><div style="font-family:'Frank Ruhl Libre',serif; font-size:30px; font-weight:700; color:#9A6A47;">יוקרתי</div><div style="width:30px; height:1px; background:#C29A3D; margin:12px 0;"></div><p style="font-size:14.5px; color:#6B5D4F; line-height:1.6; margin:0;">שפה נקייה, חמה ומכובדת — נוכחות שקטה, לא רועשת.</p></div>
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; padding:28px 26px; box-shadow:0 8px 22px rgba(154,106,71,0.08);"><div style="font-family:'Frank Ruhl Libre',serif; font-size:30px; font-weight:700; color:#9A6A47;">מבוסס-נתונים</div><div style="width:30px; height:1px; background:#C29A3D; margin:12px 0;"></div><p style="font-size:14.5px; color:#6B5D4F; line-height:1.6; margin:0;">כל המלצה נשענת על נתונים אמיתיים, לא על תחושות.</p></div>
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; padding:28px 26px; box-shadow:0 8px 22px rgba(154,106,71,0.08);"><div style="font-family:'Frank Ruhl Libre',serif; font-size:30px; font-weight:700; color:#9A6A47;">נטול-הייפ</div><div style="width:30px; height:1px; background:#C29A3D; margin:12px 0;"></div><p style="font-size:14.5px; color:#6B5D4F; line-height:1.6; margin:0;">שקט מקצועי במקום הבטחות מנופחות וסופרלטיבים.</p></div>
-      </div>
-    </section>
-
-    <!-- 05 INSTAGRAM MOCKUPS -->
-    <section>
-      <div style="text-align:center; margin-bottom:44px;">
-        <div style="color:#C29A3D; font-family:'Frank Ruhl Libre',serif; font-size:15px; letter-spacing:0.34em; font-weight:500;">05</div>
-        <h2 style="font-family:'Frank Ruhl Libre',serif; font-size:32px; font-weight:700; color:#2C2520; margin:6px 0 12px;">יישום · אינסטגרם</h2>
-        <div style="width:46px; height:1px; background:#C29A3D; margin:0 auto;"></div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; overflow:hidden; box-shadow:0 14px 36px rgba(154,106,71,0.14);">
-          <div style="display:flex; align-items:center; gap:10px; padding:12px 14px;">
-            <div style="width:34px; height:34px; border-radius:50%; border:1.5px solid #C29A3D; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><span style="font-family:'Frank Ruhl Libre',serif; font-size:15px; color:#9A6A47;">OC</span></div>
-            <div><div style="font-weight:700; font-size:13px; color:#2C2520;">oran.cohen.group</div><div style="font-size:11px; color:#8C7B66;">יועץ עסקי</div></div>
-            <i class="fa-solid fa-ellipsis" style="margin-inline-start:auto; color:#8C7B66;"></i>
-          </div>
-          <div style="aspect-ratio:1/1; background:linear-gradient(150deg,#DDCBB0 0%,#C4A47C 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px;">
-            <span style="color:#C29A3D; font-size:14px;">◆</span>
-            <p style="font-family:'Frank Ruhl Libre',serif; font-size:26px; font-weight:700; color:#2C2520; line-height:1.45; margin:16px 0;">המחזור גדל —<br>והרווח עדיין<br>לא זז.</p>
-            <span style="color:#7A5A3C; font-size:11px; letter-spacing:0.2em;">ORAN COHEN GROUP</span>
-          </div>
-          <div style="display:flex; gap:16px; padding:12px 14px 6px; color:#2C2520; font-size:16px;"><i class="fa-solid fa-heart"></i><i class="fa-regular fa-comment"></i><i class="fa-regular fa-paper-plane"></i></div>
-          <div style="padding:0 14px 16px; font-size:13px; color:#2C2520; line-height:1.5;"><b>oran.cohen.group</b> הכאב האמיתי הוא לא במכירות. 👇</div>
-        </div>
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; overflow:hidden; box-shadow:0 14px 36px rgba(154,106,71,0.14);">
-          <div style="display:flex; align-items:center; gap:10px; padding:12px 14px;">
-            <div style="width:34px; height:34px; border-radius:50%; border:1.5px solid #C29A3D; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><span style="font-family:'Frank Ruhl Libre',serif; font-size:15px; color:#9A6A47;">OC</span></div>
-            <div><div style="font-weight:700; font-size:13px; color:#2C2520;">oran.cohen.group</div><div style="font-size:11px; color:#8C7B66;">יועץ עסקי</div></div>
-            <i class="fa-solid fa-ellipsis" style="margin-inline-start:auto; color:#8C7B66;"></i>
-          </div>
-          <div style="aspect-ratio:1/1; background:#9A6A47; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px; position:relative; overflow:hidden;">
-            <div style="position:absolute; bottom:-60px; left:-40px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(230,198,90,0.3) 0%, rgba(230,198,90,0) 70%);"></div>
-            <div style="position:relative; z-index:2; display:flex; flex-direction:column; align-items:center;">
-              <div style="color:#E6C65A; font-size:10px; font-weight:600; letter-spacing:0.3em;">מוצר דגל</div>
-              <p style="font-family:'Frank Ruhl Libre',serif; font-size:42px; font-weight:700; color:#F1EADE; line-height:1.1; margin:14px 0 16px;">הדרך<br>ל-50K</p>
-              <span style="display:inline-block; background:linear-gradient(140deg,#C29A3D,#E0BE63); color:#2C2520; font-weight:700; font-size:12px; padding:9px 22px; border-radius:50px;">פותחים רשימה</span>
-            </div>
-          </div>
-          <div style="display:flex; gap:16px; padding:12px 14px 6px; color:#2C2520; font-size:16px;"><i class="fa-solid fa-heart"></i><i class="fa-regular fa-comment"></i><i class="fa-regular fa-paper-plane"></i></div>
-          <div style="padding:0 14px 16px; font-size:13px; color:#2C2520; line-height:1.5;"><b>oran.cohen.group</b> מרעיון ל-50,000 ₪ ראשונים. 🚀</div>
-        </div>
-        <div style="background:#FBF6ED; border:1px solid rgba(154,106,71,0.16); border-radius:16px; overflow:hidden; box-shadow:0 14px 36px rgba(154,106,71,0.14);">
-          <div style="display:flex; align-items:center; gap:10px; padding:12px 14px;">
-            <div style="width:34px; height:34px; border-radius:50%; border:1.5px solid #C29A3D; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><span style="font-family:'Frank Ruhl Libre',serif; font-size:15px; color:#9A6A47;">OC</span></div>
-            <div><div style="font-weight:700; font-size:13px; color:#2C2520;">oran.cohen.group</div><div style="font-size:11px; color:#8C7B66;">יועץ עסקי</div></div>
-            <i class="fa-solid fa-ellipsis" style="margin-inline-start:auto; color:#8C7B66;"></i>
-          </div>
-          <div style="aspect-ratio:1/1; background:#F1EADE; display:flex; align-items:center; justify-content:center; padding:22px;">
-            <div style="border:1px solid rgba(194,154,61,0.5); border-radius:8px; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px;">
-              <div style="width:54px; height:54px; border-radius:50%; border:1.5px solid #C29A3D; display:flex; align-items:center; justify-content:center; margin-bottom:18px;"><span style="font-family:'Frank Ruhl Libre',serif; font-size:24px; color:#9A6A47;">OC</span></div>
-              <p style="font-family:'Frank Ruhl Libre',serif; font-size:23px; font-weight:500; color:#2C2520; line-height:1.5; margin:0;">הכנסה ראשונה.<br>מהר, בטוח, מדוד.</p>
-            </div>
-          </div>
-          <div style="display:flex; gap:16px; padding:12px 14px 6px; color:#2C2520; font-size:16px;"><i class="fa-solid fa-heart"></i><i class="fa-regular fa-comment"></i><i class="fa-regular fa-paper-plane"></i></div>
-          <div style="padding:0 14px 16px; font-size:13px; color:#2C2520; line-height:1.5;"><b>oran.cohen.group</b> שלוש מילים. שיטה אחת. ✨</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 06 BANNER -->
-    <section>
-      <div style="text-align:center; margin-bottom:44px;">
-        <div style="color:#C29A3D; font-family:'Frank Ruhl Libre',serif; font-size:15px; letter-spacing:0.34em; font-weight:500;">06</div>
-        <h2 style="font-family:'Frank Ruhl Libre',serif; font-size:32px; font-weight:700; color:#2C2520; margin:6px 0 12px;">באנר · הדרך ל-50K</h2>
-        <div style="width:46px; height:1px; background:#C29A3D; margin:0 auto;"></div>
-      </div>
-
-      <div style="position:relative; background:linear-gradient(135deg,#9A6A47 0%,#7C5337 100%); border-radius:20px; padding:54px 60px; overflow:hidden; display:flex; align-items:center; gap:40px;">
-        <svg width="100%" height="100%" style="position:absolute; inset:0; opacity:0.06; mix-blend-mode:overlay; pointer-events:none;">
-          <rect width="100%" height="100%" filter="url(#ocgGrain)"></rect>
-        </svg>
-        <div style="position:absolute; top:-120px; left:-80px; width:380px; height:380px; border-radius:50%; background:radial-gradient(circle, rgba(230,198,90,0.28) 0%, rgba(230,198,90,0) 70%); pointer-events:none;"></div>
-
-        <div style="position:relative; z-index:2; flex:1;">
-          <div style="color:#E6C65A; font-size:12px; font-weight:600; letter-spacing:0.32em;">FLAGSHIP COURSE · מוצר דגל</div>
-          <h3 style="font-family:'Frank Ruhl Libre',serif; font-size:56px; font-weight:700; color:#F1EADE; margin:14px 0 14px; line-height:1;">הדרך ל-50K</h3>
-          <p style="color:#EBDDC9; font-size:17px; line-height:1.7; margin:0 0 26px; max-width:560px;">הליווי שמוביל יזמים מרעיון ועד 50,000 ₪ ראשונים — מסלול מהיר, בטוח ומדוד, צעד אחר צעד.</p>
-          <div style="display:flex; align-items:center; gap:18px;">
-            <span style="display:inline-block; background:linear-gradient(140deg,#C29A3D,#E0BE63); color:#2C2520; font-weight:700; font-size:15px; padding:13px 32px; border-radius:50px; box-shadow:0 10px 26px rgba(194,154,61,0.34);">להצטרפות לרשימה</span>
-            <span style="color:#E6C65A; font-size:14px; letter-spacing:0.06em;">oran-cohen.group</span>
-          </div>
-        </div>
-
-        <div style="position:relative; z-index:2; flex-shrink:0;">
-          <div style="width:160px; height:160px; border-radius:50%; border:1.5px solid #E6C65A; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 0 7px rgba(230,198,90,0.18);"><span style="font-family:'Frank Ruhl Libre',serif; font-weight:500; font-size:64px; letter-spacing:0.03em; color:#F1EADE;">OC</span></div>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- ============ FOOTER ============ -->
-  <footer style="border-top:1px solid rgba(154,106,71,0.25); padding:28px 80px; display:flex; align-items:center; justify-content:space-between; background:#F1EADE;">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <div style="width:36px; height:36px; border-radius:50%; border:1.5px solid #C29A3D; display:flex; align-items:center; justify-content:center;"><span style="font-family:'Frank Ruhl Libre',serif; font-weight:500; font-size:16px; color:#9A6A47;">OC</span></div>
-      <span style="color:#9A6A47; font-family:'Frank Ruhl Libre',serif; letter-spacing:0.18em; font-size:15px;">ORAN COHEN GROUP</span>
+  <!-- 01 · פלטה -->
+  <section class="surface">
+    <div class="wrap">
+      <div class="eyebrow">01 · פלטה</div>
+      <h2>שלושה צבעים. ותו לא.</h2>
+      <div class="swatches" id="swatches"></div>
     </div>
-    <span style="color:#8C7B66; font-size:12.5px; letter-spacing:0.1em;">לוח מותג · BRAND BOARD · 2026</span>
-  </footer>
-</div>
+  </section>
+
+  <!-- 02 · חוק האדום -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">02 · חוק האדום</div>
+      <h2 style="margin-bottom:1rem">האדום הוא <span class="red">סכין</span>.</h2>
+      <p class="lead-p">לא צבע להתזה. תפקידו יחיד: להסב את העין לכאב או לאזהרה. מופע אחד בשדה ראייה, לא יותר.</p>
+      <div class="law-grid">
+        <div class="law-card">
+          <div class="law-card__head" style="color:var(--green)">✓ מותר</div>
+          <ul>
+            <li>מילה מודגשת אחת בכותרת שחורה</li>
+            <li>המילה <strong class="red">אזהרה:</strong> בפס העליון</li>
+            <li>מספר כאב · <strong class="red">738,000 ש"ח</strong></li>
+          </ul>
+        </div>
+        <div class="law-card law-card--dont">
+          <div class="law-card__head" style="color:var(--red)">✕ אסור</div>
+          <ul>
+            <li>רקע סקשן שלם באדום</li>
+            <li>כפתור אדום · כרטיס אדום · באנר מלא</li>
+            <li>אדום כדקורציה או "צבע נעים לעין"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · טיפוגרפיה -->
+  <section class="surface">
+    <div class="wrap">
+      <div class="eyebrow">03 · טיפוגרפיה</div>
+      <h2>סריף כבד מוביל. סאנס מסביר.</h2>
+      <div class="type-grid">
+        <div class="type-col">
+          <div class="type-col__label">FRANK RUHL LIBRE · כותרות</div>
+          <div style="font-family:var(--font-display);font-weight:900;font-size:3rem;line-height:1.05;letter-spacing:-.02em;margin-bottom:.6rem">כותרת כבדה</div>
+          <div style="font-family:var(--font-display);font-weight:700;font-size:1.6rem;line-height:1.2;margin-bottom:.4rem">כותרת משנה בינונית</div>
+          <div style="font-family:var(--font-display);font-weight:500;font-size:1.15rem;color:var(--ink-soft)">אבגדהוזחטיכלמנסעפצקרשת · 900 / 700 / 500</div>
+        </div>
+        <div class="type-col">
+          <div class="type-col__label">HEEBO · גוף וממשק</div>
+          <p style="font-weight:400;font-size:1.05rem;line-height:1.75;margin:0 0 1rem">גוף הטקסט נכתב ב־Heebo במשקל רגיל, עם line-height נדיב. עברית ללא ניקוד דורשת אוויר · הריווח הזה שומר על קריאות ורוגע.</p>
+          <div style="display:flex;gap:1.4rem;flex-wrap:wrap;color:var(--ink-soft)">
+            <span style="font-weight:300">Light 300</span>
+            <span style="font-weight:400">Regular 400</span>
+            <span style="font-weight:600">Semibold 600</span>
+            <span style="font-weight:700">Bold 700</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · רכיבים: כפתורים + אייקוני קו -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">04 · רכיבים</div>
+      <h2>כפתורים ואייקוני קו.</h2>
+
+      <div class="type-col__label" style="margin-bottom:1.1rem">כפתורים · מלבניים 10px · חץ ‹ · מגע ≥44px</div>
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1.4rem">
+        <button class="btn btn--primary">ראשי · שחור <span class="btn__arrow">‹</span></button>
+        <button class="btn btn--ghost">משני · מסגרת <span class="btn__arrow">‹</span></button>
+      </div>
+      <div style="background:#000;border-radius:12px;padding:1.6rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:3rem">
+        <button class="btn btn--white">ראשי · לבן על שחור <span class="btn__arrow">‹</span></button>
+        <button class="btn btn--ghost-dark">משני · על כהה <span class="btn__arrow">‹</span></button>
+      </div>
+
+      <div class="type-col__label" style="margin-bottom:1.1rem">אייקוני קו · stroke בלבד · currentColor · ללא צבע, ללא אימוג'י</div>
+      <div class="icons" id="icons"></div>
+    </div>
+  </section>
+
+  <!-- 05 · ריתמוס סקשנים + מספר כאב -->
+  <section class="dark-section">
+    <div class="wrap">
+      <div class="eyebrow">05 · ריתמוס סקשנים</div>
+      <h2>קרם ↔ שחור. לאורך כל הדף.</h2>
+      <p class="lead-p">סקשן כהה שובר את הקרם ומחזיר את תשומת הלב. כאן חי מספר הכאב · המקום היחיד שבו האדום נושם.</p>
+      <div class="pain">
+        <div class="pain__num">738,000</div>
+        <div class="pain__txt">ש"ח חובות · לפני שהיא בנתה את המערכת שמחזירה 50K בחודש.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · כרטיסי עדות -->
+  <section class="surface">
+    <div class="wrap">
+      <div class="eyebrow">06 · כרטיסי עדות</div>
+      <h2>תמונה כהה. ציטוט על זכוכית.</h2>
+      <div class="tcards" id="tcards"></div>
+    </div>
+  </section>
+
+  <!-- 07 · טופס סיום -->
+  <section class="form-dark">
+    <div class="wrap">
+      <div class="eyebrow">07 · טופס סיום</div>
+      <h2>מוכנה להתחיל את המסע?</h2>
+      <form onsubmit="return false">
+        <input class="field" type="text" placeholder="שם מלא">
+        <input class="field" type="tel" placeholder="טלפון" dir="rtl">
+        <input class="field" type="email" placeholder="אימייל">
+        <button class="btn btn--white btn--block">שריינו לי מקום <span class="btn__arrow">‹</span></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- 08 · שני מצבים · היפוך חי -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">08 · שני מצבים · היפוך מלא</div>
+      <h2 style="margin-bottom:1rem">בהיר וכהה. אותו אדום.</h2>
+      <p class="lead-p" style="max-width:48ch;margin-bottom:2rem">לחצו כדי לראות את אותו רכיב מתהפך במלואו · האדום נשאר קבוע.</p>
+      <div class="pv-toggle">
+        <button id="pv-light" class="on" onclick="setPv(false)">בהיר</button>
+        <button id="pv-dark" onclick="setPv(true)">כהה</button>
+      </div>
+      <div class="pv" id="pv">
+        <div class="pv__label" id="pv-label">מצב בהיר · ברירת מחדל</div>
+        <div class="pv__title">המסע ל־<span class="red">50K</span>.</div>
+        <p class="pv__body">אותו מבנה, אותה טיפוגרפיה, אותו אדום · רק הקרם והשחור מתחלפים.</p>
+        <button class="btn btn--primary pv__btn" id="pv-btn">אני בפנים <span class="btn__arrow">‹</span></button>
+      </div>
+    </div>
+  </section>
+
+  <footer><div class="credit">נבנה ע"י הלל אקנין.</div></footer>
+
+<script>
+  // פלטה — 8 דגימות (design-system.md §2)
+  const swatches = [
+    { role: 'רקע קרם ראשי',      hex: '#EDE9E2' },
+    { role: 'משטח / כרטיסים',    hex: '#F5F1EA' },
+    { role: 'קרם עמוק · הפרדות', hex: '#E2DCD1' },
+    { role: 'טקסט ראשי',         hex: '#0B0A08' },
+    { role: 'טקסט משני',         hex: '#5A554D' },
+    { role: 'סקשנים כהים',       hex: '#000000' },
+    { role: 'אדום מותג',         hex: '#E8001A' },
+    { role: 'ירוק · וי בלבד',    hex: '#1E8F4E' },
+  ];
+  document.getElementById('swatches').innerHTML = swatches.map(s => `
+    <div class="swatch">
+      <div class="swatch__chip" style="background:${s.hex}"></div>
+      <div class="swatch__meta">
+        <div class="swatch__role">${s.role}</div>
+        <div class="swatch__hex">${s.hex}</div>
+      </div>
+    </div>`).join('');
+
+  // אייקוני קו — stroke בלבד, currentColor (design-system.md §5.4)
+  const SVG = (inner) => `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+  const icons = [
+    { label: 'יעד',    svg: SVG('<circle cx="12" cy="12" r="8"/><path d="M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0 -8"/><path d="M12 11.5a.5 .5 0 1 0 0 1a.5 .5 0 0 0 0 -1"/>') },
+    { label: 'צמיחה',  svg: SVG('<path d="M4 19h16"/><path d="M6 15l4 -4l3 3l5 -6"/>') },
+    { label: 'זמן',    svg: SVG('<circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/>') },
+    { label: 'הכנסה',  svg: SVG('<path d="M12 3v18"/><path d="M16 7c0 -2 -2 -3 -4 -3s-4 1 -4 3s2 2.5 4 3s4 1 4 3s-2 3 -4 3s-4 -1 -4 -3"/>') },
+    { label: 'וי',     svg: SVG('<path d="M5 12l5 5l9 -11"/>') },
+  ];
+  document.getElementById('icons').innerHTML = icons.map(ic => `
+    <div class="icon-tile">
+      <div class="icon-tile__box">${ic.svg}</div>
+      <span>${ic.label}</span>
+    </div>`).join('');
+
+  // כרטיסי עדות — placeholder עד צילומי עדות אמיתיים
+  const tcards = [
+    { who: 'תמונה כהה', name: 'ד. · מאמנת',   quote: '"תוך 4 חודשים עברתי מאפס לקוחות ל־42K בחודש."' },
+    { who: 'תמונה כהה', name: 'מ. · יועצת',   quote: '"הפסקתי לרדוף אחרי לקוחות. עכשיו הם רודפים אחריי."' },
+    { who: 'תמונה כהה', name: 'ר. · בעל עסק', quote: '"סגרתי את החוב וחציתי את ה־50K בפעם הראשונה."' },
+  ];
+  document.getElementById('tcards').innerHTML = tcards.map(t => `
+    <div class="tcard">
+      <div class="tcard__who">${t.who}</div>
+      <div class="tcard__quote"><p>${t.quote}</p><div class="tcard__name">${t.name}</div></div>
+    </div>`).join('');
+
+  // היפוך חי בהיר/כהה
+  function setPv(dark) {
+    document.getElementById('pv').classList.toggle('dark', dark);
+    document.getElementById('pv-light').classList.toggle('on', !dark);
+    document.getElementById('pv-dark').classList.toggle('on', dark);
+    document.getElementById('pv-label').textContent = dark ? 'מצב כהה · שחור טהור' : 'מצב בהיר · ברירת מחדל';
+    const btn = document.getElementById('pv-btn');
+    btn.classList.toggle('btn--white', dark);
+    btn.classList.toggle('btn--primary', !dark);
+  }
+</script>
 </body>
 </html>

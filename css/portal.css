@@ -1,33 +1,38 @@
 /* ============================================================
    המסע ל-50K · מערכת העיצוב (מקור-אמת יחיד)
-   מיתוג נמדל מהאתר הרשמי של הלקוחה · 2026-06-28
-   Dark · מינימלי · יוקרתי · Inter · RTL
+   מיתוג "Orian Editorial" · נמדל מה-Figma של המעצבת שלה
+   (figma.com/design/ecRfoyWwXTJD2Ov7luaX4H/Orian · דפי הייעוץ העסקי)
+   קרם + שחור + אדום מותג · סריף ORIAN COHEN · RTL · 2026-07-02
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800&display=swap');
 
 :root, html[data-theme="light"]{
-  /* === WARM LUXURY (ברירת מחדל · מיתוג ORAN COHEN GROUP) === */
-  --bg:#F1EADE; --surface:#FBF6ED; --surface-2:#F4ECDD; --surface-3:#DDCBB0;
-  --line:rgba(154,106,71,.18);
-  --text:#2C2520; --text-dim:#6B5D4F; --text-faint:#8C7B66; --text-strong:#2C2520;
-  --btn-bg:#9A6A47; --btn-text:#FBF6ED;
-  --input-bg:#F6EFE2;
-  --done:#9A6A47; --active:#9A6A47;
-  --locked:#B5A488; --locked-bg:#EFE6D5; --locked-bd:#DDCBB0; --locked-tx:#B5A488;
-  --gold:#C29A3D; --serif:'Frank Ruhl Libre',serif;
-  --radius-pill:30px; --radius-card:18px; --maxw:680px;
+  /* === ORIAN EDITORIAL (ברירת מחדל · נדגם מדפי הנחיתה שלה) === */
+  --bg:#EDE9E2; --surface:#F5F1EA; --surface-2:#EFEAE1; --surface-3:#E2DCD1;
+  --line:rgba(11,10,8,.14);
+  --text:#171512; --text-dim:#5A554D; --text-faint:#8A847A; --text-strong:#0B0A08;
+  --btn-bg:#0B0A08; --btn-text:#F5F1EA;
+  --input-bg:#F7F4EE;
+  --done:#0B0A08; --active:#0B0A08;
+  --locked:#B3AC9F; --locked-bg:#E7E2D8; --locked-bd:#D8D2C6; --locked-tx:#A39C8E;
+  --accent:#E8001A; --gold:#E8001A; /* אדום המותג · --gold נשאר כ-alias לתאימות */
+  --watermark:rgba(11,10,8,.05);
+  --serif:'Frank Ruhl Libre',serif;
+  --radius-pill:10px; --radius-card:14px; --maxw:680px;
 }
 html[data-theme="dark"]{
-  /* === DARK · מצב לילה === */
-  --bg:#0a0a0a; --surface:#1a222e; --surface-2:#1c2635; --surface-3:#2d3e58;
-  --line:rgba(255,255,255,.08);
-  --text:#e0e0e0; --text-dim:#8a93a0; --text-faint:#56606e; --text-strong:#ffffff;
-  --btn-bg:#f7f7f7; --btn-text:#0a0a0a;
-  --input-bg:#070707;
-  --done:#3a8a6d; --active:#f7f7f7;
-  --locked:#39414d; --locked-bg:#121821; --locked-bd:#20293a; --locked-tx:#3a434f;
-  --gold:#C29A3D; --serif:'Frank Ruhl Libre',serif;
-  --radius-pill:30px; --radius-card:18px; --maxw:680px;
+  /* === DARK EDITORIAL · מצב לילה (הגרסה הכהה מה-Figma) === */
+  --bg:#000000; --surface:#111111; --surface-2:#181818; --surface-3:#242424;
+  --line:rgba(255,255,255,.12);
+  --text:#E9E5DE; --text-dim:#9B968D; --text-faint:#6A655D; --text-strong:#F5F1EA;
+  --btn-bg:#F5F1EA; --btn-text:#0B0A08;
+  --input-bg:#0C0C0C;
+  --done:#F5F1EA; --active:#F5F1EA;
+  --locked:#3E3B36; --locked-bg:#141311; --locked-bd:#262420; --locked-tx:#4A463F;
+  --accent:#E8001A; --gold:#E8001A;
+  --watermark:rgba(245,241,234,.05);
+  --serif:'Frank Ruhl Libre',serif;
+  --radius-pill:10px; --radius-card:14px; --maxw:680px;
 }
 
 /* מתג בהיר/כהה (מוזרק אוטומטית ע"י js/theme.js) */
@@ -55,8 +60,8 @@ body{padding:0 18px 60px;direction:rtl}
 .progress{max-width:var(--maxw);margin:22px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px 20px}
 .progress .row{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:var(--text-dim);margin-bottom:10px}
 .progress .row b{color:var(--text-strong);font-size:15px}
-.bar{height:8px;background:#070707;border-radius:20px;overflow:hidden}
-.bar > i{display:block;height:100%;background:linear-gradient(90deg,#2d3e58,#f7f7f7);border-radius:20px;transition:width .5s}
+.bar{height:8px;background:var(--surface-3);border-radius:20px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--text-strong);border-radius:20px;transition:width .5s}
 
 /* ---------- Journey path ---------- */
 .journey{max-width:var(--maxw);margin:30px auto 0;position:relative}
@@ -81,8 +86,8 @@ body{padding:0 18px 60px;direction:rtl}
 .station.done .dot span{display:none}
 .station.done .body{opacity:.7}
 
-.station.active .dot{border-color:var(--active);background:var(--active);color:var(--btn-text);box-shadow:0 0 0 5px rgba(247,247,247,.12)}
-.station.active .body{border-color:rgba(247,247,247,.45);background:var(--surface-2)}
+.station.active .dot{border-color:var(--active);background:var(--active);color:var(--btn-text);box-shadow:0 0 0 5px var(--watermark)}
+.station.active .body{border-color:var(--text-strong);background:var(--surface-2)}
 .station.active .body .name{color:var(--text-strong);font-weight:700}
 .station.active .cta{margin-top:12px;display:inline-block;background:var(--btn-bg);color:var(--btn-text);font-weight:700;font-size:14px;padding:10px 22px;border-radius:var(--radius-pill);border:none;cursor:pointer}
 
@@ -94,8 +99,30 @@ body{padding:0 18px 60px;direction:rtl}
 .station.locked .body .name{color:var(--text-dim)}
 
 /* ---------- Footer credit ---------- */
-.credit{text-align:center;color:#56606e;font-size:12.5px;margin:36px auto 0;max-width:var(--maxw)}
+.credit{text-align:center;color:var(--text-faint);font-size:12.5px;margin:36px auto 0;max-width:var(--maxw)}
 .credit b{color:var(--text-dim)}
+
+/* ============================================================
+   רכיבי שפה מה-Figma (Orian Editorial)
+   ============================================================ */
+/* ווטרמארק סריף ענק מאחורי Hero — כמו ORIAN COHEN בדפים שלה */
+.watermark{position:absolute;inset-inline:0;top:8%;z-index:0;pointer-events:none;user-select:none;
+  font-family:var(--serif);font-weight:700;letter-spacing:.04em;color:var(--watermark);
+  font-size:clamp(64px,14vw,150px);line-height:.95;text-align:center;overflow:hidden;white-space:nowrap}
+.hero-wrap{position:relative;overflow:hidden}
+.hero-wrap > *:not(.watermark){position:relative;z-index:1}
+
+/* פס אזהרה עליון — "אזהרה: תהליך עסקי מיועד רק ל..." */
+.warnbar{background:var(--btn-bg);color:var(--btn-text);font-size:13px;font-weight:500;
+  text-align:center;padding:9px 16px}
+.warnbar b, .warnbar .red{color:var(--accent);font-weight:700}
+
+/* הדגשת מילה אדומה בתוך כותרת (המחליף של הזהב) */
+.red{color:var(--accent)}
+
+/* סקשן כהה מתחלף (סטוריטלינג/CTA) — בהיר↔כהה מתהפך עם ה-theme */
+.section-invert{background:var(--btn-bg);color:var(--btn-text);border-radius:var(--radius-card)}
+.section-invert .btn-invert{background:var(--btn-text);color:var(--btn-bg)}
 
 @media(max-width:520px){
   .hero h1{font-size:27px}

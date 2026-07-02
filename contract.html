@@ -10,10 +10,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-  :root{ --ink:#1a222e; --muted:#5a6675; --line:#e3e8ee; --navy:#1c2635; --gold:#b8932f; --soft:#f6f8fa; }
+  /* Orian Editorial · תואם design/design-system.md */
+  :root{ --ink:#171512; --muted:#5A554D; --line:#E2DCD1; --navy:#0B0A08; --gold:#E8001A; --soft:#F5F1EA; }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#eef1f4;color:var(--ink);font-family:'Heebo',sans-serif;line-height:1.7;direction:rtl;padding:24px 14px}
-  .page{max-width:780px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 8px 40px rgba(0,59,70,.10);padding:0 0 50px}
+  body{background:#EDE9E2;color:var(--ink);font-family:'Heebo',sans-serif;line-height:1.7;direction:rtl;padding:24px 14px}
+  .page{max-width:780px;margin:0 auto;background:#fff;border-radius:8px;box-shadow:0 8px 40px rgba(11,10,8,.10);padding:0 0 50px}
 
   .actbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:12px;display:flex;gap:10px;justify-content:center;border-radius:8px 8px 0 0}
   .actbar button{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:11px 26px;font-family:'Heebo';font-weight:700;font-size:14.5px;cursor:pointer}
@@ -34,10 +35,10 @@
   h2.sec{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:18px;color:var(--navy);margin:26px 0 8px;display:flex;align-items:center;gap:9px}
   h2.sec .n{flex:none;width:27px;height:27px;border-radius:7px;background:var(--navy);color:#fff;font-family:'Heebo';font-size:14px;font-weight:700;display:grid;place-items:center}
   ul.t{list-style:none;margin:6px 0;padding:0;display:flex;flex-direction:column;gap:7px}
-  ul.t li{position:relative;padding-inline-start:20px;font-size:15px;color:#27313d}
-  ul.t li::before{content:"";position:absolute;inset-inline-start:3px;top:10px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
-  ul.x li::before{background:#c0392b;border-radius:1px}
-  p.t{font-size:15px;color:#27313d;margin:6px 0}
+  ul.t li{position:relative;padding-inline-start:20px;font-size:15px;color:#171512}
+  ul.t li::before{content:"";position:absolute;inset-inline-start:3px;top:10px;width:7px;height:7px;border-radius:50%;background:var(--navy)}
+  ul.x li::before{background:#E8001A;border-radius:1px}
+  p.t{font-size:15px;color:#171512;margin:6px 0}
 
   .fill{display:inline-block;min-width:120px;border-bottom:1.5px dotted var(--navy);color:var(--muted);text-align:center;padding:0 6px}
   table.pay{width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px}
@@ -47,7 +48,7 @@
 
   .sign{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:34px;padding-top:24px;border-top:2px solid var(--line)}
   .sign .role{font-size:13.5px;color:var(--navy);font-weight:700;margin-bottom:8px}
-  .pad{border:1px dashed #b8c2cd;border-radius:8px;background:#fcfdfe;width:100%;height:120px;touch-action:none;cursor:crosshair;display:block}
+  .pad{border:1px dashed #C9C2B5;border-radius:8px;background:#FBF9F5;width:100%;height:120px;touch-action:none;cursor:crosshair;display:block}
   .pad-actions{margin:5px 0 4px}
   .pad-actions button{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;font-family:'Heebo'}
   .pad-actions .dlbtn{background:var(--navy);color:#fff;text-decoration:none;border-radius:7px;padding:8px 14px;font-weight:700;font-size:12.5px}
@@ -55,7 +56,7 @@
   .sign .ln{font-size:12.5px;color:var(--muted)}
   .sign .nm{font-weight:700;color:var(--navy);font-size:14.5px}
 
-  .foot{text-align:center;color:#9aa6b2;font-size:12px;margin-top:30px}
+  .foot{text-align:center;color:#8A847A;font-size:12px;margin-top:30px}
   .foot b{color:var(--muted)}
 
   @media(max-width:560px){ .inner{padding:14px 22px} .sign{grid-template-columns:1fr;gap:22px} }
@@ -177,8 +178,8 @@
     var bar = document.getElementById('statusBar');
     if (!el) return;
     if (ST.s1 && ST.s2 && ST.d1 && ST.d2) {
-      bar.style.background = 'rgba(58,138,109,.12)'; bar.style.borderBottomColor = '#3a8a6d';
-      el.style.color = '#2f8a5f';
+      bar.style.background = 'rgba(30,143,78,.12)'; bar.style.borderBottomColor = '#1E8F4E';
+      el.style.color = '#1E8F4E';
       el.textContent = '✓ ההסכם הושלם · שני הצדדים חתמו והורידו עותק. אפשר למחוק את הדף.';
     } else {
       var miss = [];
