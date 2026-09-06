@@ -1,13 +1,51 @@
 /* ============================================================
    המסע ל-50K · מערכת העיצוב (מקור-אמת יחיד)
-   מיתוג "Orian Editorial" · נמדל מה-Figma של המעצבת שלה
-   (figma.com/design/ecRfoyWwXTJD2Ov7luaX4H/Orian · דפי הייעוץ העסקי)
-   קרם + שחור + אדום מותג · סריף ORIAN COHEN · RTL · 2026-07-02
+
+   מיתוג פעיל: "Orian OS" · נמדל מה-CRM שלה (crmorian.web.app)
+   נייבי + ורוד · Heebo בלבד · RTL · 2026-09-06
+   הכרעת אוריאן 06.09.2026: הפורטל מתיישר לפי המערכת, לא לפי הפיגמה.
+   טוקנים מלאים ומקור המדידה: design/crm-orian-os-tokens.md
+
+   המיתוג הקודם "Orian Editorial" (קרם/שחור/אדום, Frank Ruhl) לא נמחק.
+   הוא חי תחת html[data-brand="editorial"] בהמשך הקובץ.
+   חזרה אליו = הוספת data-brand="editorial" לתגית <html>. שום דבר אחר.
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700;800&display=swap');
 
 :root, html[data-theme="light"]{
-  /* === ORIAN EDITORIAL (ברירת מחדל · נדגם מדפי הנחיתה שלה) === */
+  /* === ORIAN OS · בהיר (ברירת מחדל · נדגם ממסך הכניסה של ה-CRM) === */
+  --bg:#F9FAFB; --surface:#FFFFFF; --surface-2:#F3F4F6; --surface-3:#E5E7EB;
+  --line:rgba(30,58,95,.14);
+  --text:#1F2937; --text-dim:#6B7280; --text-faint:#9CA3AF; --text-strong:#111827;
+  --btn-bg:#1E3A5F; --btn-text:#FFFFFF;        /* primary-600 · כפתור ההתחברות ב-CRM */
+  --input-bg:#FFFFFF;
+  --done:#1E3A5F; --active:#1E3A5F;
+  --locked:#C5D8F5; --locked-bg:#F3F4F6; --locked-bd:#E5E7EB; --locked-tx:#9CA3AF;
+  --accent:#D4607E; --gold:#D4607E;            /* pink-500 · --gold נשאר alias לתאימות */
+  --watermark:rgba(30,58,95,.05);
+  --serif:'Heebo',sans-serif;                   /* ה-CRM הוא חד-גופני. אין סריף. */
+  --radius-pill:10px; --radius-card:16px; --maxw:680px;
+}
+html[data-theme="dark"]{
+  /* === ORIAN OS · כהה (הלוח הכהה מימין במסך הכניסה) === */
+  --bg:#0E1F35; --surface:#162C4A; --surface-2:#1E3A5F; --surface-3:#2D5A8E;
+  --line:rgba(197,216,245,.14);
+  --text:#E8F0FA; --text-dim:#9CBDEE; --text-faint:#6B8CB8; --text-strong:#FFFFFF;
+  --btn-bg:#4D8CE3; --btn-text:#071020;        /* primary-400 · הכחול של הלוגו */
+  --input-bg:#0B1A2C;
+  --done:#4D8CE3; --active:#4D8CE3;
+  --locked:#2D5A8E; --locked-bg:#12253D; --locked-bd:#1E3A5F; --locked-tx:#5B7A9E;
+  --accent:#E8819A; --gold:#E8819A;            /* pink-400 · הוורוד של הלוגו */
+  --watermark:rgba(232,240,250,.05);
+  --serif:'Heebo',sans-serif;
+  --radius-pill:10px; --radius-card:16px; --maxw:680px;
+}
+
+/* ============================================================
+   ARCHIVE · Orian Editorial (המיתוג הקודם, שמור ועובד)
+   הופעלה ע"י <html data-brand="editorial"> · אין צורך לגעת בשום דף אחר.
+   ============================================================ */
+html[data-brand="editorial"], html[data-brand="editorial"][data-theme="light"]{
   --bg:#EDE9E2; --surface:#F5F1EA; --surface-2:#EFEAE1; --surface-3:#E2DCD1;
   --line:rgba(11,10,8,.14);
   --text:#171512; --text-dim:#5A554D; --text-faint:#8A847A; --text-strong:#0B0A08;
@@ -15,13 +53,12 @@
   --input-bg:#F7F4EE;
   --done:#0B0A08; --active:#0B0A08;
   --locked:#B3AC9F; --locked-bg:#E7E2D8; --locked-bd:#D8D2C6; --locked-tx:#A39C8E;
-  --accent:#E8001A; --gold:#E8001A; /* אדום המותג · --gold נשאר כ-alias לתאימות */
+  --accent:#E8001A; --gold:#E8001A;
   --watermark:rgba(11,10,8,.05);
   --serif:'Frank Ruhl Libre',serif;
   --radius-pill:10px; --radius-card:14px; --maxw:680px;
 }
-html[data-theme="dark"]{
-  /* === DARK EDITORIAL · מצב לילה (הגרסה הכהה מה-Figma) === */
+html[data-brand="editorial"][data-theme="dark"]{
   --bg:#000000; --surface:#111111; --surface-2:#181818; --surface-3:#242424;
   --line:rgba(255,255,255,.12);
   --text:#E9E5DE; --text-dim:#9B968D; --text-faint:#6A655D; --text-strong:#F5F1EA;
