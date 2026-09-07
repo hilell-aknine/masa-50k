@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>שאלות לאוריאן · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  :root{--ask-bg:#061a33;--ask-card:#0b2038;--ask-pink:#fcc1cb;--ask-line:rgba(252,193,203,.16);
+        --ask-txt:#eaf1fb;--ask-dim:#93a6c4}
+  body{background:var(--ask-bg);color:var(--ask-txt);font-family:'Heebo',sans-serif}
+  .wrap{max-width:720px;margin:0 auto;padding:22px 18px 70px}
+  h1{font-size:26px;color:var(--ask-pink);margin-bottom:6px}
+  .sub{font-size:14.5px;color:var(--ask-dim);margin-bottom:22px;line-height:1.6}
+
+  .box{background:var(--ask-card);border:1px solid var(--ask-line);border-radius:16px;padding:18px 20px;margin-bottom:18px}
+  .box h2{font-size:16px;color:var(--ask-txt);margin-bottom:10px}
+  textarea{width:100%;min-height:110px;resize:vertical;padding:13px 15px;font-size:15.5px;font-family:inherit;
+    background:#061a33;color:var(--ask-txt);border:1px solid var(--ask-line);border-radius:12px;line-height:1.6}
+  textarea:focus{outline:none;border-color:var(--ask-pink)}
+  select{width:100%;margin-top:10px;padding:12px 14px;font-size:15px;font-family:inherit;
+    background:#061a33;color:var(--ask-txt);border:1px solid var(--ask-line);border-radius:12px;min-height:46px}
+  button.send{width:100%;margin-top:12px;padding:14px;font-size:16px;font-weight:800;font-family:inherit;
+    background:var(--ask-pink);color:#2a1018;border:0;border-radius:30px;min-height:50px;cursor:pointer}
+  button.send:disabled{opacity:.55;cursor:default}
+  .count{font-size:12px;color:var(--ask-dim);text-align:end;margin-top:6px}
+
+  .q{background:var(--ask-card);border:1px solid var(--ask-line);border-radius:14px;padding:15px 17px;margin-bottom:12px}
+  .q .meta{display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--ask-dim);margin-bottom:8px;flex-wrap:wrap}
+  .tag{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+  .tag.wait{background:rgba(252,193,203,.12);color:var(--ask-pink)}
+  .tag.done{background:var(--ask-pink);color:#2a1018}
+  .q .body{font-size:15px;line-height:1.65;color:var(--ask-txt)}
+  .q .ans{margin-top:12px;padding-top:12px;border-top:1px solid var(--ask-line);
+    font-size:14.5px;line-height:1.7;color:var(--ask-txt)}
+  .q .ans b{display:block;color:var(--ask-pink);font-size:12.5px;margin-bottom:5px}
+  .empty{padding:26px;text-align:center;color:var(--ask-dim);font-size:14.5px;line-height:1.7}
+
+  .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--ask-pink);color:#2a1018;
+    padding:13px 18px;border-radius:14px;font-size:14px;font-weight:600;display:none;z-index:400}
+  .toast.on{display:block}
+  .credit{text-align:center;font-size:12px;color:var(--ask-dim);margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>שאלות לאוריאן</h1>
+  <p class="sub">כתבי כאן כל שאלה שעולה לך תוך כדי המסע. אוריאן עוברת על השאלות ועונה, ותשובות שיכולות לעזור לכולן מתפרסמות כאן.</p>
+
+  <div class="box">
+    <h2>שאלה חדשה</h2>
+    <select id="station"><option value="">כללי · לא קשור לתחנה מסוימת</option></select>
+    <textarea id="body" placeholder="מה השאלה שלך?" maxlength="1200"></textarea>
+    <div class="count"><span id="cnt">0</span> / 1200</div>
+    <button class="send" id="send" type="button">שליחת השאלה</button>
+  </div>
+
+  <div class="box">
+    <h2>השאלות שלי</h2>
+    <div id="mine"><div class="empty">טוען...</div></div>
+  </div>
+
+  <div class="box">
+    <h2>שאלות ותשובות לכולן</h2>
+    <div id="pub"><div class="empty">טוען...</div></div>
+  </div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/nav.js"></script>
+<script src="data/content.js"></script>
+<script>
+document.addEventListener('oriane:ready', function (ev) {
+  'use strict';
+  var db = window.ORIANE_DB, me = ev.detail;
+  var Q = db.collection('questions');
+
+  function esc(t){ var d=document.createElement('div'); d.textContent=t==null?'':t; return d.innerHTML; }
+  function toast(t){ var e=document.getElementById('toast'); e.textContent=t; e.className='toast on';
+                     setTimeout(function(){ e.className='toast'; },2500); }
+  function when(ts){ if(!ts||!ts.toDate) return ''; var d=ts.toDate();
+                     return d.toLocaleDateString('he-IL'); }
+
+  // רשימת התחנות לבחירה
+  var sel = document.getElementById('station');
+  ((window.COURSE && window.COURSE.allStations) || []).forEach(function (s) {
+    var o = document.createElement('option');
+    o.value = s.id; o.textContent = 'תחנה ' + s.id + ' · ' + s.name;
+    sel.appendChild(o);
+  });
+
+  var body = document.getElementById('body');
+  body.addEventListener('input', function () {
+    document.getElementById('cnt').textContent = body.value.length;
+  });
+
+  // ---------- שליחה ----------
+  document.getElementById('send').addEventListener('click', function () {
+    var b = this, txt = (body.value || '').trim();
+    if (txt.length < 5) return toast('כתבי שאלה קצת יותר מפורטת');
+    b.disabled = true; b.textContent = 'שולח...';
+    Q.add({
+      uid: me.uid,
+      email: me.email,
+      name: me.name || '',
+      stationId: sel.value ? parseInt(sel.value, 10) : null,
+      body: txt,
+      answer: null,
+      published: false,
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      body.value = ''; document.getElementById('cnt').textContent = '0';
+      toast('השאלה נשלחה. אוריאן תעבור עליה.');
+    }).catch(function (e) {
+      toast('השליחה נכשלה'); console.error(e);
+    }).then(function () { b.disabled = false; b.textContent = 'שליחת השאלה'; });
+  });
+
+  function card(d, showWho) {
+    var answered = !!d.answer;
+    return '<div class="q">' +
+      '<div class="meta">' +
+        '<span class="tag ' + (answered ? 'done' : 'wait') + '">' + (answered ? 'נענתה' : 'ממתינה') + '</span>' +
+        (d.stationId ? '<span>תחנה ' + d.stationId + '</span>' : '<span>כללי</span>') +
+        '<span>' + when(d.created_at) + '</span>' +
+        (showWho && d.name ? '<span>· ' + esc(d.name) + '</span>' : '') +
+      '</div>' +
+      '<div class="body">' + esc(d.body) + '</div>' +
+      (answered ? '<div class="ans"><b>אוריאן עונה</b>' + esc(d.answer) + '</div>' : '') +
+    '</div>';
+  }
+
+  // ---------- השאלות שלי ----------
+  Q.where('uid', '==', me.uid).onSnapshot(function (snap) {
+    var docs = snap.docs.map(function (d) { return d.data(); });
+    document.getElementById('mine').innerHTML = docs.length
+      ? docs.map(function (d) { return card(d, false); }).join('')
+      : '<div class="empty">עוד לא שאלת כלום.<br>זה המקום לשאול, ואין שאלה קטנה מדי.</div>';
+  }, function (e) { console.error(e); });
+
+  // ---------- שאלות שפורסמו ----------
+  Q.where('published', '==', true).onSnapshot(function (snap) {
+    var docs = snap.docs.map(function (d) { return d.data(); });
+    document.getElementById('pub').innerHTML = docs.length
+      ? docs.map(function (d) { return card(d, true); }).join('')
+      : '<div class="empty">עוד לא פורסמו שאלות ותשובות.<br>ברגע שאוריאן תענה על שאלה שרלוונטית לכולן, היא תופיע כאן.</div>';
+  }, function (e) { console.error(e); });
+});
+</script>
+</body>
+</html>

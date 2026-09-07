@@ -93,6 +93,26 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ---------- שאלות לאוריאן ----------
+    // תלמיד עם גישה פעילה שולח שאלה, ורואה רק את השאלות שלו עצמו.
+    // מנהל רואה הכל ועונה. תלמיד לא יכול לערוך תשובה או לסמן מפורסם,
+    // ולא יכול לכתוב שאלה בשם מישהו אחר.
+    match /questions/{qid} {
+      allow read: if isAdmin()
+                  || (signedIn() && resource.data.uid == request.auth.uid)
+                  || (signedIn() && resource.data.published == true);
+
+      allow create: if hasAccess()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.answer == null
+                    && request.resource.data.published == false
+                    && request.resource.data.body is string
+                    && request.resource.data.body.size() > 4
+                    && request.resource.data.body.size() < 1200;
+
+      allow update, delete: if isAdmin();
+    }
+
     // ---------- ברירת מחדל: חסום ----------
     match /{document=**} {
       allow read, write: if false;
