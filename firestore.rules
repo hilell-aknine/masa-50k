@@ -85,6 +85,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ---------- הגדרות אתר ----------
+    // מסמך יחיד (settings/site) עם קישור "השארת פרטים לתהליך עסקי" וכד'.
+    // כל מחובר רשאי לקרוא כדי להציג את הכפתור בסרגל הניווט. רק מנהל כותב.
+    match /settings/{doc} {
+      allow read:  if signedIn();
+      allow write: if isAdmin();
+    }
+
     // ---------- ברירת מחדל: חסום ----------
     match /{document=**} {
       allow read, write: if false;

@@ -1,0 +1,21 @@
+/* ============================================================
+   ערכת "המסע ל-50K" · רקע נייבי-כהה + כותרות ורוד בהיר
+   -----------------------------------------------------------------
+   טוענים אחרי css/portal.css. דורס את טוקני הבסיס שלו, כך שכל
+   הרכיבים הקיימים (כרטיסים, כפתורים, תגיות, מסכי נעילה וכו')
+   מקבלים את המראה החדש בלי לשכתב אף class.
+   שימוש: <link rel="stylesheet" href="css/journey-theme.css"> אחרי portal.css.
+   ============================================================ */
+:root, html[data-theme="light"], html[data-theme="dark"]{
+  --bg:#010f24; --surface:#0a1c38; --surface-2:#0d2242; --surface-3:#13294a;
+  --line:rgba(252,193,203,.16);
+  --text:#cdd9ec; --text-dim:#93a6c4; --text-faint:#5f7290; --text-strong:#fcc1cb;
+  --btn-bg:#fcc1cb; --btn-text:#2a1018;
+  --input-bg:#071b38;
+  --done:#fcc1cb; --active:#fcc1cb;
+  --locked:#3a5478; --locked-bg:#0d2038; --locked-bd:#1c3352; --locked-tx:#5f7290;
+  --accent:#fcc1cb; --gold:#fcc1cb;
+  --watermark:rgba(252,193,203,.05);
+}
+html,body{background:var(--bg) !important}
+.theme-toggle{display:none !important}

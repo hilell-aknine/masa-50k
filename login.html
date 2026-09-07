@@ -42,14 +42,25 @@
 <div class="wrap">
   <div class="card">
     <h1>כניסה למסע</h1>
-    <p class="sub">הכניסה מיועדת למשתתפים מאושרים בלבד. בחרו את הדרך הנוחה לכם, ואין צורך בסיסמה.</p>
+    <p class="sub">הכניסה מיועדת למשתתפים מאושרים בלבד. בחרו את הדרך הנוחה לכם.</p>
 
     <button id="btn-google" class="google" type="button">
       <svg viewBox="0 0 48 48" width="19" height="19" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.1 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9.1h12.4c-.5 2.9-2.1 5.3-4.6 6.9l7.2 5.6c4.2-3.9 6.6-9.6 6.6-16.4z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4l-7.9-6.1C1 16.9 0 20.3 0 24s1 7.1 2.6 10.2l7.9-5.5z"/><path fill="#34A853" d="M24 48c6.3 0 11.7-2.1 15.6-5.7l-7.2-5.6c-2 1.4-4.7 2.3-8.4 2.3-6.3 0-11.6-3.6-13.5-8.8l-7.9 5.5C6.5 42.6 14.6 48 24 48z"/></svg>
       המשיכו עם Google
     </button>
 
-    <div class="or"><span>או עם מייל</span></div>
+    <div class="or"><span>או עם מייל וסיסמה</span></div>
+
+    <form id="fpw" novalidate>
+      <label for="pw-email">כתובת מייל</label>
+      <input id="pw-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+      <label for="pw-pass" style="margin-top:12px">סיסמה</label>
+      <input id="pw-pass" type="password" autocomplete="current-password" placeholder="••••••••" required minlength="6">
+      <button id="btn-pw" type="submit">כניסה עם סיסמה</button>
+      <button id="btn-pw-signup" type="button" class="google" style="margin-top:10px">אין לי חשבון · הרשמה עם מייל וסיסמה</button>
+    </form>
+
+    <div class="or"><span>או עם קישור למייל</span></div>
 
     <form id="f" novalidate>
       <label for="email">כתובת מייל</label>
@@ -135,6 +146,72 @@
       }
     });
   }
+
+  // ---------- כניסה/הרשמה עם מייל וסיסמה ----------
+  var fpw = document.getElementById('fpw');
+  var pwEmail = document.getElementById('pw-email');
+  var pwPass = document.getElementById('pw-pass');
+  var btnPw = document.getElementById('btn-pw');
+  var btnPwSignup = document.getElementById('btn-pw-signup');
+
+  function pwCreds() {
+    var v = (pwEmail.value || '').trim().toLowerCase();
+    var p = (pwPass.value || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
+      say('נראה שכתובת המייל אינה תקינה. בדקו שוב.', 'err');
+      return null;
+    }
+    if (p.length < 6) {
+      say('הסיסמה חייבת להכיל לפחות 6 תווים.', 'err');
+      return null;
+    }
+    return { email: v, pass: p };
+  }
+
+  function pwError(e) {
+    var known = {
+      'auth/user-not-found': 'לא נמצא חשבון עם המייל הזה. אפשר להירשם למטה.',
+      'auth/wrong-password': 'הסיסמה שגויה. נסו שוב.',
+      'auth/invalid-credential': 'מייל או סיסמה שגויים. נסו שוב.',
+      'auth/email-already-in-use': 'כבר קיים חשבון עם המייל הזה. נסו להתחבר במקום להירשם.',
+      'auth/weak-password': 'הסיסמה חלשה מדי. בחרו סיסמה עם לפחות 6 תווים.',
+      'auth/operation-not-allowed': 'כניסה עם מייל וסיסמה עדיין לא הופעלה במערכת. פנו למנהל המערכת.',
+      'auth/too-many-requests': 'יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.'
+    };
+    say((e && known[e.code]) || 'משהו השתבש. נסו שוב.', 'err');
+    console.error(e);
+  }
+
+  fpw.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var c = pwCreds();
+    if (!c) return;
+    btnPw.disabled = true;
+    btnPw.textContent = 'מתחבר...';
+    auth.signInWithEmailAndPassword(c.email, c.pass).then(function (res) {
+      return afterSignIn(res.user);
+    }).catch(function (e) {
+      pwError(e);
+    }).finally(function () {
+      btnPw.disabled = false;
+      btnPw.textContent = 'כניסה עם סיסמה';
+    });
+  });
+
+  btnPwSignup.addEventListener('click', function () {
+    var c = pwCreds();
+    if (!c) return;
+    btnPwSignup.disabled = true;
+    btnPwSignup.textContent = 'נרשם...';
+    auth.createUserWithEmailAndPassword(c.email, c.pass).then(function (res) {
+      return afterSignIn(res.user);
+    }).catch(function (e) {
+      pwError(e);
+    }).finally(function () {
+      btnPwSignup.disabled = false;
+      btnPwSignup.textContent = 'אין לי חשבון · הרשמה עם מייל וסיסמה';
+    });
+  });
 
   // ---------- כניסה עם גוגל ----------
   document.getElementById('btn-google').addEventListener('click', function () {

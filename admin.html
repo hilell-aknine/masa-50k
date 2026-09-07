@@ -58,6 +58,16 @@
   </div>
 
   <div class="panel">
+    <h2>כפתור "השארת פרטים לתהליך עסקי"</h2>
+    <p class="help">קישור חיצוני שיוצג ככפתור בסרגל הניווט העליון בכל האתר (למשל טופס ליד או קישור לוואטסאפ/יומן פגישות). השאירו את הקישור ריק כדי להסתיר את הכפתור.</p>
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">קישור (URL)</label>
+    <input type="text" id="bizUrl" placeholder="https://..." style="direction:ltr;text-align:left;margin-bottom:12px">
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">טקסט הכפתור</label>
+    <input type="text" id="bizLabel" placeholder="השארת פרטים לתהליך עסקי" style="margin-bottom:12px">
+    <button id="btn-biz-save">שמירה</button>
+  </div>
+
+  <div class="panel">
     <h2>פתיחת גישה מראש</h2>
     <p class="help">הדביקו כתובות מייל, אחת בכל שורה. מי שייכנס עם כתובת מהרשימה יקבל גישה פעילה אוטומטית, בלי שתצטרכו לאשר אותו ידנית.</p>
     <textarea id="invites" placeholder="dana@example.com&#10;yossi@example.com"></textarea>
@@ -87,6 +97,26 @@ document.addEventListener('oriane:ready', function (ev) {
   var db = window.ORIANE_DB, me = ev.detail, rows = [];
 
   document.getElementById('whoami').textContent = 'מחובר כ־' + me.email;
+
+  // ---------- כפתור "השארת פרטים לתהליך עסקי" ----------
+  var bizRef = db.collection('settings').doc('site');
+  bizRef.get().then(function (snap) {
+    var s = snap.exists ? snap.data() : {};
+    document.getElementById('bizUrl').value = s.businessLinkUrl || '';
+    document.getElementById('bizLabel').value = s.businessLinkLabel || '';
+  }).catch(function (e) { console.error(e); });
+
+  document.getElementById('btn-biz-save').addEventListener('click', function () {
+    var btn = this; btn.disabled = true;
+    var url = (document.getElementById('bizUrl').value || '').trim();
+    var label = (document.getElementById('bizLabel').value || '').trim();
+    bizRef.set({ businessLinkUrl: url, businessLinkLabel: label }, { merge: true }).then(function () {
+      toast('הקישור נשמר');
+    }).catch(function (e) {
+      toast('השמירה נכשלה'); console.error(e);
+    }).then(function () { btn.disabled = false; });
+  });
+
 
   function toast(t) {
     var el = document.getElementById('toast');
