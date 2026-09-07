@@ -1,175 +1,164 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
 <head>
-  <meta name="robots" content="noindex, nofollow">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>הדרך ל-50K · התחברות</title>
-  <link rel="stylesheet" href="css/portal.css">
-  <script src="js/icons.js"></script>
-  <style>
-    /* ---------- מסך התחברות (רכיבים ייחודיים · יורש :root מ-portal.css) ---------- */
-    body{padding:0;min-height:100svh;display:grid;place-items:center}
-    .auth-wrap{width:100%;max-width:420px;padding:24px 18px;margin:0 auto}
-
-    .auth-logo{text-align:center;margin-bottom:26px}
-    .auth-logo .name{font-size:30px;font-weight:800;color:var(--text-strong);letter-spacing:-.5px}
-    .auth-logo .tag{font-size:14px;color:var(--text-dim);margin-top:6px}
-
-    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:22px 20px}
-
-    /* טאבים */
-    .tabs{display:flex;gap:6px;background:var(--input-bg);border:1px solid var(--line);border-radius:var(--radius-pill);padding:4px;margin-bottom:22px}
-    .tabs button{flex:1;min-height:44px;border:none;background:transparent;color:var(--text-dim);font-family:inherit;font-size:15px;font-weight:600;border-radius:var(--radius-pill);cursor:pointer;transition:.2s}
-    .tabs button.on{background:var(--btn-bg);color:var(--btn-text);font-weight:700}
-
-    /* שדות */
-    .field{margin-bottom:14px}
-    .field label{display:block;font-size:13px;color:var(--text-dim);margin-bottom:6px;font-weight:500}
-    .field input{width:100%;min-height:48px;background:var(--input-bg);border:1px solid var(--line);border-radius:12px;color:var(--text);font-family:inherit;font-size:16px;padding:0 14px;direction:rtl;transition:border-color .2s}
-    .field input::placeholder{color:var(--text-faint)}
-    .field input:focus{outline:none;border-color:var(--text-strong)}
-    .field input.err{border-color:#E8001A}
-
-    .btn-primary{width:100%;min-height:50px;background:var(--btn-bg);color:var(--btn-text);font-family:inherit;font-size:16px;font-weight:700;border:none;border-radius:var(--radius-pill);cursor:pointer;margin-top:8px}
-    .btn-primary:active{opacity:.85}
-
-    .err-msg{color:#E8001A;font-size:13px;text-align:center;margin-top:12px;min-height:18px}
-
-    .note{text-align:center;color:var(--text-faint);font-size:12px;margin-top:16px}
-
-    .hide{display:none}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>כניסה · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .wrap{max-width:420px;margin:0 auto;padding:40px 0 60px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:26px 22px}
+  h1{font-size:26px;color:var(--text-strong);margin-bottom:6px}
+  .sub{font-size:14.5px;color:var(--text-dim);margin-bottom:22px;line-height:1.55}
+  label{display:block;font-size:13.5px;color:var(--text-dim);margin-bottom:7px}
+  input{width:100%;padding:14px 15px;font-size:16px;font-family:inherit;direction:ltr;text-align:left;
+    background:var(--input-bg);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-pill);min-height:48px}
+  input:focus{outline:none;border-color:var(--btn-bg)}
+  button{width:100%;margin-top:14px;padding:15px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;
+    background:var(--btn-bg);color:var(--btn-text);border:0;border-radius:var(--radius-pill);min-height:48px;transition:.15s}
+  button:disabled{opacity:.55;cursor:default}
+  .msg{margin-top:16px;padding:14px 16px;border-radius:var(--radius-card);font-size:14.5px;line-height:1.6;display:none}
+  .msg.on{display:block}
+  .msg.ok{background:var(--surface-2);border:1px solid var(--btn-bg);color:var(--text-strong)}
+  .msg.err{background:var(--surface-2);border:1px solid var(--accent);color:var(--text-strong)}
+  .hint{margin-top:18px;font-size:13px;color:var(--text-faint);line-height:1.6;text-align:center}
+  .credit{margin-top:30px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+</style>
 </head>
 <body>
-  <div class="auth-wrap">
+<div class="wrap">
+  <div class="card">
+    <h1>כניסה למסע</h1>
+    <p class="sub">הזינו את כתובת המייל שלכם ונשלח אליכם קישור כניסה. אין צורך בסיסמה.</p>
 
-    <div class="auth-logo">
-      <div class="name">הדרך ל-50K</div>
-      <div class="tag">המסע שלך מתחיל כאן</div>
-    </div>
+    <form id="f" novalidate>
+      <label for="email">כתובת מייל</label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+      <button id="btn" type="submit">שלחו לי קישור כניסה</button>
+    </form>
 
-    <div class="card">
-      <div class="tabs">
-        <button id="tab-login" class="on" type="button">כניסה</button>
-        <button id="tab-signup" type="button">הרשמה</button>
-      </div>
-
-      <!-- כניסה -->
-      <form id="form-login" novalidate>
-        <div class="field">
-          <label for="login-email">אימייל</label>
-          <input id="login-email" type="email" inputmode="email" autocomplete="email" placeholder="name@email.com">
-        </div>
-        <div class="field">
-          <label for="login-pass">סיסמה</label>
-          <input id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••">
-        </div>
-        <button class="btn-primary" type="submit">כניסה למסע</button>
-        <div class="err-msg" id="login-err"></div>
-      </form>
-
-      <!-- הרשמה -->
-      <form id="form-signup" class="hide" novalidate>
-        <div class="field">
-          <label for="signup-name">שם מלא</label>
-          <input id="signup-name" type="text" autocomplete="name" placeholder="השם שלך">
-        </div>
-        <div class="field">
-          <label for="signup-email">אימייל</label>
-          <input id="signup-email" type="email" inputmode="email" autocomplete="email" placeholder="name@email.com">
-        </div>
-        <div class="field">
-          <label for="signup-pass">סיסמה</label>
-          <input id="signup-pass" type="password" autocomplete="new-password" placeholder="בחר סיסמה">
-        </div>
-        <button class="btn-primary" type="submit">פתח חשבון</button>
-        <div class="err-msg" id="signup-err"></div>
-      </form>
-
-      <div class="note">התחברות אמיתית תחובר ל-Supabase</div>
-    </div>
-
-    <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
-    <a href="admin.html" style="display:block;text-align:center;color:var(--text-faint);font-size:11.5px;text-decoration:none;margin-top:8px;opacity:.7"><span data-ic="key"></span> כניסת מנהל</a>
+    <div class="msg" id="msg"></div>
+    <p class="hint">הקישור תקף לזמן מוגבל ומיועד למכשיר שממנו ביקשתם אותו.</p>
   </div>
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
 
-  <script src="js/theme.js"></script>
-  <script src="js/users.js"></script>
-  <script src="data/content.js"></script>
-  <script>
-    (function(){
-      // שם המוצר מתוך מקור-האמת היחיד (fallback למקרה שלא נטען)
-      try{
-        var pn = window.COURSE && window.COURSE.brand && window.COURSE.brand.productName;
-        if(pn){ document.querySelector('.auth-logo .name').textContent = pn; document.title = pn + ' · התחברות'; }
-      }catch(e){}
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/theme.js"></script>
+<script>
+(function () {
+  'use strict';
+  firebase.initializeApp(window.ORIANE_FB);
+  var auth = firebase.auth();
+  var db = firebase.firestore();
 
-      var tabLogin  = document.getElementById('tab-login');
-      var tabSignup = document.getElementById('tab-signup');
-      var formLogin = document.getElementById('form-login');
-      var formSignup= document.getElementById('form-signup');
+  var f = document.getElementById('f');
+  var email = document.getElementById('email');
+  var btn = document.getElementById('btn');
+  var msg = document.getElementById('msg');
+  var KEY = 'oriane_pending_email';
 
-      function show(which){
-        var login = which === 'login';
-        tabLogin.classList.toggle('on', login);
-        tabSignup.classList.toggle('on', !login);
-        formLogin.classList.toggle('hide', !login);
-        formSignup.classList.toggle('hide', login);
-      }
-      tabLogin.addEventListener('click', function(){ show('login'); });
-      tabSignup.addEventListener('click', function(){ show('signup'); });
+  function say(text, kind) {
+    msg.textContent = text;
+    msg.className = 'msg on ' + kind;
+  }
 
-      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var params = new URLSearchParams(location.search);
+  var next = params.get('next') || 'index.html';
 
-      function valid(el){
-        var ok = el.value.trim().length > 0;
-        el.classList.toggle('err', !ok);
-        return ok;
-      }
-      function validEmail(el){
-        var ok = EMAIL_RE.test(el.value.trim());
-        el.classList.toggle('err', !ok);
-        return ok;
-      }
+  // הודעה מותאמת למי שהשער העיף החוצה
+  var why = params.get('why');
+  if (why === 'access-pending') {
+    say('החשבון שלכם נוצר וממתין לאישור. תקבלו הודעה ברגע שהגישה תיפתח.', 'err');
+  } else if (why === 'access-revoked') {
+    say('הגישה לחשבון הזה נסגרה. אם זו טעות, פנו אלינו.', 'err');
+  } else if (why === 'not-admin') {
+    say('האזור הזה מיועד לניהול בלבד.', 'err');
+  }
 
-      // דמו: ולידציה בסיסית (שדות מלאים + פורמט אימייל) · שומר אימייל ל-localStorage · מעביר הלאה
-      formLogin.addEventListener('submit', function(e){
-        e.preventDefault();
-        var err = document.getElementById('login-err'); err.textContent = '';
-        var email = document.getElementById('login-email');
-        var pass  = document.getElementById('login-pass');
-        var okEmail = validEmail(email), okPass = valid(pass);
-        if(!okEmail || !okPass){
-          err.textContent = !okEmail ? 'נא להזין כתובת אימייל תקינה' : 'נא להזין סיסמה';
-          return;
-        }
-        var u = window.authUser ? window.authUser(email.value, pass.value) : null;
-        if(!u){
-          err.textContent = 'אימייל או סיסמה שגויים';
-          return;
-        }
-        localStorage.setItem('oriane_user', u.email);
-        localStorage.setItem('oriane_role', u.role || 'student');
-        if(u.role === 'admin'){ localStorage.setItem('oriane_admin','1'); }
-        window.location.href = 'index.html';
+  // ---------- חזרה מהקישור במייל ----------
+  if (auth.isSignInWithEmailLink(location.href)) {
+    var saved = localStorage.getItem(KEY);
+    if (!saved) {
+      saved = window.prompt('לאישור הזהות, הזינו שוב את כתובת המייל שאליה נשלח הקישור');
+    }
+    if (saved) {
+      say('מאמת את הקישור, רגע אחד...', 'ok');
+      auth.signInWithEmailLink(saved, location.href).then(function (res) {
+        localStorage.removeItem(KEY);
+        var u = res.user;
+        var ref = db.collection('profiles').doc(u.uid);
+        return ref.get().then(function (snap) {
+          if (snap.exists) return;
+          // בודק אם המנהל הזמין את המייל הזה מראש.
+          // הכללים אוכפים את זה שוב בצד השרת, אז שקר כאן לא יעזור לאיש.
+          return db.collection('invites').doc((u.email || '').toLowerCase()).get()
+            .then(function (inv) { return inv.exists; })
+            .catch(function () { return false; })
+            .then(function (invited) {
+              return ref.set({
+                email: u.email,
+                full_name: '',
+                phone: '',
+                role: 'student',
+                access: invited ? 'active' : 'pending',
+                source: invited ? 'invite' : 'self',
+                created_at: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            });
+        }).then(function () {
+          return ref.get();
+        }).then(function (snap) {
+          var p = snap.data() || {};
+          if (p.access === 'active') {
+            location.replace(next);
+          } else {
+            say('נכנסתם בהצלחה. החשבון ממתין לאישור גישה, ותקבלו הודעה כשייפתח.', 'ok');
+          }
+        });
+      }).catch(function (e) {
+        say('הקישור אינו תקף יותר. בקשו קישור חדש למטה.', 'err');
+        console.error(e);
       });
+    }
+  }
 
-      formSignup.addEventListener('submit', function(e){
-        e.preventDefault();
-        var err = document.getElementById('signup-err'); err.textContent = '';
-        var name  = document.getElementById('signup-name');
-        var email = document.getElementById('signup-email');
-        var pass  = document.getElementById('signup-pass');
-        var okName = valid(name), okEmail = validEmail(email), okPass = valid(pass);
-        if(!okName || !okEmail || !okPass){
-          err.textContent = !okEmail ? 'נא להזין כתובת אימייל תקינה' : 'נא למלא את כל השדות';
-          return;
-        }
-        localStorage.setItem('oriane_user', email.value.trim());
-        window.location.href = 'onboarding.html';
-      });
-    })();
-  </script>
+  // ---------- כבר מחובר ----------
+  auth.onAuthStateChanged(function (u) {
+    if (!u || auth.isSignInWithEmailLink(location.href)) return;
+    db.collection('profiles').doc(u.uid).get().then(function (snap) {
+      if (snap.exists && snap.data().access === 'active') location.replace(next);
+    });
+  });
+
+  // ---------- שליחת הקישור ----------
+  f.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var v = (email.value || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
+      return say('נראה שכתובת המייל אינה תקינה. בדקו שוב.', 'err');
+    }
+    btn.disabled = true;
+    btn.textContent = 'שולח...';
+    auth.sendSignInLinkToEmail(v, {
+      url: location.origin + location.pathname + '?next=' + encodeURIComponent(next),
+      handleCodeInApp: true
+    }).then(function () {
+      localStorage.setItem(KEY, v);
+      say('שלחנו קישור כניסה אל ' + v + '. פתחו אותו מהמכשיר הזה. אם הוא לא מגיע, בדקו בספאם.', 'ok');
+      btn.textContent = 'נשלח ✓';
+    }).catch(function (e) {
+      btn.disabled = false;
+      btn.textContent = 'שלחו לי קישור כניסה';
+      say('לא הצלחנו לשלוח כרגע. נסו שוב בעוד רגע.', 'err');
+      console.error(e);
+    });
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,93 @@
+rules_version = '2';
+
+// המסע ל-50K · כללי אבטחה
+//
+// עיקרון: נכשל-סגור. הכלל האחרון חוסם כל מה שלא הותר במפורש למעלה.
+// תפקיד וסטטוס גישה נשמרים במסמך הפרופיל, ומשתמש לא יכול לגעת בהם.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- עזרים ----------
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function me() {
+      return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/profiles/$(request.auth.uid))
+        && me().role == 'admin';
+    }
+
+    // גישה פעילה = מותר לצרוך תוכן
+    function hasAccess() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/profiles/$(request.auth.uid))
+        && me().access == 'active';
+    }
+
+    // השדות שמשתמש רגיל לעולם לא משנה בעצמו
+    function keepsProtectedFields() {
+      return request.resource.data.role   == resource.data.role
+          && request.resource.data.access == resource.data.access;
+    }
+
+    // ---------- פרופילים ----------
+    match /profiles/{uid} {
+      allow read: if request.auth.uid == uid || isAdmin();
+
+      // יצירה עצמית בהרשמה: תמיד תלמיד, לעולם לא אדמין.
+      // גישה פעילה מותרת רק אם קיימת הזמנה עם המייל הזה, שרק מנהל יכול ליצור.
+      // ככה רשימת ההזמנות עובדת באמת בלי פונקציות ענן, ובלי לתת למשתמש
+      // לפתוח גישה לעצמו. האכיפה בצד השרת.
+      allow create: if request.auth.uid == uid
+                    && request.resource.data.role == 'student'
+                    && (
+                         request.resource.data.access == 'pending'
+                         || (
+                              request.resource.data.access == 'active'
+                              && exists(/databases/$(database)/documents/invites/$(request.auth.token.email))
+                            )
+                       );
+
+      // עדכון עצמי: שם וטלפון בלבד. תפקיד וגישה מוקפאים.
+      allow update: if (request.auth.uid == uid && keepsProtectedFields())
+                    || isAdmin();
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------- התקדמות בקורס ----------
+    match /progress/{uid}/stations/{stationId} {
+      allow read, write: if request.auth.uid == uid && hasAccess();
+      allow read:        if isAdmin();
+    }
+
+    // ---------- הערות פרטיות ----------
+    // פרטי לחלוטין. גם אדמין לא רואה. החלטה מכוונת, לא פספוס.
+    // hasAccess נדרש גם כאן: בלעדיו מי שנתקע ב-pending יכול לכתוב למסד
+    // דרך ה-API בלי לעבור את השער, ולשרוף את תקרת הכתיבות היומית של Spark.
+    match /notes/{uid}/stations/{stationId} {
+      allow read, write: if request.auth.uid == uid && hasAccess();
+    }
+
+    // ---------- הזמנות ----------
+    // הלל מזין מייל, נוצרת הזמנה, ומי שנרשם עם אותו מייל מקבל גישה.
+    // רק מנהל יוצר ומנהל הזמנות.
+    // משתמש מחובר רשאי לבדוק אך ורק אם קיימת הזמנה עבור המייל שלו עצמו,
+    // ולא לראות את הרשימה כולה.
+    match /invites/{email} {
+      allow read:  if isAdmin() || (signedIn() && request.auth.token.email == email);
+      allow write: if isAdmin();
+    }
+
+    // ---------- ברירת מחדל: חסום ----------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

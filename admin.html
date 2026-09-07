@@ -1,55 +1,198 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
 <head>
-  <meta name="robots" content="noindex, nofollow">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>כניסת מנהל · המסע ל-50K</title>
-  <link rel="stylesheet" href="css/portal.css">
-  <script src="js/icons.js"></script>
-  <style>
-    body{display:grid;place-items:center;min-height:100vh;padding:24px}
-    .card{width:100%;max-width:340px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:30px 26px;text-align:center}
-    .lock{width:54px;height:54px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-size:24px;margin:0 auto 14px}
-    h1{font-size:20px;font-weight:800;color:var(--text-strong)}
-    .sub{font-size:13px;color:var(--text-dim);margin-top:6px}
-    input{width:100%;margin-top:20px;background:var(--input-bg);border:1px solid var(--line);border-radius:12px;padding:13px 15px;color:var(--text);font-family:Inter,sans-serif;font-size:15px;outline:none;text-align:center;letter-spacing:2px}
-    input::placeholder{color:var(--text-faint);letter-spacing:0}
-    button{width:100%;margin-top:12px;background:var(--btn-bg);color:var(--btn-text);border:none;border-radius:var(--radius-pill);padding:14px;font-family:Inter,sans-serif;font-weight:800;font-size:15px;cursor:pointer;min-height:50px}
-    .err{color:#E8001A;font-size:13px;margin-top:10px;min-height:18px}
-    .note{font-size:11.5px;color:var(--text-faint);margin-top:16px;line-height:1.6}
-    .back{display:block;margin-top:14px;color:var(--text-dim);font-size:13px;text-decoration:none}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ניהול משתמשים · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .wrap{max-width:900px;margin:0 auto;padding:26px 0 70px}
+  h1{font-size:26px;color:var(--text-strong)}
+  .sub{font-size:14px;color:var(--text-dim);margin-top:5px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:14px 16px}
+  .stat b{display:block;font-size:24px;color:var(--text-strong);line-height:1.2}
+  .stat span{font-size:12.5px;color:var(--text-dim)}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px;margin-bottom:18px}
+  .panel h2{font-size:16px;color:var(--text-strong);margin-bottom:10px}
+  .panel p.help{font-size:13.5px;color:var(--text-dim);margin-bottom:12px;line-height:1.55}
+  textarea,input[type=search]{width:100%;padding:12px 14px;font-size:15px;font-family:inherit;
+    background:var(--input-bg);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-pill)}
+  textarea{min-height:96px;direction:ltr;text-align:left;resize:vertical}
+  button{padding:12px 18px;font-size:14.5px;font-weight:600;font-family:inherit;cursor:pointer;min-height:44px;
+    background:var(--btn-bg);color:var(--btn-text);border:0;border-radius:var(--radius-pill);transition:.15s}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  button:disabled{opacity:.5;cursor:default}
+
+  table{width:100%;border-collapse:collapse;margin-top:6px}
+  th{text-align:right;font-size:12.5px;color:var(--text-dim);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line)}
+  td{padding:12px 6px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+  td.em{direction:ltr;text-align:right;font-size:13px;color:var(--text-dim)}
+  .pill{display:inline-block;padding:4px 11px;border-radius:var(--radius-pill);font-size:12px;font-weight:600}
+  .pill.active{background:var(--btn-bg);color:var(--btn-text)}
+  .pill.pending{background:var(--surface-3);color:var(--text-dim)}
+  .pill.revoked{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .row-actions{display:flex;gap:7px;flex-wrap:wrap}
+  .row-actions button{padding:8px 13px;font-size:13px;min-height:40px}
+  .empty{padding:26px;text-align:center;color:var(--text-faint);font-size:14.5px}
+  .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--btn-bg);color:var(--btn-text);
+    padding:13px 18px;border-radius:var(--radius-card);font-size:14px;display:none;z-index:400;max-width:90vw}
+  .toast.on{display:block}
+  .credit{margin-top:26px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+  @media(max-width:640px){ th:nth-child(3),td:nth-child(3){display:none} }
+</style>
 </head>
 <body>
-  <div class="card">
-    <div class="lock"><span data-ic="key"></span></div>
-    <h1>כניסת מנהל</h1>
-    <div class="sub">אזור ניהול הקורס · גישה מורשית בלבד</div>
-    <input id="email" type="email" placeholder="אימייל מנהל" autocomplete="off" style="text-align:center;letter-spacing:0;margin-top:14px">
-    <input id="pass" type="password" placeholder="סיסמה" autocomplete="off">
-    <button onclick="enter()">כניסה לדשבורד</button>
-    <div class="err" id="err"></div>
-    <div class="note">דמו · בגרסה המלאה הכניסה מאובטחת דרך Supabase לפי הרשאת admin בלבד.</div>
-    <a class="back" href="index.html">→ חזרה למסע</a>
+<div class="wrap">
+  <h1>ניהול משתמשים</h1>
+  <p class="sub" id="whoami"></p>
+
+  <div class="stats">
+    <div class="stat"><b id="s-total">–</b><span>סה"כ נרשמו</span></div>
+    <div class="stat"><b id="s-active">–</b><span>גישה פעילה</span></div>
+    <div class="stat"><b id="s-pending">–</b><span>ממתינים לאישור</span></div>
+    <div class="stat"><b id="s-revoked">–</b><span>גישה סגורה</span></div>
   </div>
 
-  <script src="js/users.js"></script>
-  <script>
-    // דמו · בפרודקשן ההזדהות עוברת ל-Supabase Auth (role=admin)
-    function enter(){
-      var email = document.getElementById('email').value;
-      var pass  = document.getElementById('pass').value;
-      var u = window.authUser ? window.authUser(email, pass) : null;
-      if (u && u.role === 'admin'){
-        try { localStorage.setItem('oriane_user', u.email); localStorage.setItem('oriane_admin','1'); localStorage.setItem('oriane_role','admin'); } catch(e){}
-        location.href = 'dashboard.html';
-      } else {
-        document.getElementById('err').textContent = u ? 'אין הרשאת מנהל לחשבון זה' : 'אימייל או סיסמה שגויים';
-      }
+  <div class="panel">
+    <h2>פתיחת גישה מראש</h2>
+    <p class="help">הדביקו כתובות מייל, אחת בכל שורה. מי שייכנס עם כתובת מהרשימה יקבל גישה פעילה אוטומטית, בלי שתצטרכו לאשר אותו ידנית.</p>
+    <textarea id="invites" placeholder="dana@example.com&#10;yossi@example.com"></textarea>
+    <div style="margin-top:11px"><button id="btn-invite">הוסיפו לרשימה</button></div>
+  </div>
+
+  <div class="panel">
+    <h2>משתמשים</h2>
+    <input type="search" id="q" placeholder="חיפוש לפי מייל או שם" style="margin-bottom:12px">
+    <div id="list"><div class="empty">טוען...</div></div>
+  </div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/theme.js"></script>
+<script>
+document.addEventListener('oriane:ready', function (ev) {
+  'use strict';
+  var db = window.ORIANE_DB, me = ev.detail, rows = [];
+
+  document.getElementById('whoami').textContent = 'מחובר כ־' + me.email;
+
+  function toast(t) {
+    var el = document.getElementById('toast');
+    el.textContent = t; el.className = 'toast on';
+    setTimeout(function () { el.className = 'toast'; }, 2600);
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+  function when(ts) {
+    if (!ts || !ts.toDate) return '–';
+    var d = ts.toDate();
+    return d.toLocaleDateString('he-IL') + ' ' + d.toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'});
+  }
+
+  var LABEL = { active:'פעילה', pending:'ממתין', revoked:'סגורה' };
+
+  function render() {
+    var q = (document.getElementById('q').value || '').trim().toLowerCase();
+    var view = rows.filter(function (r) {
+      if (!q) return true;
+      return (r.email || '').toLowerCase().indexOf(q) !== -1
+          || (r.full_name || '').toLowerCase().indexOf(q) !== -1;
+    });
+
+    var counts = { active:0, pending:0, revoked:0 };
+    rows.forEach(function (r) { if (counts[r.access] !== undefined) counts[r.access]++; });
+    document.getElementById('s-total').textContent   = rows.length;
+    document.getElementById('s-active').textContent  = counts.active;
+    document.getElementById('s-pending').textContent = counts.pending;
+    document.getElementById('s-revoked').textContent = counts.revoked;
+
+    var box = document.getElementById('list');
+    if (!view.length) {
+      box.innerHTML = '<div class="empty">' + (rows.length ? 'אין תוצאה לחיפוש הזה' : 'עדיין לא נרשם אף אחד') + '</div>';
+      return;
     }
-    document.getElementById('pass').addEventListener('keydown', function(e){ if(e.key==='Enter') enter(); });
-  </script>
-  <script src="js/theme.js"></script>
+
+    box.innerHTML =
+      '<table><thead><tr><th>מייל</th><th>סטטוס</th><th>נכנס לאחרונה</th><th>פעולות</th></tr></thead><tbody>' +
+      view.map(function (r) {
+        var a = r.access || 'pending';
+        var acts = a === 'active'
+          ? '<button class="ghost" data-act="revoked" data-id="' + r.id + '">סגירת גישה</button>'
+          : '<button data-act="active" data-id="' + r.id + '">פתיחת גישה</button>';
+        return '<tr>' +
+            '<td class="em">' + esc(r.email) + (r.full_name ? '<br><span style="color:var(--text)">' + esc(r.full_name) + '</span>' : '') + '</td>' +
+            '<td><span class="pill ' + a + '">' + (LABEL[a] || a) + '</span>' +
+              (r.role === 'admin' ? ' <span class="pill active">מנהל</span>' : '') + '</td>' +
+            '<td>' + when(r.last_seen_at) + '</td>' +
+            '<td><div class="row-actions">' + acts + '</div></td>' +
+          '</tr>';
+      }).join('') + '</tbody></table>';
+
+    Array.prototype.forEach.call(box.querySelectorAll('button[data-act]'), function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-id'), act = b.getAttribute('data-act');
+        if (id === me.uid) return toast('אי אפשר לשנות את הגישה של עצמך');
+        b.disabled = true;
+        db.collection('profiles').doc(id).update({ access: act }).then(function () {
+          toast(act === 'active' ? 'הגישה נפתחה' : 'הגישה נסגרה');
+        }).catch(function (e) {
+          b.disabled = false; toast('הפעולה נכשלה'); console.error(e);
+        });
+      });
+    });
+  }
+
+  document.getElementById('q').addEventListener('input', render);
+
+  // מאזין חי. שינוי במסד מתעדכן מיד על המסך בלי רענון.
+  db.collection('profiles').orderBy('created_at', 'desc').onSnapshot(function (snap) {
+    rows = snap.docs.map(function (d) { var o = d.data(); o.id = d.id; return o; });
+    render();
+  }, function (e) {
+    document.getElementById('list').innerHTML = '<div class="empty">שגיאה בטעינת המשתמשים</div>';
+    console.error(e);
+  });
+
+  // ---------- הזמנות ----------
+  document.getElementById('btn-invite').addEventListener('click', function () {
+    var btn = this;
+    var raw = document.getElementById('invites').value || '';
+    var list = raw.split(/[\s,;]+/).map(function (s) { return s.trim().toLowerCase(); })
+                  .filter(function (s) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s); });
+    var uniq = list.filter(function (v, i) { return list.indexOf(v) === i; });
+    if (!uniq.length) return toast('לא זוהתה אף כתובת מייל תקינה');
+
+    btn.disabled = true;
+    var batch = db.batch();
+    uniq.forEach(function (em) {
+      batch.set(db.collection('invites').doc(em), {
+        email: em,
+        invited_by: me.email,
+        created_at: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    });
+    batch.commit().then(function () {
+      document.getElementById('invites').value = '';
+      toast('נוספו ' + uniq.length + ' כתובות לרשימה');
+    }).catch(function (e) {
+      toast('ההוספה נכשלה'); console.error(e);
+    }).then(function () { btn.disabled = false; });
+  });
+});
+</script>
 </body>
 </html>
