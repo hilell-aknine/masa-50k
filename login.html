@@ -30,6 +30,13 @@
   .hint{margin-top:18px;font-size:13px;color:var(--text-faint);line-height:1.6;text-align:center}
   .credit{margin-top:30px;text-align:center;font-size:12.5px;color:var(--text-faint)}
 </style>
+<script>
+/* לוכד קוד הפניה מהכתובת ושומר אותו עד ההרשמה בפועל */
+(function(){try{
+  var r=new URLSearchParams(location.search).get('ref');
+  if(r && /^[A-Za-z0-9_-]{4,32}$/.test(r)) localStorage.setItem('oriane_ref',r);
+}catch(e){}})();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -113,6 +120,7 @@
             role: 'student',
             access: invited ? 'active' : 'pending',
             source: invited ? 'invite' : 'self',
+            referred_by: (localStorage.getItem('oriane_ref') || null),
             created_at: firebase.firestore.FieldValue.serverTimestamp()
           });
         });

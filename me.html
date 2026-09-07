@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>האזור שלי · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:18px 0 70px}
+  h1{font-size:24px;color:var(--text-strong);margin-bottom:4px}
+  .sub{font-size:14px;color:var(--text-dim);margin-bottom:20px}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px 20px;margin-bottom:16px}
+  .card h2{font-size:15px;color:var(--text-strong);margin-bottom:4px}
+  .card p.help{font-size:13.5px;color:var(--text-dim);line-height:1.6;margin-bottom:14px}
+
+  label{display:block;font-size:13px;color:var(--text-dim);margin:12px 0 6px}
+  input{width:100%;padding:13px 14px;font-size:16px;font-family:inherit;
+    background:var(--input-bg);color:var(--text);border:1px solid var(--line);
+    border-radius:var(--radius-pill);min-height:48px}
+  input:focus{outline:none;border-color:var(--btn-bg)}
+  input[readonly]{color:var(--text-dim);direction:ltr;text-align:left}
+  button.save{width:100%;margin-top:16px;padding:14px;font-size:15px;font-weight:700;font-family:inherit;
+    background:var(--btn-bg);color:var(--btn-text);border:0;border-radius:var(--radius-pill);
+    min-height:48px;cursor:pointer}
+  button.save:disabled{opacity:.55;cursor:default}
+
+  .prog{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .prog b{font-size:22px;color:var(--text-strong)}
+  .prog span{font-size:13px;color:var(--text-dim)}
+  .bar{height:8px;background:var(--surface-3);border-radius:20px;overflow:hidden}
+  .bar > i{display:block;height:100%;background:var(--btn-bg);border-radius:20px;transition:width .5s}
+
+  .reflink{display:flex;gap:8px;margin-top:6px}
+  .reflink input{direction:ltr;text-align:left;font-size:13.5px}
+  .reflink button{flex:none;padding:0 16px;font-size:13.5px;font-weight:600;font-family:inherit;
+    background:var(--surface-2);color:var(--text-strong);border:1px solid var(--line);
+    border-radius:var(--radius-pill);min-height:48px;cursor:pointer}
+  .refstat{margin-top:14px;font-size:14px;color:var(--text)}
+  .refstat b{color:var(--text-strong);font-size:18px}
+
+  .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--btn-bg);color:var(--btn-text);
+    padding:13px 18px;border-radius:var(--radius-card);font-size:14px;display:none;z-index:400}
+  .toast.on{display:block}
+  .credit{margin-top:26px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>האזור שלי</h1>
+  <p class="sub" id="hello">טוען...</p>
+
+  <div class="card">
+    <h2>ההתקדמות שלי</h2>
+    <div class="prog"><b id="p-num">–</b><span id="p-txt"></span></div>
+    <div class="bar"><i id="p-bar" style="width:0%"></i></div>
+  </div>
+
+  <div class="card">
+    <h2>הפרטים שלי</h2>
+    <p class="help">השם והטלפון משמשים אותנו רק כדי ליצור איתכם קשר. אי אפשר לשנות את כתובת המייל, כי היא זו שמזהה אתכם בכניסה.</p>
+    <label for="name">שם מלא</label>
+    <input id="name" type="text" autocomplete="name" placeholder="השם שלכם">
+    <label for="phone">טלפון</label>
+    <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000">
+    <label for="mail">מייל</label>
+    <input id="mail" type="email" readonly>
+    <button class="save" id="save" type="button">שמירה</button>
+  </div>
+
+  <div class="card">
+    <h2>הזמנת חברים</h2>
+    <p class="help">זה הקישור האישי שלכם. מי שיצטרף דרכו יירשם על שמכם.</p>
+    <div class="reflink">
+      <input id="ref" type="text" readonly>
+      <button id="copy" type="button">העתקה</button>
+    </div>
+    <div class="refstat" id="refstat">הצטרפו דרככם עד כה: <b id="refcount">0</b></div>
+  </div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/theme.js"></script>
+<script src="data/content.js"></script>
+<script>
+document.addEventListener('oriane:ready', function (ev) {
+  'use strict';
+  var db = window.ORIANE_DB, me = ev.detail;
+  var ref = db.collection('profiles').doc(me.uid);
+
+  function toast(t) {
+    var el = document.getElementById('toast');
+    el.textContent = t; el.className = 'toast on';
+    setTimeout(function () { el.className = 'toast'; }, 2400);
+  }
+
+  document.getElementById('mail').value = me.email || '';
+
+  ref.get().then(function (snap) {
+    var p = snap.data() || {};
+    document.getElementById('hello').textContent =
+      p.full_name ? ('שלום ' + p.full_name) : 'ברוכים הבאים למסע';
+    document.getElementById('name').value = p.full_name || '';
+    document.getElementById('phone').value = p.phone || '';
+
+    // קוד ההפניה נגזר מהמזהה, כך שהוא יציב ולא דורש שדה נוסף במסד
+    var code = me.uid.slice(0, 8);
+    var base = location.origin + location.pathname.replace(/me\.html$/, 'landing.html');
+    document.getElementById('ref').value = base + '?ref=' + code;
+
+    // הספירה זמינה רק למנהל, כי הכללים אוסרים על תלמיד לקרוא פרופילים
+    // של אחרים, ובצדק. לתלמיד לא מציגים מספר שאי אפשר לאמת.
+    if (me.isAdmin) {
+      db.collection('profiles').where('referred_by', '==', code).get()
+        .then(function (q) { document.getElementById('refcount').textContent = q.size; })
+        .catch(function () { document.getElementById('refstat').style.display = 'none'; });
+    } else {
+      document.getElementById('refstat').style.display = 'none';
+    }
+  });
+
+  // ---------- התקדמות ----------
+  var total = (window.COURSE && window.COURSE.totalStations) || 12;
+  db.collection('progress').doc(me.uid).collection('stations').get().then(function (q) {
+    var done = q.size;
+    document.getElementById('p-num').textContent = done + ' / ' + total;
+    document.getElementById('p-txt').textContent = done ? 'תחנות שהושלמו' : 'עוד לא התחלתם. התחנה הראשונה מחכה.';
+    document.getElementById('p-bar').style.width = Math.round(done / total * 100) + '%';
+  }).catch(function () {
+    document.getElementById('p-num').textContent = '0 / ' + total;
+    document.getElementById('p-txt').textContent = 'עוד לא התחלתם';
+  });
+
+  // ---------- שמירה ----------
+  document.getElementById('save').addEventListener('click', function () {
+    var b = this; b.disabled = true;
+    ref.update({
+      full_name: (document.getElementById('name').value || '').trim(),
+      phone: (document.getElementById('phone').value || '').trim()
+    }).then(function () {
+      toast('הפרטים נשמרו');
+    }).catch(function (e) {
+      toast('השמירה נכשלה'); console.error(e);
+    }).then(function () { b.disabled = false; });
+  });
+
+  // ---------- העתקת הקישור ----------
+  document.getElementById('copy').addEventListener('click', function () {
+    var i = document.getElementById('ref');
+    i.select(); i.setSelectionRange(0, 99999);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(i.value).then(function () { toast('הקישור הועתק'); });
+    } else {
+      document.execCommand('copy'); toast('הקישור הועתק');
+    }
+  });
+});
+</script>
+</body>
+</html>

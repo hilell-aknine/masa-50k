@@ -164,6 +164,13 @@
 
   .credit{text-align:center;color:var(--text-faint);font-size:12px;padding:28px 0 38px;font-family:var(--serif);font-weight:700}
 </style>
+<script>
+/* לוכד קוד הפניה מהכתובת ושומר אותו עד ההרשמה בפועל */
+(function(){try{
+  var r=new URLSearchParams(location.search).get('ref');
+  if(r && /^[A-Za-z0-9_-]{4,32}$/.test(r)) localStorage.setItem('oriane_ref',r);
+}catch(e){}})();
+</script>
 </head>
 <body>
 
