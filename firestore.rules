@@ -94,18 +94,16 @@ service cloud.firestore {
     }
 
     // ---------- שאלות לאוריאן ----------
-    // תלמיד עם גישה פעילה שולח שאלה, ורואה רק את השאלות שלו עצמו.
-    // מנהל רואה הכל ועונה. תלמיד לא יכול לערוך תשובה או לסמן מפורסם,
-    // ולא יכול לכתוב שאלה בשם מישהו אחר.
+    // תלמידה רואה אך ורק את השאלות שהיא עצמה שלחה.
+    // אין שום מסלול שבו תלמידה רואה שאלה של מישהי אחרת — גם לא "מפורסמת".
+    // השאלות נצפות ונענות אך ורק מדשבורד הניהול. החלטת הלל 07.09.
     match /questions/{qid} {
       allow read: if isAdmin()
-                  || (signedIn() && resource.data.uid == request.auth.uid)
-                  || (signedIn() && resource.data.published == true);
+                  || (signedIn() && resource.data.uid == request.auth.uid);
 
       allow create: if hasAccess()
                     && request.resource.data.uid == request.auth.uid
                     && request.resource.data.answer == null
-                    && request.resource.data.published == false
                     && request.resource.data.body is string
                     && request.resource.data.body.size() > 4
                     && request.resource.data.body.size() < 1200;

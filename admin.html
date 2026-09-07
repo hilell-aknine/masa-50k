@@ -75,7 +75,7 @@
 
   <div class="panel" id="q-panel" style="display:none;border-color:var(--accent)">
     <h2>שאלות שממתינות לתשובה <span id="q-n" class="pill pending"></span></h2>
-    <p class="help">שאלות שתלמידות שלחו. אפשר לענות, ולסמן תשובה כמפורסמת כדי שכולן יראו אותה.</p>
+    <p class="help">שאלות שתלמידות שלחו. התשובה מוצגת לשואלת בלבד. אף משתתפת אחרת לא רואה שאלות של אחרות.</p>
     <div id="q-list"></div>
   </div>
 
@@ -254,14 +254,12 @@ document.addEventListener('oriane:ready', function (ev) {
       return '<div style="border-bottom:1px solid var(--line);padding:14px 0">' +
         '<div style="font-size:12px;color:var(--text-dim);margin-bottom:6px">' +
           esc(q.name || q.email || '') + (q.stationId ? ' · תחנה ' + q.stationId : ' · כללי') +
-          (q.published ? ' · <b style="color:var(--btn-bg)">מפורסמת</b>' : '') +
         '</div>' +
         '<div style="font-size:14.5px;line-height:1.6;margin-bottom:8px">' + esc(q.body) + '</div>' +
         '<textarea data-ans="' + q.id + '" placeholder="התשובה שלך..." ' +
           'style="min-height:70px">' + esc(q.answer || '') + '</textarea>' +
         '<div class="row-actions" style="margin-top:8px">' +
           '<button data-save="' + q.id + '">שמירת תשובה</button>' +
-          '<button class="ghost" data-pub="' + q.id + '">' + (q.published ? 'הסרה מהפרסום' : 'פרסום לכולן') + '</button>' +
         '</div></div>';
     }).join('');
 
@@ -273,17 +271,6 @@ document.addEventListener('oriane:ready', function (ev) {
         db.collection('questions').doc(id).update({ answer: v || null })
           .then(function () { toast('התשובה נשמרה'); })
           .catch(function (e) { toast('השמירה נכשלה'); console.error(e); })
-          .then(function () { b.disabled = false; });
-      });
-    });
-    Array.prototype.forEach.call(document.querySelectorAll('[data-pub]'), function (b) {
-      b.addEventListener('click', function () {
-        var id = b.getAttribute('data-pub');
-        var cur = all.filter(function (x) { return x.id === id; })[0] || {};
-        b.disabled = true;
-        db.collection('questions').doc(id).update({ published: !cur.published })
-          .then(function () { toast(cur.published ? 'הוסרה מהפרסום' : 'פורסמה לכולן'); })
-          .catch(function (e) { toast('הפעולה נכשלה'); console.error(e); })
           .then(function () { b.disabled = false; });
       });
     });

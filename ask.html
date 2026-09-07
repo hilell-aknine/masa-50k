@@ -46,7 +46,7 @@
 <body>
 <div class="wrap">
   <h1>שאלות לאוריאן</h1>
-  <p class="sub">כתבי כאן כל שאלה שעולה לך תוך כדי המסע. אוריאן עוברת על השאלות ועונה, ותשובות שיכולות לעזור לכולן מתפרסמות כאן.</p>
+  <p class="sub">כתבי כאן כל שאלה שעולה לך תוך כדי המסע. אוריאן עוברת על השאלות ועונה לך אישית. השאלות שלך פרטיות ואף משתתפת אחרת לא רואה אותן.</p>
 
   <div class="box">
     <h2>שאלה חדשה</h2>
@@ -59,11 +59,6 @@
   <div class="box">
     <h2>השאלות שלי</h2>
     <div id="mine"><div class="empty">טוען...</div></div>
-  </div>
-
-  <div class="box">
-    <h2>שאלות ותשובות לכולן</h2>
-    <div id="pub"><div class="empty">טוען...</div></div>
   </div>
 
   <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
@@ -114,7 +109,6 @@ document.addEventListener('oriane:ready', function (ev) {
       stationId: sel.value ? parseInt(sel.value, 10) : null,
       body: txt,
       answer: null,
-      published: false,
       created_at: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function () {
       body.value = ''; document.getElementById('cnt').textContent = '0';
@@ -124,14 +118,14 @@ document.addEventListener('oriane:ready', function (ev) {
     }).then(function () { b.disabled = false; b.textContent = 'שליחת השאלה'; });
   });
 
-  function card(d, showWho) {
+  function card(d) {
     var answered = !!d.answer;
     return '<div class="q">' +
       '<div class="meta">' +
         '<span class="tag ' + (answered ? 'done' : 'wait') + '">' + (answered ? 'נענתה' : 'ממתינה') + '</span>' +
         (d.stationId ? '<span>תחנה ' + d.stationId + '</span>' : '<span>כללי</span>') +
         '<span>' + when(d.created_at) + '</span>' +
-        (showWho && d.name ? '<span>· ' + esc(d.name) + '</span>' : '') +
+        
       '</div>' +
       '<div class="body">' + esc(d.body) + '</div>' +
       (answered ? '<div class="ans"><b>אוריאן עונה</b>' + esc(d.answer) + '</div>' : '') +
@@ -142,17 +136,10 @@ document.addEventListener('oriane:ready', function (ev) {
   Q.where('uid', '==', me.uid).onSnapshot(function (snap) {
     var docs = snap.docs.map(function (d) { return d.data(); });
     document.getElementById('mine').innerHTML = docs.length
-      ? docs.map(function (d) { return card(d, false); }).join('')
+      ? docs.map(function (d) { return card(d); }).join('')
       : '<div class="empty">עוד לא שאלת כלום.<br>זה המקום לשאול, ואין שאלה קטנה מדי.</div>';
   }, function (e) { console.error(e); });
 
-  // ---------- שאלות שפורסמו ----------
-  Q.where('published', '==', true).onSnapshot(function (snap) {
-    var docs = snap.docs.map(function (d) { return d.data(); });
-    document.getElementById('pub').innerHTML = docs.length
-      ? docs.map(function (d) { return card(d, true); }).join('')
-      : '<div class="empty">עוד לא פורסמו שאלות ותשובות.<br>ברגע שאוריאן תענה על שאלה שרלוונטית לכולן, היא תופיע כאן.</div>';
-  }, function (e) { console.error(e); });
 });
 </script>
 </body>
