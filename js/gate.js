@@ -25,7 +25,10 @@
   }
 
   function out(reason) {
-    location.replace(LOGIN + '?next=' + encodeURIComponent(here) + '&why=' + encodeURIComponent(reason));
+    // חשוב: לשמור גם את ה-query. בלעדיו קישור ל-?id=8 היה מחזיר
+    // את המשתמש אחרי ההתחברות לתחנה ריקה במקום לתחנה שביקש.
+    var target = here + location.search;
+    location.replace(LOGIN + '?next=' + encodeURIComponent(target) + '&why=' + encodeURIComponent(reason));
   }
 
   var CFG = window.ORIANE_FB;

@@ -68,7 +68,9 @@
   }
 
   var params = new URLSearchParams(location.search);
+  // מגן מפני הפניה לאתר זר: מקבל רק שם דף פנימי, לא כתובת מלאה
   var next = params.get('next') || 'index.html';
+  if (!/^[a-z0-9_-]+\.html(\?[^#]*)?$/i.test(next)) next = 'index.html';
 
   // הודעה מותאמת למי שהשער העיף החוצה
   var why = params.get('why');
