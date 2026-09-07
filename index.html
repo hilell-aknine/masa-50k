@@ -118,15 +118,10 @@
 </head>
 <body>
 
-<div class="devbar">דמו פנימי · שמות התחנות זמניים · יושלמו מתוכן הקורס</div>
-
 <div class="wrap">
   <div class="hero">
-    <div class="side-note right">ילדים גדולים<br>מתחילים בצעד קטן</div>
-    <div class="side-note left">Dream<br>Learn<br>Do<br>Repeat ♡</div>
-    <div class="kick">Small Steps ♥ Big Results</div>
-    <h1>ברוכה הבאה למסע שלך!</h1>
-    <div class="sub">כאן תמצאי את כל הפרקים, הכלים וההליווי בדרך לגרסה הכי טובה שלך.</div>
+    <h1>The Road to 50K</h1>
+    <div class="sub">כל הפרקים, הכלים והליווי במקום אחד.</div>
     <a class="cta" href="#" id="ctaContinue">המשך לאן שהפסקת →</a>
 
     <div class="progress-box">
@@ -147,11 +142,6 @@
   </div>
 
   <div class="features">
-    <a class="feat" href="#" id="featCourse">
-      <div class="ic-box"><span data-ic="book" style="width:20px;height:20px"></span></div>
-      <div class="t">הקורס שלי</div>
-      <div class="m">המשך ללמוד</div>
-    </a>
     <a class="feat" href="#">
       <span class="soon">בקרוב</span>
       <div class="ic-box"><span data-ic="cap" style="width:20px;height:20px"></span></div>
@@ -172,7 +162,6 @@
     </a>
   </div>
 
-  <div class="tagline">A better you is a brighter world ♥</div>
   <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
 </div>
 
@@ -258,7 +247,10 @@
     document.getElementById('goalSub').textContent = left > 0 ? `עוד ${left} תחנות והגעת לפסגה` : 'הגעת לפסגה · 50K';
     const nextId = Math.min(done + 1, TOTAL);
     document.getElementById('ctaContinue').href = 'station.html?id=' + nextId;
-    document.getElementById('featCourse').href = 'station.html?id=' + nextId;
+    // כרטיס "הקורס שלי" הוסר בבקשת אוריאן [פגישה 07.09, 20:02].
+    // נשמרת בדיקת קיום כדי שהסרת אלמנט לא תפיל את כל הסקריפט.
+    var fc = document.getElementById('featCourse');
+    if (fc) fc.href = 'station.html?id=' + nextId;
   }
 
   render();
