@@ -78,6 +78,7 @@
         '<div class="menu">' +
           link('index.html', 'מסע הבית', here === 'index.html') +
           link('me.html', 'האזור שלי', here === 'me.html') +
+          link('ask.html', 'שאלות', here === 'ask.html') +
           (me.isAdmin ? link('admin.html', 'ניהול', here === 'admin.html' || here === 'dashboard.html') : '') +
         '</div>' +
         '<span id="onavBizSlot"></span>' +

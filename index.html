@@ -45,6 +45,23 @@
   .hero .cta:active{transform:scale(.97)}
 
   /* ---------- progress ---------- */
+  /* באנר "המשך לצפות" בסגנון נטפליקס · בקשת אוריאן [פגישה 02:02] */
+  .nextban{display:flex;gap:0;align-items:stretch;max-width:560px;margin:22px auto 0;
+    background:var(--hp-card);border:1px solid var(--hp-line);border-radius:18px;overflow:hidden;
+    cursor:pointer;transition:.18s;text-align:start}
+  .nextban:hover{border-color:var(--hp-pink);transform:translateY(-2px);
+    box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .nextban .th{position:relative;flex:0 0 172px;background:#0d2242 center/cover no-repeat}
+  .nextban .th .pl{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:30px;
+    text-shadow:0 2px 12px rgba(0,0,0,.7)}
+  .nextban .tx{flex:1;padding:15px 18px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+  .nextban .kick{font-size:11px;letter-spacing:2px;color:var(--hp-pink);font-weight:700}
+  .nextban .nm{font-size:17px;font-weight:800;color:#eaf1fb;line-height:1.3}
+  .nextban .sub2{font-size:12.5px;color:#93a6c4}
+  @media(max-width:520px){
+    .nextban{flex-direction:column}
+    .nextban .th{flex:none;height:150px}
+  }
   .progress-box{background:var(--hp-card);border:1px solid var(--hp-line);border-radius:16px;padding:15px 20px;max-width:520px;margin:24px auto 0}
   .progress-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
   .progress-top .label{font-size:13px;color:var(--hp-text-dim);font-weight:500}
@@ -122,8 +139,6 @@
   <div class="hero">
     <h1>The Road to 50K</h1>
     <div class="sub">כל הפרקים, הכלים והליווי במקום אחד.</div>
-    <a class="cta" href="#" id="ctaContinue">המשך לאן שהפסקת →</a>
-
     <div class="progress-box">
       <div class="progress-top">
         <span class="label">ההתקדמות שלך</span>
@@ -131,6 +146,16 @@
       </div>
       <div class="bar"><span id="pfill"></span></div>
     </div>
+
+    <div class="nextban" id="nextBan" style="display:none">
+      <div class="th" id="nbThumb"><span class="pl">▶</span></div>
+      <div class="tx">
+        <span class="kick" id="nbKick">המשך לאן שהפסקת</span>
+        <span class="nm" id="nbName"></span>
+        <span class="sub2" id="nbSub"></span>
+      </div>
+    </div>
+    <a class="cta" href="#" id="ctaContinue" style="display:none">המשך לאן שהפסקת →</a>
   </div>
 
   <div class="road-section" id="journey"></div>
@@ -166,6 +191,7 @@
 </div>
 
 <script src="data/content.js"></script>
+<script src="js/search.js"></script>
 <script>
   const KEY = 'oriane_journey_progress';
   const CH = window.COURSE.chapters;
@@ -247,6 +273,38 @@
     document.getElementById('goalSub').textContent = left > 0 ? `עוד ${left} תחנות והגעת לפסגה` : 'הגעת לפסגה · 50K';
     const nextId = Math.min(done + 1, TOTAL);
     document.getElementById('ctaContinue').href = 'station.html?id=' + nextId;
+
+    // ---------- באנר "המשך לצפות" ----------
+    // מציג את השיעור הבא עם התמונה הממוזערת שלו מיוטיוב.
+    // אם אין וידאו לתחנה הבאה, נופל חזרה לכפתור הטקסטואלי.
+    (function () {
+      var all = (window.COURSE && window.COURSE.allStations) || [];
+      var next = all.filter(function (s) { return s.id === nextId; })[0];
+      var ban = document.getElementById('nextBan');
+      var cta = document.getElementById('ctaContinue');
+      if (!next || !ban) return;
+
+      var yt = next.youtubeId;
+      var label = next.name, sub = next.tier || '';
+      var href = 'station.html?id=' + next.id;
+
+      // אם לתחנה יש שיעורים, מצביעים על השיעור הראשון שלה
+      if (next.lessons && next.lessons.length) {
+        yt = next.lessons[0].youtubeId || yt;
+        label = next.lessons[0].n || label;
+        sub = next.name + ' · ' + next.lessons.length + ' שיעורים';
+        href += '&l=1';
+      }
+      if (!yt) { cta.style.display = ''; return; }   // אין וידאו — נשארים עם הכפתור
+
+      document.getElementById('nbThumb').style.backgroundImage =
+        'url(https://i.ytimg.com/vi/' + encodeURIComponent(yt) + '/mqdefault.jpg)';
+      document.getElementById('nbKick').textContent = done ? 'המשך לאן שהפסקת' : 'מתחילים כאן';
+      document.getElementById('nbName').textContent = label;
+      document.getElementById('nbSub').textContent = sub;
+      ban.style.display = '';
+      ban.addEventListener('click', function () { location.href = href; });
+    })();
     // כרטיס "הקורס שלי" הוסר בבקשת אוריאן [פגישה 07.09, 20:02].
     // נשמרת בדיקת קיום כדי שהסרת אלמנט לא תפיל את כל הסקריפט.
     var fc = document.getElementById('featCourse');

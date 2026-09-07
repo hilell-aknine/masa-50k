@@ -38,18 +38,33 @@
     .gains li::before{content:"✓";position:absolute;inset-inline-start:0;top:6px;color:var(--btn-bg);font-weight:800;font-size:13px}
 
     /* חוברת עבודה */
-    /* רשימת שיעורים בתוך תחנה */
-    .lessons{max-width:var(--maxw);margin:18px auto 0}
-    .lessons h3{font-size:14px;color:var(--text-dim);font-weight:600;margin-bottom:10px}
-    .lesson-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
-    .lesson{display:flex;justify-content:space-between;align-items:center;gap:12px;
-      background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);
-      padding:14px 16px;cursor:pointer;transition:.15s;min-height:44px}
-    .lesson:hover{border-color:var(--accent)}
-    .lesson.on{border-color:var(--btn-bg);background:var(--surface-2);box-shadow:inset 3px 0 0 var(--accent)}
-    .lesson .l-name{font-size:15px;color:var(--text);font-weight:500}
-    .lesson.on .l-name{color:var(--text-strong);font-weight:600}
-    .lesson .l-min{font-size:12.5px;color:var(--text-faint);white-space:nowrap}
+    /* קרוסלת שיעורים בתוך תחנה */
+    .lessons{max-width:var(--maxw);margin:20px auto 0}
+    .lessons .lh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:11px}
+    .lessons h3{font-size:14.5px;color:var(--text-strong);font-weight:700}
+    .lessons .hint{font-size:11.5px;color:var(--text-faint)}
+    .lesson-rail{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;scrollbar-width:thin}
+    .lesson-rail::-webkit-scrollbar{height:6px}
+    .lesson-rail::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:20px}
+    .lcard{flex:0 0 208px;scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);
+      border-radius:var(--radius-card);overflow:hidden;cursor:pointer;transition:.16s;text-align:start}
+    .lcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+    .lcard.on{border-color:var(--btn-bg);box-shadow:0 0 0 1px var(--btn-bg) inset}
+    .lcard .thumb{position:relative;width:100%;aspect-ratio:16/9;background:var(--surface-3);
+      background-size:cover;background-position:center}
+    .lcard .thumb .num{position:absolute;inset-inline-start:8px;top:8px;min-width:22px;height:22px;
+      border-radius:11px;background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:700;
+      display:grid;place-items:center;padding:0 7px}
+    .lcard .thumb .min{position:absolute;inset-inline-end:8px;bottom:8px;background:rgba(0,0,0,.7);
+      color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:5px}
+    .lcard .thumb .play{position:absolute;inset:0;display:grid;place-items:center;
+      color:#fff;font-size:26px;opacity:0;transition:.16s;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+    .lcard:hover .thumb .play{opacity:1}
+    .lcard .body{padding:11px 12px}
+    .lcard .nm{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.4}
+    .lcard.on .nm{color:var(--text-strong);font-weight:700}
+    .lcard .st{display:block;font-size:11px;color:var(--text-faint);margin-top:4px}
     .workbook{margin:18px auto 0}
     .btn-wb{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:12px 20px;border-radius:var(--radius-pill);min-height:44px;text-decoration:none}
     .btn-wb.on{background:var(--surface-2);color:var(--text-strong);border:1px solid var(--line)}
@@ -106,6 +121,7 @@
   <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
 
   <script src="data/content.js"></script>
+<script src="js/search.js"></script>
   <script>
   (function(){
     var PROGRESS_KEY = 'oriane_journey_progress';
@@ -160,10 +176,17 @@
 
     // אזור וידאו
     var videoHtml;
-    if (station.youtubeId) {
+    // אם יש שיעורים, הנגן פותח את השיעור שנבחר בכתובת
+    var openId = station.youtubeId;
+    if (station.lessons && station.lessons.length) {
+      var li = Math.max(0, (parseInt(params.get('l'), 10) || 1) - 1);
+      if (li >= station.lessons.length) li = 0;
+      openId = station.lessons[li].youtubeId || openId;
+    }
+    if (openId) {
       videoHtml =
         '<div class="video">' +
-          '<iframe id="stFrame" src="https://www.youtube.com/embed/' + encodeURIComponent(station.youtubeId) + '" ' +
+          '<iframe id="stFrame" src="https://www.youtube.com/embed/' + encodeURIComponent(openId) + '" ' +
             'title="' + esc(station.name) + '" allowfullscreen ' +
             'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>' +
         '</div>';
@@ -172,20 +195,33 @@
         '<div class="video ph"><div class="phtxt"><span data-ic="play"></span> כאן ייכנס הסרטון של התחנה</div></div>';
     }
 
-    // רשימת שיעורים בתוך התחנה (מוצגת רק כשיש יותר מסרטון אחד)
+    // קרוסלת שיעורים · לחיצה נכנסת לשיעור ספציפי (?l=N בכתובת)
+    var lessonIdx = Math.max(0, (parseInt(params.get('l'), 10) || 1) - 1);
     var lessonsHtml = '';
     if (station.lessons && station.lessons.length) {
+      if (lessonIdx >= station.lessons.length) lessonIdx = 0;
       lessonsHtml =
         '<div class="lessons">' +
-          '<h3>שיעורי התחנה · ' + station.lessons.length + '</h3>' +
-          '<ol class="lesson-list">' +
+          '<div class="lh">' +
+            '<h3>שיעורי התחנה · ' + station.lessons.length + '</h3>' +
+            '<span class="hint">גללו לצדדים</span>' +
+          '</div>' +
+          '<div class="lesson-rail" id="lrail">' +
             station.lessons.map(function (l, i) {
-              return '<li class="lesson' + (i === 0 ? ' on' : '') + '" data-yt="' + esc(l.youtubeId) + '">' +
-                       '<span class="l-name">' + esc(l.n) + '</span>' +
-                       '<span class="l-min">' + esc(l.min) + ' דק׳</span>' +
-                     '</li>';
+              var thumb = 'https://i.ytimg.com/vi/' + encodeURIComponent(l.youtubeId) + '/mqdefault.jpg';
+              return '<div class="lcard' + (i === lessonIdx ? ' on' : '') + '" data-i="' + i + '" ' +
+                          'data-yt="' + esc(l.youtubeId) + '">' +
+                       '<div class="thumb" style="background-image:url(' + thumb + ')">' +
+                         '<span class="num">' + (i + 1) + '</span>' +
+                         '<span class="min">' + esc(l.min) + ' דק׳</span>' +
+                         '<span class="play">▶</span>' +
+                       '</div>' +
+                       '<div class="body"><span class="nm">' + esc(l.n) + '</span>' +
+                         '<span class="st">' + (i === lessonIdx ? 'מנוגן עכשיו' : 'לחצו לצפייה') + '</span>' +
+                       '</div>' +
+                     '</div>';
             }).join('') +
-          '</ol>' +
+          '</div>' +
         '</div>';
     }
 
@@ -257,15 +293,29 @@
       '</div>' +
       '<div class="stepnav">' + prevHtml + nextHtml + '</div>';
 
-    // ---------- מעבר בין שיעורי התחנה ----------
-    var lessonEls = document.querySelectorAll('.lesson');
-    Array.prototype.forEach.call(lessonEls, function (el) {
+    // ---------- כניסה לשיעור ספציפי מהקרוסלה ----------
+    var cards = document.querySelectorAll('.lcard');
+    Array.prototype.forEach.call(cards, function (el) {
       el.addEventListener('click', function () {
+        var i = parseInt(el.getAttribute('data-i'), 10);
         var frame = document.getElementById('stFrame');
         if (!frame) return;
         frame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(el.getAttribute('data-yt')) + '?autoplay=1';
-        Array.prototype.forEach.call(lessonEls, function (o) { o.classList.remove('on'); });
+
+        Array.prototype.forEach.call(cards, function (o) {
+          o.classList.remove('on');
+          var st = o.querySelector('.st'); if (st) st.textContent = 'לחצו לצפייה';
+        });
         el.classList.add('on');
+        var st = el.querySelector('.st'); if (st) st.textContent = 'מנוגן עכשיו';
+
+        // הכתובת משקפת את השיעור, כך שאפשר לשלוח קישור ישיר אליו
+        try {
+          var u = new URL(location.href);
+          u.searchParams.set('l', i + 1);
+          history.replaceState(null, '', u.toString());
+        } catch (e) {}
+
         frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
     });
