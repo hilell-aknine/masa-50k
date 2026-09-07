@@ -57,6 +57,12 @@
     <div class="stat"><b id="s-revoked">–</b><span>גישה סגורה</span></div>
   </div>
 
+  <div class="panel" id="pend-panel" style="display:none;border-color:var(--accent)">
+    <h2>ממתינים לאישור <span id="pend-n" class="pill pending"></span></h2>
+    <p class="help">נרשמו לפורטל ועדיין אין להם גישה. הם רואים מסך המתנה ולא רואים אף שיעור.</p>
+    <div id="pend-list"></div>
+  </div>
+
   <div class="panel">
     <h2>פתיחת גישה מראש</h2>
     <p class="help">הדביקו כתובות מייל, אחת בכל שורה. מי שייכנס עם כתובת מהרשימה יקבל גישה פעילה אוטומטית, בלי שתצטרכו לאשר אותו ידנית.</p>
@@ -121,9 +127,28 @@ document.addEventListener('oriane:ready', function (ev) {
     document.getElementById('s-pending').textContent = counts.pending;
     document.getElementById('s-revoked').textContent = counts.revoked;
 
+    // ---------- פאנל הממתינים ----------
+    var pend = rows.filter(function (r) { return (r.access || 'pending') === 'pending'; });
+    var pp = document.getElementById('pend-panel');
+    if (pend.length) {
+      pp.style.display = '';
+      document.getElementById('pend-n').textContent = pend.length;
+      document.getElementById('pend-list').innerHTML =
+        '<table><tbody>' + pend.map(function (r) {
+          return '<tr><td class="em">' + esc(r.email) +
+                 (r.full_name ? '<br><span style="color:var(--text)">' + esc(r.full_name) + '</span>' : '') +
+                 '</td><td style="text-align:end"><button data-act="active" data-id="' + r.id + '">פתיחת גישה</button></td></tr>';
+        }).join('') + '</tbody></table>';
+      bindActions(document.getElementById('pend-list'));
+    } else {
+      pp.style.display = 'none';
+    }
+
     var box = document.getElementById('list');
     if (!view.length) {
-      box.innerHTML = '<div class="empty">' + (rows.length ? 'אין תוצאה לחיפוש הזה' : 'עדיין לא נרשם אף אחד') + '</div>';
+      box.innerHTML = '<div class="empty">' + (rows.length
+        ? 'אין תוצאה לחיפוש הזה'
+        : 'עדיין לא נרשם אף אחד.<br><br>ברגע שמישהו ייכנס לפורטל הוא יופיע כאן.<br>מי שהמייל שלו נמצא ברשימת ההזמנות למעלה יקבל גישה אוטומטית ולא יצטרך אישור.') + '</div>';
       return;
     }
 
@@ -143,6 +168,10 @@ document.addEventListener('oriane:ready', function (ev) {
           '</tr>';
       }).join('') + '</tbody></table>';
 
+    bindActions(box);
+  }
+
+  function bindActions(box) {
     Array.prototype.forEach.call(box.querySelectorAll('button[data-act]'), function (b) {
       b.addEventListener('click', function () {
         var id = b.getAttribute('data-id'), act = b.getAttribute('data-act');
