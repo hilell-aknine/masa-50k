@@ -24,16 +24,27 @@ service cloud.firestore {
     }
 
     // גישה פעילה = מותר לצרוך תוכן
+    // access_until (בקשת אוריאן 08.09): גישה חינם מוגבלת בזמן ליזמים
+    // שהיא מלווה. ריק = ללא הגבלה. עבר = כאילו אין גישה.
+    // נאכף כאן ולא רק בממשק, אחרת מספיק לרענן כדי לעקוף.
+    function notExpired() {
+      return me().get('access_until', null) == null
+          || request.time < me().access_until;
+    }
+
     function hasAccess() {
       return signedIn()
         && exists(/databases/$(database)/documents/profiles/$(request.auth.uid))
-        && me().access == 'active';
+        && me().access == 'active'
+        && (me().role == 'admin' || notExpired());
     }
 
     // השדות שמשתמש רגיל לעולם לא משנה בעצמו
+    // access_until חייב להיות כאן, אחרת תלמידה מאריכה לעצמה את הגישה
     function keepsProtectedFields() {
       return request.resource.data.role   == resource.data.role
-          && request.resource.data.access == resource.data.access;
+          && request.resource.data.access == resource.data.access
+          && request.resource.data.get('access_until', null) == resource.data.get('access_until', null);
     }
 
     // ---------- פרופילים ----------

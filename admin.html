@@ -35,7 +35,12 @@
   .pill.active{background:var(--btn-bg);color:var(--btn-text)}
   .pill.pending{background:var(--surface-3);color:var(--text-dim)}
   .pill.revoked{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-  .row-actions{display:flex;gap:7px;flex-wrap:wrap}
+  .row-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  /* גישה חינם עד תאריך · בקשת אוריאן 08.09 */
+  .untilbox{display:inline-flex;align-items:center;gap:6px;font-size:12px;
+    color:var(--text-dim);white-space:nowrap}
+  .untilbox input[type="date"]{width:auto;min-height:36px;padding:5px 8px;font-size:12px;
+    margin:0;direction:ltr}
   .row-actions button{padding:8px 13px;font-size:13px;min-height:40px}
   .empty{padding:26px;text-align:center;color:var(--text-faint);font-size:14.5px}
   .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--btn-bg);color:var(--btn-text);
@@ -286,16 +291,71 @@ document.addEventListener('oriane:ready', function (ev) {
         return '<tr>' +
             '<td class="em">' + esc(r.email) + (r.full_name ? '<br><span style="color:var(--text)">' + esc(r.full_name) + '</span>' : '') + '</td>' +
             '<td><span class="pill ' + a + '">' + (LABEL[a] || a) + '</span>' +
-              (r.role === 'admin' ? ' <span class="pill active">מנהל</span>' : '') + '</td>' +
+              (r.role === 'admin' ? ' <span class="pill active">מנהל</span>' : '') +
+              untilPill(r) + '</td>' +
             '<td>' + when(r.last_seen_at) + '</td>' +
-            '<td><div class="row-actions">' + acts + '</div></td>' +
+            '<td><div class="row-actions">' + acts +
+              '<label class="untilbox" title="גישה חינם עד תאריך. ריק = בלי הגבלה.">' +
+                '<span>עד</span>' +
+                '<input type="date" data-until="' + r.id + '" value="' + untilInputValue(r) + '">' +
+              '</label>' +
+            '</div></td>' +
           '</tr>';
       }).join('') + '</tbody></table>';
 
     bindActions(box);
   }
 
+  // ---------- גישה מוגבלת בזמן · עזרים ----------
+  // בקשת אוריאן 08.09: היזמים שהיא מלווה מקבלים גישה חינם עד תאריך.
+  function untilDate(r) {
+    var v = r.access_until;
+    if (!v) return null;
+    if (typeof v.toDate === 'function') return v.toDate();
+    var d = new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function untilInputValue(r) {
+    var d = untilDate(r);
+    if (!d) return '';
+    // yyyy-mm-dd בשעון המקומי, לא ב-UTC, אחרת התאריך קופץ ביום אחד
+    var p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+
+  function untilPill(r) {
+    var d = untilDate(r);
+    if (!d) return '';
+    var past = d.getTime() <= Date.now();
+    var txt = d.toLocaleDateString('he-IL');
+    return ' <span class="pill ' + (past ? 'revoked' : 'pending') + '">' +
+           (past ? 'פג ' : 'עד ') + esc(txt) + '</span>';
+  }
+
   function bindActions(box) {
+    // שמירת תאריך תפוגה. שינוי בשדה שומר מיד.
+    Array.prototype.forEach.call(box.querySelectorAll('input[data-until]'), function (inp) {
+      inp.addEventListener('change', function () {
+        var id = inp.getAttribute('data-until');
+        var v = (inp.value || '').trim();
+        if (id === me.uid) { toast('אי אפשר להגביל את הגישה של עצמך'); inp.value = ''; return; }
+        var val = null;
+        if (v) {
+          // סוף היום הנבחר, כדי שגישה "עד 31.12" תקפה כל ה-31.12
+          var d = new Date(v + 'T23:59:59');
+          if (isNaN(d.getTime())) return toast('תאריך לא תקין');
+          val = firebase.firestore.Timestamp.fromDate(d);
+        }
+        inp.disabled = true;
+        db.collection('profiles').doc(id).update({ access_until: val }).then(function () {
+          toast(val ? 'הגישה תקפה עד ' + new Date(v).toLocaleDateString('he-IL') : 'ההגבלה בזמן הוסרה');
+        }).catch(function (e) {
+          toast('העדכון נכשל'); console.error(e);
+        }).then(function () { inp.disabled = false; });
+      });
+    });
+
     Array.prototype.forEach.call(box.querySelectorAll('button[data-act]'), function (b) {
       b.addEventListener('click', function () {
         var id = b.getAttribute('data-id'), act = b.getAttribute('data-act');

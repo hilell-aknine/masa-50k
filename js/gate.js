@@ -52,6 +52,13 @@
 
       if (p.access !== 'active') return out('access-' + (p.access || 'unknown'));
 
+      // גישה מוגבלת בזמן · בקשת אוריאן 08.09.
+      // היזמים שהיא מלווה מקבלים גישה חינם עד תאריך. אדמין לא מוגבל.
+      // אותה בדיקה נאכפת גם בכללי השרת, כך שזה לא רק ויזואלי.
+      if (p.role !== 'admin' && p.access_until && typeof p.access_until.toDate === 'function') {
+        if (p.access_until.toDate().getTime() <= Date.now()) return out('access-expired');
+      }
+
       window.ORIANE_USER = {
         uid: user.uid,
         email: user.email,
