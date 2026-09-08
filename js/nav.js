@@ -69,6 +69,11 @@
     '  margin-inline-end:6px}',
     '.onav .sup:hover{color:#eaf1fb;border-color:rgba(252,193,203,.45)}',
     '.onav .sup svg{width:14px;height:14px;flex:none}',
+    // סימון "יש משהו חדש" על קישור הניהול · נראה למנהלת בכל מסך
+    '.onav .nbadge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;',
+    '  margin-inline-start:6px;border-radius:30px;background:#C2456A;color:#fff;',
+    '  font-size:10.5px;font-weight:700;line-height:1;vertical-align:middle}',
+    '.onav .nbadge.flag{background:#E03131}',
     '@media(max-width:760px){',
     '  .onav .menu a{padding:8px 10px;font-size:12.5px}',
     '  .onav .who .txt{display:none}',
@@ -143,6 +148,36 @@
         location.replace('login.html');
       });
     });
+
+    // ---------- סימון "יש משהו חדש" למנהלת ----------
+    // התראה בתוך המערכת. שליחה למייל או לוואטסאפ דורשת שרת שאין לנו.
+    // דיווח פתוח גובר על תגובה חדשה, ולכן מסומן באדום ולא בוורוד.
+    if (db && me.isAdmin) {
+      var adminLink = document.querySelector('.onav .menu a[href="admin.html"]');
+      if (adminLink) {
+        db.collection('reports').where('handled', '==', false).get().then(function (rs) {
+          var flags = rs.size;
+          if (flags) {
+            adminLink.insertAdjacentHTML('beforeend', '<span class="nbadge flag" title="דיווחים שממתינים">' + flags + '</span>');
+            return null; // דיווח דחוף יותר, לא מציפים שני סימונים
+          }
+          return db.collection('profiles').doc(me.uid).get().then(function (p) {
+            var seen = (p.data() || {}).comments_seen_at;
+            var seenMs = seen && seen.toMillis ? seen.toMillis() : 0;
+            return db.collection('comments').get().then(function (cs) {
+              var fresh = 0;
+              cs.forEach(function (d) {
+                var t = d.data().created_at;
+                if (t && t.toMillis && t.toMillis() > seenMs) fresh++;
+              });
+              if (fresh) {
+                adminLink.insertAdjacentHTML('beforeend', '<span class="nbadge" title="תגובות חדשות">' + fresh + '</span>');
+              }
+            });
+          });
+        }).catch(function (e) { console.error('[nav] badge', e); });
+      }
+    }
 
     // ---------- הגדרות אתר (settings/site) ----------
     // קריאה אחת שמזינה גם את כפתור "השארת פרטים" וגם את כפתור התמיכה.

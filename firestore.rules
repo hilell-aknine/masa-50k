@@ -145,6 +145,25 @@ service cloud.firestore {
       allow delete: if isAdmin() || resource.data.uid == request.auth.uid;
     }
 
+    // ---------- דיווח על תגובה ----------
+    // תלמידה מדווחת, ורק אוריאן רואה. אין "כמה דיווחים קיבלת" בממשק
+    // התלמידות, כדי שלא ייווצר כלי לחץ חברתי.
+    // הדיווח שומר עותק של נוסח התגובה, כדי שאוריאן תדע על מה מדובר
+    // גם אם הכותבת מחקה אותה בינתיים.
+    match /reports/{rid} {
+      allow read: if isAdmin();
+
+      allow create: if hasAccess()
+                    && request.resource.data.reporterUid == request.auth.uid
+                    && request.resource.data.commentId is string
+                    && request.resource.data.commentBody is string
+                    && request.resource.data.commentBody.size() < 1200
+                    && request.resource.data.handled == false;
+
+      // רק אוריאן מסמנת כטופל או מוחקת. מדווחת לא חוזרת בה.
+      allow update, delete: if isAdmin();
+    }
+
     // ---------- חיובים וחשבוניות ----------
     // כל חיוב נשמר תחת המשתמש שלו. כרגע רק מנהל כותב (ידנית / מהוובהוק
     // של הסליקה בעתיד). המשתמש רואה רק את החיובים של עצמו.

@@ -107,6 +107,19 @@
     <button id="btn-oto-save">שמירה</button>
   </div>
 
+  <div class="panel" id="rep-panel" style="display:none;border-color:#C2456A">
+    <h2>🚩 תגובות שדווחו <span id="rep-n" class="pill pending"></span></h2>
+    <p class="help">משתתפות דיווחו על התגובות האלה. אפשר למחוק את התגובה מהתחנה, או לסמן שטיפלת בלי למחוק. מי שדיווחה לא נחשפת לשאר המשתתפות.</p>
+    <div id="rep-list"></div>
+  </div>
+
+  <div class="panel" id="cmt-panel" style="display:none">
+    <h2>תגובות אחרונות בתחנות <span id="cmt-n" class="pill pending"></span></h2>
+    <p class="help">מה שמשתתפות כותבות בתיבה הפומבית בכל תחנה. ההערות הפרטיות שלהן לא מוצגות כאן ולא בשום מקום אחר.</p>
+    <div style="margin-bottom:12px"><button class="ghost" id="btn-cmt-seen">סימון הכל כנקרא</button></div>
+    <div id="cmt-list"></div>
+  </div>
+
   <div class="panel" id="q-panel" style="display:none;border-color:var(--accent)">
     <h2>שאלות שממתינות לתשובה <span id="q-n" class="pill pending"></span></h2>
     <p class="help">שאלות שתלמידות שלחו. התשובה מוצגת לשואלת בלבד. אף משתתפת אחרת לא רואה שאלות של אחרות.</p>
@@ -231,6 +244,15 @@ document.addEventListener('oriane:ready', function (ev) {
     if (!ts || !ts.toDate) return '–';
     var d = ts.toDate();
     return d.toLocaleDateString('he-IL') + ' ' + d.toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'});
+  }
+
+  // חותם זמן למספר. מקבל Timestamp של פיירסטור וגם ערך ריק.
+  function ms(ts) {
+    if (!ts) return 0;
+    if (typeof ts.toMillis === 'function') return ts.toMillis();
+    if (typeof ts.toDate === 'function') return ts.toDate().getTime();
+    var d = new Date(ts);
+    return isNaN(d.getTime()) ? 0 : d.getTime();
   }
 
   var LABEL = { active:'פעילה', pending:'ממתין', revoked:'סגורה' };
@@ -402,6 +424,111 @@ document.addEventListener('oriane:ready', function (ev) {
   }, function (e) {
     document.getElementById('list').innerHTML = '<div class="empty">שגיאה בטעינת המשתמשים</div>';
     console.error(e);
+  });
+
+  // ---------- 🚩 תגובות שדווחו ----------
+  db.collection('reports').onSnapshot(function (snap) {
+    var all = snap.docs.map(function (d) { var o = d.data(); o.id = d.id; return o; });
+    var open = all.filter(function (r) { return !r.handled; });
+    var pp = document.getElementById('rep-panel');
+    if (!open.length) { pp.style.display = 'none'; return; }
+    pp.style.display = '';
+    document.getElementById('rep-n').textContent = open.length + ' ממתינים';
+
+    open.sort(function (a, b) { return ms(b.created_at) - ms(a.created_at); });
+    document.getElementById('rep-list').innerHTML = open.map(function (r) {
+      return '<div style="border-bottom:1px solid var(--line);padding:14px 0">' +
+        '<div style="font-size:12px;color:var(--text-dim);margin-bottom:6px">' +
+          'תחנה ' + esc(String(r.stationId || '')) + (r.stationName ? ' · ' + esc(r.stationName) : '') +
+          ' · דווח על ידי ' + esc(r.reporterName || 'משתתפת') + ' · ' + when(r.created_at) +
+        '</div>' +
+        '<div style="font-size:12.5px;color:var(--text-dim);margin-bottom:4px">כתבה: <b>' + esc(r.commentAuthorName || '') + '</b></div>' +
+        '<div style="font-size:14px;line-height:1.6;background:var(--surface-2);padding:11px 13px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere">' +
+          esc(r.commentBody || '') + '</div>' +
+        '<div class="row-actions" style="margin-top:9px">' +
+          '<button data-repdel="' + esc(r.id) + '" data-cid="' + esc(r.commentId || '') + '">מחיקת התגובה</button>' +
+          '<button class="ghost" data-repok="' + esc(r.id) + '">טופל, להשאיר</button>' +
+        '</div></div>';
+    }).join('');
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-repdel]'), function (b) {
+      b.addEventListener('click', function () {
+        if (!confirm('למחוק את התגובה מהתחנה?')) return;
+        b.disabled = true;
+        var cid = b.getAttribute('data-cid');
+        var done = cid ? db.collection('comments').doc(cid).delete().catch(function () {}) : Promise.resolve();
+        done.then(function () {
+          return db.collection('reports').doc(b.getAttribute('data-repdel')).update({ handled: true });
+        }).then(function () { toast('התגובה נמחקה'); })
+          .catch(function (e) { b.disabled = false; toast('הפעולה נכשלה'); console.error(e); });
+      });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-repok]'), function (b) {
+      b.addEventListener('click', function () {
+        b.disabled = true;
+        db.collection('reports').doc(b.getAttribute('data-repok')).update({ handled: true })
+          .then(function () { toast('סומן כטופל'); })
+          .catch(function (e) { b.disabled = false; toast('הפעולה נכשלה'); console.error(e); });
+      });
+    });
+  }, function (e) { console.error('[reports]', e); });
+
+  // ---------- תגובות אחרונות בתחנות ----------
+  // "התראה" בתוך המערכת. שליחה למייל או לוואטסאפ דורשת שרת שאין לנו.
+  // חשוב לקרוא את "נקרא עד" לפני שמתחילים להאזין, אחרת בטעינה
+  // הראשונה כל התגובות היו מסומנות כחדשות.
+  var seenAt = 0;
+  db.collection('profiles').doc(me.uid).get()
+    .then(function (s) { seenAt = ms((s.data() || {}).comments_seen_at); })
+    .catch(function () {})
+    .then(function () { listenComments(); });
+
+  function listenComments() {
+  db.collection('comments').onSnapshot(function (snap) {
+    var all = snap.docs.map(function (d) { var o = d.data(); o.id = d.id; return o; });
+    var pp = document.getElementById('cmt-panel');
+    if (!all.length) { pp.style.display = 'none'; return; }
+    pp.style.display = '';
+    all.sort(function (a, b) { return ms(b.created_at) - ms(a.created_at); });
+
+    var fresh = all.filter(function (c) { return ms(c.created_at) > seenAt; });
+    document.getElementById('cmt-n').textContent = fresh.length ? fresh.length + ' חדשות' : 'הכל נקרא';
+
+    document.getElementById('cmt-list').innerHTML = all.slice(0, 30).map(function (c) {
+      var isNew = ms(c.created_at) > seenAt;
+      return '<div style="border-bottom:1px solid var(--line);padding:12px 0' +
+             (isNew ? ';border-inline-start:3px solid #C2456A;padding-inline-start:11px' : '') + '">' +
+        '<div style="font-size:12px;color:var(--text-dim);margin-bottom:5px">' +
+          '<b style="color:var(--text)">' + esc(c.name || 'משתתפת') + '</b>' +
+          ' · תחנה ' + esc(String(c.stationId || '')) + ' · ' + when(c.created_at) +
+          (isNew ? ' · <span style="color:#C2456A;font-weight:700">חדש</span>' : '') +
+        '</div>' +
+        '<div style="font-size:13.5px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(c.body || '') + '</div>' +
+        '<div class="row-actions" style="margin-top:7px">' +
+          '<button class="ghost" data-cmtdel="' + esc(c.id) + '">מחיקה</button>' +
+        '</div></div>';
+    }).join('');
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-cmtdel]'), function (b) {
+      b.addEventListener('click', function () {
+        if (!confirm('למחוק את התגובה?')) return;
+        b.disabled = true;
+        db.collection('comments').doc(b.getAttribute('data-cmtdel')).delete()
+          .then(function () { toast('נמחק'); })
+          .catch(function (e) { b.disabled = false; toast('המחיקה נכשלה'); console.error(e); });
+      });
+    });
+  }, function (e) { console.error('[comments]', e); });
+  }
+
+  document.getElementById('btn-cmt-seen').addEventListener('click', function () {
+    var b = this; b.disabled = true;
+    db.collection('profiles').doc(me.uid)
+      .update({ comments_seen_at: firebase.firestore.FieldValue.serverTimestamp() })
+      .then(function () { seenAt = Date.now(); toast('סומן כנקרא'); })
+      .catch(function (e) { toast('העדכון נכשל'); console.error(e); })
+      .then(function () { b.disabled = false; });
   });
 
   // ---------- שאלות לאוריאן ----------
