@@ -29,16 +29,20 @@
     '  padding:9px 15px;border-radius:30px;text-decoration:none;white-space:nowrap;',
     '  box-shadow:0 0 14px rgba(252,193,203,.35);flex:none}',
     '.onav .biz:hover{filter:brightness(1.05)}',
+    '.onav .crmbtn{font-size:12.5px;font-weight:700;color:#2a1018;background:#fcc1cb;',
+    '  padding:9px 15px;border-radius:30px;text-decoration:none;white-space:nowrap;',
+    '  box-shadow:0 0 14px rgba(252,193,203,.35);flex:none;margin-inline-end:6px}',
+    '.onav .crmbtn:hover{filter:brightness(1.05)}',
     '.onav .who{display:flex;align-items:center;gap:8px;cursor:pointer;background:transparent;',
     '  border:0;padding:5px 6px 5px 4px;border-radius:30px;flex:none;font-family:inherit}',
     '.onav .who:hover{background:rgba(255,255,255,.05)}',
     '.onav .who .avatar{width:30px;height:30px;border-radius:50%;background:#0d2242;',
     '  border:1px solid rgba(252,193,203,.3);display:grid;place-items:center;color:#fcc1cb;',
     '  font-weight:700;font-size:13px;flex:none}',
-    '.onav .who .txt{font-size:11.5px;line-height:1.3;color:#93a6c4;text-align:start;',
-    '  max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-    '.onav .who .txt b{display:block;color:#eaf1fb;font-size:12.5px;font-weight:700;',
-    '  max-width:120px;overflow:hidden;text-overflow:ellipsis}',
+    '.onav .who .txt{font-size:11px;line-height:1.3;color:#93a6c4;text-align:start;direction:ltr;',
+    '  max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+    '.onav .who .txt b{display:block;color:#eaf1fb;font-size:12.5px;font-weight:700;direction:rtl;',
+    '  text-align:start;max-width:150px;overflow:hidden;text-overflow:ellipsis}',
     '.onav .out{background:transparent;border:1px solid rgba(252,193,203,.22);color:#93a6c4;',
     '  font-size:11.5px;font-weight:600;padding:8px 12px;border-radius:30px;cursor:pointer;',
     '  font-family:inherit;flex:none}',
@@ -47,6 +51,7 @@
     '  .onav .menu a{padding:8px 10px;font-size:12.5px}',
     '  .onav .who .txt{display:none}',
     '  .onav .biz{padding:8px 12px;font-size:12px}',
+    '  .onav .crmbtn{padding:8px 12px;font-size:12px}',
     '}',
     '@media(max-width:460px){ .onav .out{display:none} }'
   ].join('');
@@ -75,15 +80,15 @@
     var html =
       '<nav class="onav" dir="rtl">' +
         '<a class="brand" href="index.html">המסע ל-50K</a>' +
+        '<a class="crmbtn" href="https://crmorian.web.app/" target="_blank" rel="noopener">לניהול העסק שלי</a>' +
         '<div class="menu">' +
           link('index.html', 'מסע הבית', here === 'index.html') +
-          link('me.html', 'האזור שלי', here === 'me.html') +
           link('ask.html', 'שאלות', here === 'ask.html') +
           (me.isAdmin ? link('admin.html', 'ניהול', here === 'admin.html' || here === 'dashboard.html') : '') +
         '</div>' +
         '<span id="onavBizSlot"></span>' +
         '<button class="who" id="onavWho" type="button" title="עדכון פרטים אישיים">' +
-          '<span class="txt"><b>' + esc(me.name || me.email || 'המשתמש') + '</b>' + (me.isAdmin ? 'מנהל' : 'משתתף/ת') + '</span>' +
+          '<span class="txt"><b>' + esc(me.name || 'המשתמש') + '</b>' + esc(me.email || '') + '</span>' +
           '<span class="avatar">' + esc(initial || '🙂') + '</span>' +
         '</button>' +
         '<button class="out" id="onav-out" type="button">יציאה</button>' +

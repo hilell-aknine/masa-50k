@@ -111,6 +111,14 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // ---------- חיובים וחשבוניות ----------
+    // כל חיוב נשמר תחת המשתמש שלו. כרגע רק מנהל כותב (ידנית / מהוובהוק
+    // של הסליקה בעתיד). המשתמש רואה רק את החיובים של עצמו.
+    match /billing/{uid}/invoices/{invoiceId} {
+      allow read: if request.auth.uid == uid || isAdmin();
+      allow write: if isAdmin();
+    }
+
     // ---------- ברירת מחדל: חסום ----------
     match /{document=**} {
       allow read, write: if false;

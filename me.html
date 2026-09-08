@@ -6,15 +6,89 @@
 <meta name="robots" content="noindex,nofollow">
 <title>האזור שלי · המסע ל-50K</title>
 <link rel="stylesheet" href="css/portal.css">
+<link rel="stylesheet" href="css/journey-theme.css">
+<script src="js/icons.js"></script>
 <style>
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:18px 0 70px}
-  h1{font-size:24px;color:var(--text-strong);margin-bottom:4px}
-  .sub{font-size:14px;color:var(--text-dim);margin-bottom:20px}
+  /* ============================================================
+     האזור שלי · דשבורד אישי עם תפריט צד (5 סקשנים)
+     ============================================================ */
+  .acct-wrap{max-width:1080px;margin:0 auto;padding:24px 18px 80px;display:flex;gap:22px;align-items:flex-start}
+  .acct-side{flex:0 0 220px;position:sticky;top:74px;display:flex;flex-direction:column;gap:4px}
+  .acct-side button{display:flex;align-items:center;gap:10px;width:100%;text-align:start;background:transparent;
+    border:1px solid transparent;color:var(--text-dim);font-family:inherit;font-size:14px;font-weight:600;
+    padding:12px 14px;border-radius:12px;cursor:pointer;transition:.15s}
+  .acct-side button:hover{background:var(--surface);color:var(--text)}
+  .acct-side button.on{background:var(--surface);border-color:var(--line);color:var(--text-strong)}
+  .acct-side button .ic{width:18px;height:18px;flex:none}
+  @media(max-width:820px){
+    .acct-wrap{flex-direction:column}
+    .acct-side{position:static;flex-direction:row;overflow-x:auto;width:100%;gap:8px;padding-bottom:4px}
+    .acct-side button{flex:none;white-space:nowrap}
+  }
 
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px 20px;margin-bottom:16px}
-  .card h2{font-size:15px;color:var(--text-strong);margin-bottom:4px}
+  .acct-main{flex:1;min-width:0}
+  .acct-section{display:none}
+  .acct-section.on{display:block;animation:fadein .2s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:20px 22px;margin-bottom:16px}
+  .card h2{font-size:16px;color:var(--text-strong);margin-bottom:4px}
   .card p.help{font-size:13.5px;color:var(--text-dim);line-height:1.6;margin-bottom:14px}
 
+  /* ---------- 1. המסע שלי ---------- */
+  .greet{margin-bottom:18px}
+  .greet .hi{font-size:23px;font-weight:800;color:var(--text-strong)}
+  .greet .sub{font-size:14px;color:var(--text-dim);margin-top:5px}
+
+  .prog{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .prog b{font-size:26px;color:var(--text-strong);direction:ltr;unicode-bidi:isolate}
+  .prog span{font-size:13px;color:var(--text-dim)}
+  .bar{height:10px;background:var(--surface-3);border-radius:20px;overflow:hidden}
+  .bar > i{display:block;height:100%;background:var(--btn-bg);border-radius:20px;transition:width .6s}
+
+  /* ---------- מפת כביש אופקית · 11 תחנות משמאל (1) לימין (11) ---------- */
+  .road11-wrap{margin:26px 0 6px;overflow-x:auto;padding-bottom:6px;direction:ltr}
+  .road11{position:relative;width:100%;height:64px;padding:0 16px;direction:ltr}
+  @media(max-width:560px){ .road11{min-width:640px} }
+  .road11 .r-line{position:absolute;top:26px;left:16px;right:16px;height:12px;border-radius:7px;
+    background:#0d2242;border:1px solid var(--line);overflow:hidden}
+  .road11 .r-line::after{content:"";position:absolute;inset:0;margin:auto 0;height:2px;
+    background-image:repeating-linear-gradient(to right,rgba(255,255,255,.55) 0 9px,transparent 9px 18px)}
+  .road11 .r-slots{position:relative;height:100%;display:flex;align-items:flex-start;justify-content:space-between}
+  .r-stop{display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;cursor:default}
+  .r-stop .pin{width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+    background:var(--surface);border:2.5px solid var(--btn-bg);display:flex;align-items:center;justify-content:center;
+    margin-top:14px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+  .r-stop .pin b{transform:rotate(45deg);font-size:10.5px;font-weight:800;color:var(--btn-bg)}
+  .r-stop.done .pin{background:var(--btn-bg)}
+  .r-stop.done .pin b{color:var(--btn-text)}
+  .r-stop.rest .pin{border-style:dashed;background:var(--surface-2);width:30px;height:30px}
+  .r-stop.rest .pin b{font-size:13px}
+  .road11 .r-car{position:absolute;top:-18px;width:38px;height:38px;transform:translateX(-50%);
+    transition:left 1s cubic-bezier(.4,0,.2,1);filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));z-index:2}
+  .road11 .r-car svg{width:100%;height:100%}
+
+  .road11-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:18px}
+  .rl-group h4{font-size:12px;letter-spacing:1px;color:var(--hp-pink,var(--btn-bg));font-weight:800;margin-bottom:8px;text-transform:uppercase}
+  .rl-group ul{list-style:none;display:grid;gap:5px}
+  .rl-group li{font-size:12.5px;color:var(--text-dim);display:flex;gap:6px;align-items:center}
+  .rl-group li.done{color:var(--text-strong);font-weight:600}
+  .rl-group li .n{flex:none;width:18px;height:18px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);
+    display:grid;place-items:center;font-size:9.5px;font-weight:700;color:var(--text-dim)}
+  .rl-group li.done .n{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-text)}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:18px}
+  .stat{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .stat b{display:block;font-size:24px;color:var(--text-strong);line-height:1.2}
+  .stat span{font-size:12.5px;color:var(--text-dim)}
+
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .badge{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:8px 13px;border-radius:20px;
+    border:1px solid var(--line);color:var(--text-dim);background:var(--surface-2)}
+  .badge.on{border-color:var(--btn-bg);color:var(--text-strong);background:rgba(252,193,203,.08)}
+  .badge .ic{width:14px;height:14px}
+
+  /* ---------- 2. הפרטים שלי ---------- */
   label{display:block;font-size:13px;color:var(--text-dim);margin:12px 0 6px}
   input{width:100%;padding:13px 14px;font-size:16px;font-family:inherit;
     background:var(--input-bg);color:var(--text);border:1px solid var(--line);
@@ -26,12 +100,51 @@
     min-height:48px;cursor:pointer}
   button.save:disabled{opacity:.55;cursor:default}
 
-  .prog{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
-  .prog b{font-size:22px;color:var(--text-strong)}
-  .prog span{font-size:13px;color:var(--text-dim)}
-  .bar{height:8px;background:var(--surface-3);border-radius:20px;overflow:hidden}
-  .bar > i{display:block;height:100%;background:var(--btn-bg);border-radius:20px;transition:width .5s}
+  /* ---------- 3. המנוי שלי ---------- */
+  .plan-cur{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:18px}
+  .plan-cur .nm{font-size:15px;font-weight:700;color:var(--text-strong)}
+  .plan-cur .sub{font-size:12.5px;color:var(--text-dim);margin-top:3px}
+  .plan-cur .pill{font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;background:var(--btn-bg);color:var(--btn-text)}
 
+  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:8px}
+  .plan{position:relative;background:var(--surface-2);border:1.5px solid var(--line);border-radius:16px;
+    padding:20px 18px;text-align:center;display:flex;flex-direction:column;gap:8px}
+  .plan.best{border-color:var(--btn-bg);box-shadow:0 0 0 3px rgba(252,193,203,.12)}
+  .plan .best-tag{position:absolute;top:-12px;inset-inline-start:50%;transform:translateX(50%);
+    background:var(--btn-bg);color:var(--btn-text);font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px;white-space:nowrap}
+  .plan .len{font-size:13.5px;font-weight:700;color:var(--text-dim)}
+  .plan .was{font-size:13px;color:var(--text-faint);text-decoration:line-through}
+  .plan .price{font-size:26px;font-weight:800;color:var(--text-strong)}
+  .plan .price small{font-size:13px;font-weight:600;color:var(--text-dim)}
+  .plan .save{font-size:11.5px;font-weight:700;color:var(--btn-bg);background:rgba(252,193,203,.1);
+    padding:3px 10px;border-radius:20px;display:inline-block;margin:0 auto}
+  .plan .total{font-size:12.5px;color:var(--text-dim)}
+  .plan button{margin-top:8px;width:100%;padding:12px;font-size:14px;font-weight:700;font-family:inherit;
+    background:var(--btn-bg);color:var(--btn-text);border:0;border-radius:var(--radius-pill);min-height:44px;cursor:pointer}
+  .plan button:active{transform:scale(.98)}
+
+  .plan-feats{list-style:none;margin:16px 0 0;padding:16px 0 0;border-top:1px solid var(--line);display:grid;gap:8px}
+  .plan-feats li{font-size:13.5px;color:var(--text);display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+  .plan-feats li .ic{color:var(--btn-bg);flex:none;margin-top:2px}
+
+  button.danger{background:transparent;color:var(--accent);border:1px solid var(--accent);font-family:inherit;
+    font-size:13.5px;font-weight:600;padding:11px 18px;border-radius:var(--radius-pill);cursor:pointer;margin-top:18px}
+  button.danger:hover{background:rgba(252,193,203,.08)}
+
+  /* ---------- 4. חיובים וחשבוניות ---------- */
+  table{width:100%;border-collapse:collapse;margin-top:6px}
+  th{text-align:right;font-size:12.5px;color:var(--text-dim);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line)}
+  td{padding:12px 6px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle;color:var(--text)}
+  .pill{display:inline-block;padding:4px 11px;border-radius:var(--radius-pill);font-size:12px;font-weight:600}
+  .pill.paid{background:var(--btn-bg);color:var(--btn-text)}
+  .pill.due{background:var(--surface-3);color:var(--text-dim)}
+  .btn-mini{background:var(--surface-3);color:var(--text-strong);border:1px solid var(--line);font-family:inherit;
+    font-size:12.5px;font-weight:600;padding:8px 13px;border-radius:var(--radius-pill);cursor:pointer}
+  .btn-mini[disabled]{opacity:.5;cursor:not-allowed}
+  .empty{padding:26px;text-align:center;color:var(--text-faint);font-size:14.5px}
+
+  /* ---------- 5. חבר מביא חבר ---------- */
   .reflink{display:flex;gap:8px;margin-top:6px}
   .reflink input{direction:ltr;text-align:left;font-size:13.5px}
   .reflink button{flex:none;padding:0 16px;font-size:13.5px;font-weight:600;font-family:inherit;
@@ -39,6 +152,8 @@
     border-radius:var(--radius-pill);min-height:48px;cursor:pointer}
   .refstat{margin-top:14px;font-size:14px;color:var(--text)}
   .refstat b{color:var(--text-strong);font-size:18px}
+  .commission-note{margin-top:14px;font-size:13px;color:var(--text-dim);background:var(--surface-2);
+    border:1px dashed var(--line);border-radius:12px;padding:12px 14px;line-height:1.6}
 
   .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--btn-bg);color:var(--btn-text);
     padding:13px 18px;border-radius:var(--radius-card);font-size:14px;display:none;z-index:400}
@@ -47,39 +162,148 @@
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>האזור שלי</h1>
-  <p class="sub" id="hello">טוען...</p>
+<div class="acct-wrap">
+  <aside class="acct-side">
+    <button class="on" data-tab="journey"><span class="ic" data-ic="compass"></span> המסע שלי</button>
+    <button data-tab="details"><span class="ic" data-ic="note"></span> הפרטים שלי</button>
+    <button data-tab="subscription"><span class="ic" data-ic="shield"></span> המנוי שלי</button>
+    <button data-tab="billing"><span class="ic" data-ic="download"></span> חיובים וחשבוניות</button>
+    <button data-tab="affiliate"><span class="ic" data-ic="send"></span> חבר מביא חבר</button>
+  </aside>
 
-  <div class="card">
-    <h2>ההתקדמות שלי</h2>
-    <div class="prog"><b id="p-num">–</b><span id="p-txt"></span></div>
-    <div class="bar"><i id="p-bar" style="width:0%"></i></div>
-  </div>
+  <main class="acct-main">
 
-  <div class="card">
-    <h2>הפרטים שלי</h2>
-    <p class="help">השם והטלפון משמשים אותנו רק כדי ליצור איתכם קשר. אי אפשר לשנות את כתובת המייל, כי היא זו שמזהה אתכם בכניסה.</p>
-    <label for="name">שם מלא</label>
-    <input id="name" type="text" autocomplete="name" placeholder="השם שלכם">
-    <label for="phone">טלפון</label>
-    <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000">
-    <label for="mail">מייל</label>
-    <input id="mail" type="email" readonly>
-    <button class="save" id="save" type="button">שמירה</button>
-  </div>
+    <!-- 1. המסע שלי -->
+    <section class="acct-section on" id="tab-journey">
+      <div class="card">
+        <div class="greet">
+          <div class="hi" id="greetHi">טוען...</div>
+          <div class="sub" id="greetSub">בואי נראה איפה עומדים היום</div>
+        </div>
 
-  <div class="card">
-    <h2>הזמנת חברים</h2>
-    <p class="help">זה הקישור האישי שלכם. מי שיצטרף דרכו יירשם על שמכם.</p>
-    <div class="reflink">
-      <input id="ref" type="text" readonly>
-      <button id="copy" type="button">העתקה</button>
-    </div>
-    <div class="refstat" id="refstat">הצטרפו דרככם עד כה: <b id="refcount">0</b></div>
-  </div>
+        <div class="prog"><b id="p-num">–</b><span id="p-txt"></span></div>
+        <div class="bar"><i id="p-bar" style="width:0%"></i></div>
 
-  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+        <div class="road11-wrap">
+          <div class="road11" id="road11">
+            <div class="r-line"></div>
+            <div class="r-slots" id="r11slots"></div>
+            <div class="r-car" id="r11car">
+              <svg viewBox="0 0 64 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 26c0-2 2-4 5-4h6l6-9c1.5-2 4-3 6-3h9c2 0 4 1 5 3l5 9h4c3 0 6 2 6 6v3c0 2-1 3-3 3h-2a5 5 0 0 1-10 0H21a5 5 0 0 1-10 0H8c-1 0-2-1-2-2v-6Z"
+                  fill="#fff" stroke="#93a6c4" stroke-width="1.2"/>
+                <path d="M18 13h20l4 7H16l2-7Z" fill="#cfe0f7"/>
+                <circle cx="16" cy="30" r="4" fill="#0a1c38" stroke="#fcc1cb" stroke-width="1.4"/>
+                <circle cx="46" cy="30" r="4" fill="#0a1c38" stroke="#fcc1cb" stroke-width="1.4"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="road11-legend" id="road11legend"></div>
+      </div>
+
+      <div class="card">
+        <h2>דשבורד ההתקדמות שלי</h2>
+        <p class="help">תמונת מצב מהירה של איפה את נמצאת במסע.</p>
+        <div class="stat-grid">
+          <div class="stat"><b id="d-done">–</b><span>תחנות שהושלמו</span></div>
+          <div class="stat"><b id="d-total">–</b><span>סה"כ תחנות במסע</span></div>
+          <div class="stat"><b id="d-pct">–</b><span>אחוז התקדמות</span></div>
+          <div class="stat"><b id="d-chapter">–</b><span>הפרק הנוכחי</span></div>
+        </div>
+        <h2 style="margin-top:20px">הישגים</h2>
+        <div class="badges" id="badges"></div>
+      </div>
+    </section>
+
+    <!-- 2. הפרטים שלי -->
+    <section class="acct-section" id="tab-details">
+      <div class="card">
+        <h2>הפרטים שלי</h2>
+        <p class="help">השם והטלפון משמשים אותנו רק כדי ליצור איתכם קשר. אי אפשר לשנות את כתובת המייל, כי היא זו שמזהה אתכם בכניסה.</p>
+        <label for="name">שם מלא</label>
+        <input id="name" type="text" autocomplete="name" placeholder="השם שלכם">
+        <label for="phone">טלפון</label>
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000">
+        <label for="mail">מייל</label>
+        <input id="mail" type="email" readonly>
+        <button class="save" id="save" type="button">שמירה</button>
+      </div>
+    </section>
+
+    <!-- 3. המנוי שלי -->
+    <section class="acct-section" id="tab-subscription">
+      <div class="card">
+        <h2>המנוי שלי</h2>
+        <p class="help">כרגע נמצאים על המסלול ההתחלתי. אפשר לשדרג בכל שלב לאחד המסלולים למטה.</p>
+        <div class="plan-cur">
+          <div>
+            <div class="nm">מנוי התחלתי</div>
+            <div class="sub">28 ₪ לחודש הראשון · לאחר מכן נדרש שדרוג למסלול</div>
+          </div>
+          <span class="pill">פעיל</span>
+        </div>
+
+        <div class="plans">
+          <div class="plan">
+            <div class="len">3 חודשים</div>
+            <div class="price">328 ₪ <small>/ לחודש</small></div>
+            <div class="total">סה"כ 984 ₪</div>
+            <button data-plan="3m" data-price="984">שדרוג למסלול</button>
+          </div>
+          <div class="plan">
+            <div class="len">6 חודשים</div>
+            <div class="price">318 ₪ <small>/ לחודש</small></div>
+            <div class="total">סה"כ 1,908 ₪</div>
+            <button data-plan="6m" data-price="1908">שדרוג למסלול</button>
+          </div>
+          <div class="plan best">
+            <div class="best-tag">⭐ המשתלם ביותר</div>
+            <div class="len">12 חודשים</div>
+            <div class="was">328 ₪</div>
+            <div class="price">248 ₪ <small>/ לחודש</small></div>
+            <span class="save">24% חיסכון</span>
+            <div class="total">סה"כ 2,976 ₪</div>
+            <button data-plan="12m" data-price="2976">שדרוג למסלול</button>
+          </div>
+        </div>
+
+        <ul class="plan-feats">
+          <li><span class="ic" data-ic="target"></span> גישה מלאה למסע ל-50K</li>
+          <li><span class="ic" data-ic="brain"></span> CRM</li>
+          <li><span class="ic" data-ic="send"></span> Q&amp;A אחת לשבועיים</li>
+          <li><span class="ic" data-ic="spark"></span> כל העדכונים והתכנים החדשים</li>
+        </ul>
+
+        <button class="danger" id="btn-cancel" type="button">ביטול המנוי</button>
+      </div>
+    </section>
+
+    <!-- 4. חיובים וחשבוניות -->
+    <section class="acct-section" id="tab-billing">
+      <div class="card">
+        <h2>חיובים וחשבוניות</h2>
+        <p class="help">כאן יופיע היסטוריית החיובים החודשיים שלך, עם אפשרות להורדת חשבונית לכל חיוב.</p>
+        <div id="billingList"><div class="empty">טוען...</div></div>
+      </div>
+    </section>
+
+    <!-- 5. חבר מביא חבר -->
+    <section class="acct-section" id="tab-affiliate">
+      <div class="card">
+        <h2>הזמנת חברים</h2>
+        <p class="help">זה הקישור האישי שלכם. מי שיצטרף דרכו יירשם על שמכם.</p>
+        <div class="reflink">
+          <input id="ref" type="text" readonly>
+          <button id="copy" type="button">העתקה</button>
+        </div>
+        <div class="refstat" id="refstat">הצטרפו דרככם עד כה: <b id="refcount">0</b></div>
+        <div class="commission-note" id="commissionNote">מבנה העמלות עבור הצטרפויות דרך הקישור האישי ייקבע ויוצג כאן בקרוב.</div>
+      </div>
+    </section>
+
+    <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+  </main>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -89,7 +313,6 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/gate.js"></script>
 <script src="js/nav.js"></script>
-<script src="js/theme.js"></script>
 <script src="data/content.js"></script>
 <script>
 document.addEventListener('oriane:ready', function (ev) {
@@ -103,22 +326,41 @@ document.addEventListener('oriane:ready', function (ev) {
     setTimeout(function () { el.className = 'toast'; }, 2400);
   }
 
+  // ---------- מעבר בין הסקשנים ----------
+  var tabs = document.querySelectorAll('.acct-side button');
+  var sections = document.querySelectorAll('.acct-section');
+  function showTab(name) {
+    tabs.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-tab') === name); });
+    sections.forEach(function (s) { s.classList.toggle('on', s.id === 'tab-' + name); });
+    history.replaceState(null, '', '#' + name);
+  }
+  tabs.forEach(function (b) {
+    b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); });
+  });
+  var initial = (location.hash || '').replace('#', '');
+  if (['journey','details','subscription','billing','affiliate'].indexOf(initial) !== -1) showTab(initial);
+
+  // ---------- 1. ברכה לפי שעה ----------
+  var hour = new Date().getHours();
+  var greetText = hour < 5 ? 'לילה טוב'
+    : hour < 12 ? 'בוקר מלא בשפע לפניך'
+    : hour < 18 ? 'צהריים טובים'
+    : 'ערב טוב ומלמד';
+
+  // ---------- פרטים + התקדמות + מפת מסע מוקטנת ----------
   document.getElementById('mail').value = me.email || '';
 
   ref.get().then(function (snap) {
     var p = snap.data() || {};
-    document.getElementById('hello').textContent =
-      p.full_name ? ('שלום ' + p.full_name) : 'ברוכים הבאים למסע';
-    document.getElementById('name').value = p.full_name || '';
+    var name = p.full_name || '';
+    document.getElementById('greetHi').textContent = greetText + (name ? ', ' + name : '') + ' ✨';
+    document.getElementById('name').value = name;
     document.getElementById('phone').value = p.phone || '';
 
-    // קוד ההפניה נגזר מהמזהה, כך שהוא יציב ולא דורש שדה נוסף במסד
     var code = me.uid.slice(0, 8);
     var base = location.origin + location.pathname.replace(/me\.html$/, 'landing.html');
     document.getElementById('ref').value = base + '?ref=' + code;
 
-    // הספירה זמינה רק למנהל, כי הכללים אוסרים על תלמיד לקרוא פרופילים
-    // של אחרים, ובצדק. לתלמיד לא מציגים מספר שאי אפשר לאמת.
     if (me.isAdmin) {
       db.collection('profiles').where('referred_by', '==', code).get()
         .then(function (q) { document.getElementById('refcount').textContent = q.size; })
@@ -128,19 +370,92 @@ document.addEventListener('oriane:ready', function (ev) {
     }
   });
 
-  // ---------- התקדמות ----------
-  var total = (window.COURSE && window.COURSE.totalStations) || 12;
+  var CH = (window.COURSE && window.COURSE.chapters) || [];
+  var total = (window.COURSE && window.COURSE.totalStations) || 0;
+
   db.collection('progress').doc(me.uid).collection('stations').get().then(function (q) {
-    var done = q.size;
-    document.getElementById('p-num').textContent = done + ' / ' + total;
-    document.getElementById('p-txt').textContent = done ? 'תחנות שהושלמו' : 'עוד לא התחלתם. התחנה הראשונה מחכה.';
-    document.getElementById('p-bar').style.width = Math.round(done / total * 100) + '%';
+    renderProgress(q.size);
   }).catch(function () {
-    document.getElementById('p-num').textContent = '0 / ' + total;
-    document.getElementById('p-txt').textContent = 'עוד לא התחלתם';
+    renderProgress(0);
   });
 
-  // ---------- שמירה ----------
+  function renderProgress(done) {
+    var pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('p-num').textContent = done + ' / ' + total;
+    document.getElementById('p-txt').textContent = done ? 'תחנות שהושלמו' : 'עוד לא התחלתם. התחנה הראשונה מחכה.';
+    document.getElementById('p-bar').style.width = pct + '%';
+    document.getElementById('d-done').textContent = done;
+    document.getElementById('d-total').textContent = total;
+    document.getElementById('d-pct').textContent = pct + '%';
+
+    // מציאת הפרק הנוכחי (הפרק שמכיל את התחנה הבאה שטרם הושלמה)
+    var nextId = Math.min(done + 1, total);
+    var curChapterIdx = 0;
+    CH.forEach(function (c, ci) {
+      if (c.stations.some(function (s) { return s.id === nextId; })) curChapterIdx = ci;
+    });
+    document.getElementById('d-chapter').textContent = CH[curChapterIdx] ? CH[curChapterIdx].title : '–';
+
+    // ---------- מפת כביש אופקית · תחנה 1 משמאל, תחנה 11 מימין ----------
+    // הרצף כולל את כל 11 התחנות האמיתיות מתוכן הקורס, ובין כל פרק לפרק
+    // (מלבד אחרי האחרון) מוכנסת "תחנת התרעננות" · בדיוק 3 פרקים = 2 עצירות.
+    var slots = [];
+    CH.forEach(function (c, ci) {
+      c.stations.forEach(function (s) {
+        slots.push({ type: 'station', id: s.id, name: s.name, chapterIdx: ci });
+      });
+      if (ci < CH.length - 1) slots.push({ type: 'rest', chapterIdx: ci });
+    });
+
+    var slotsEl = document.getElementById('r11slots');
+    slotsEl.innerHTML = slots.map(function (sl) {
+      if (sl.type === 'rest') {
+        var restDone = CH[sl.chapterIdx].stations.every(function (s) { return s.id <= done; });
+        return '<div class="r-stop rest' + (restDone ? ' done' : '') + '" title="תחנת התרעננות">' +
+                 '<div class="pin"><b>☕</b></div>' +
+               '</div>';
+      }
+      var isDone = sl.id <= done;
+      return '<div class="r-stop' + (isDone ? ' done' : '') + '" data-station="' + sl.id + '" title="' + sl.name.replace(/"/g,'&quot;') + '">' +
+               '<div class="pin"><b>' + sl.id + '</b></div>' +
+             '</div>';
+    }).join('');
+
+    // ---------- מיקום הרכב לפי התחנה הנוכחית (מדידת המיקום בפועל בדום) ----------
+    var targetId = done >= total ? total : nextId;
+    var targetEl = slotsEl.querySelector('[data-station="' + targetId + '"]');
+    if (targetEl) {
+      requestAnimationFrame(function () {
+        var carLeft = targetEl.offsetLeft + targetEl.offsetWidth / 2;
+        document.getElementById('r11car').style.left = carLeft + 'px';
+        var wrap = document.querySelector('.road11-wrap');
+        if (wrap && wrap.scrollWidth > wrap.clientWidth) {
+          targetEl.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+        }
+      });
+    }
+
+    // ---------- מקרא · שמות אמיתיים מתוכן הקורס, מסונכרן עם data/content.js ----------
+    var legend = document.getElementById('road11legend');
+    legend.innerHTML = CH.map(function (c) {
+      return '<div class="rl-group"><h4>' + c.title + '</h4><ul>' +
+        c.stations.map(function (s) {
+          var isDone = s.id <= done;
+          return '<li class="' + (isDone ? 'done' : '') + '"><span class="n">' + s.id + '</span>' + s.name + '</li>';
+        }).join('') +
+      '</ul></div>';
+    }).join('');
+
+    // ---------- הישגים ----------
+    var badgesEl = document.getElementById('badges');
+    badgesEl.innerHTML = CH.map(function (c) {
+      var allDone = c.stations.every(function (s) { return s.id <= done; });
+      return '<span class="badge' + (allDone ? ' on' : '') + '"><span class="ic" data-ic="' + (allDone ? 'flame' : 'lock') + '"></span>' + c.title + '</span>';
+    }).join('');
+    if (window.icHTML) { /* icons.js fills [data-ic] automatically via MutationObserver */ }
+  }
+
+  // ---------- 2. שמירת פרטים ----------
   document.getElementById('save').addEventListener('click', function () {
     var b = this; b.disabled = true;
     ref.update({
@@ -153,7 +468,44 @@ document.addEventListener('oriane:ready', function (ev) {
     }).then(function () { b.disabled = false; });
   });
 
-  // ---------- העתקת הקישור ----------
+  // ---------- 3. מנוי ----------
+  Array.prototype.forEach.call(document.querySelectorAll('.plan button[data-plan]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var plan = btn.getAttribute('data-plan');
+      toast('מעבר לסליקה עבור מסלול ' + plan + ' · מערכת התשלומים תחובר בקרוב');
+    });
+  });
+  document.getElementById('btn-cancel').addEventListener('click', function () {
+    if (!confirm('לבטל את המנוי? הגישה תיסגר בסוף מחזור החיוב הנוכחי.')) return;
+    toast('בקשת הביטול התקבלה · מערכת הביטול האוטומטית תחובר בקרוב');
+  });
+
+  // ---------- 4. חיובים וחשבוניות ----------
+  db.collection('billing').doc(me.uid).collection('invoices').orderBy('date', 'desc').get().then(function (q) {
+    var box = document.getElementById('billingList');
+    if (q.empty) {
+      box.innerHTML = '<div class="empty">אין עדיין חיובים מתועדים. ברגע שיתבצע חיוב ראשון הוא יופיע כאן.</div>';
+      return;
+    }
+    box.innerHTML =
+      '<table><thead><tr><th>תאריך</th><th>סכום</th><th>סטטוס</th><th>חשבונית</th></tr></thead><tbody>' +
+      q.docs.map(function (d) {
+        var r = d.data();
+        var when = r.date && r.date.toDate ? r.date.toDate().toLocaleDateString('he-IL') : '–';
+        var paid = r.status === 'paid';
+        var dl = r.invoiceUrl
+          ? '<a class="btn-mini" href="' + r.invoiceUrl + '" target="_blank" rel="noopener">הורדה</a>'
+          : '<button class="btn-mini" disabled>בקרוב</button>';
+        return '<tr><td>' + when + '</td><td>' + (r.amount != null ? r.amount + ' ₪' : '–') + '</td>' +
+               '<td><span class="pill ' + (paid ? 'paid' : 'due') + '">' + (paid ? 'שולם' : 'ממתין') + '</span></td>' +
+               '<td>' + dl + '</td></tr>';
+      }).join('') + '</tbody></table>';
+  }).catch(function (e) {
+    document.getElementById('billingList').innerHTML = '<div class="empty">אין עדיין חיובים מתועדים.</div>';
+    console.error(e);
+  });
+
+  // ---------- 5. העתקת קישור ההפניה ----------
   document.getElementById('copy').addEventListener('click', function () {
     var i = document.getElementById('ref');
     i.select(); i.setSelectionRange(0, 99999);
