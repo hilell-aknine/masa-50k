@@ -119,6 +119,7 @@
   <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
 
   <script src="data/content.js"></script>
+  <script src="js/lesson-progress.js"></script>
   <script>
   (function(){
     var PROGRESS_KEY = 'oriane_journey_progress';
@@ -306,6 +307,9 @@
         el.classList.add('on');
         var st = el.querySelector('.st'); if (st) st.textContent = 'מנוגן עכשיו';
 
+        // מסמן את השיעור כנצפה, כדי שהמונה במסך הבית יתעדכן
+        if (window.OrianeLessons) window.OrianeLessons.markWatched(station.id, i);
+
         // הכתובת משקפת את השיעור, כך שאפשר לשלוח קישור ישיר אליו
         try {
           var u = new URL(location.href);
@@ -316,6 +320,11 @@
         frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
     });
+
+    // השיעור שנפתח עם הדף נספר גם הוא, כי הנגן שלו כבר על המסך
+    if (window.OrianeLessons && station.lessons && station.lessons.length) {
+      window.OrianeLessons.markWatched(station.id, lessonIdx);
+    }
 
     // ---------- סיום תחנה ----------
     document.getElementById('finishBtn').addEventListener('click', function(){

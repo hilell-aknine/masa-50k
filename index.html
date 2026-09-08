@@ -100,6 +100,11 @@
   .card .ic-box{width:34px;height:34px;border-radius:9px;background:rgba(252,193,203,.1);color:var(--hp-pink);display:grid;place-items:center;margin:0 auto 8px}
   .card .t{font-size:14px;font-weight:700;color:var(--hp-text)}
   .card .m{font-size:11.5px;color:var(--hp-text-dim);margin-top:3px}
+  /* מונה שיעורים בקובייה · בקשת אוריאן 08.09 */
+  .card .lcount{display:inline-block;font-size:11px;font-weight:700;margin-top:7px;
+    padding:3px 9px;border-radius:30px;color:var(--hp-text-dim);
+    background:rgba(127,127,127,.14)}
+  .card .lcount.full{color:#fff;background:#C2456A}
 
   .start-flag,.end-flag{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--hp-pink);margin-bottom:8px}
   .start-flag .box,.end-flag .box{padding:6px 16px;border:1px solid var(--hp-line);border-radius:8px;background:var(--hp-card);letter-spacing:2px}
@@ -161,6 +166,7 @@
 </div>
 
 <script src="data/content.js"></script>
+<script src="js/lesson-progress.js"></script>
 <script>
   const KEY = 'oriane_journey_progress';
   const CH = window.COURSE.chapters;
@@ -216,6 +222,13 @@
         if (s.id === 1) flag = '<div class="start-flag"><div class="box">START</div></div>';
         if (s.id === lastStationId) flag = '<div class="end-flag"><span class="star">★</span></div>';
 
+        // מונה שיעורים · בקשת אוריאן 08.09. מוצג רק בתחנה שיש בה שיעורים.
+        const nLes = Array.isArray(s.lessons) ? s.lessons.length : 0;
+        const seen = nLes && window.OrianeLessons ? window.OrianeLessons.watchedCount(s.id) : 0;
+        const lesLine = nLes
+          ? `<div class="lcount${seen >= nLes ? ' full' : ''}">${Math.min(seen, nLes)}/${nLes} שיעורים</div>`
+          : '';
+
         node.innerHTML = `
           ${flag}
           <div class="pin"><div class="num">${s.id}</div></div>
@@ -223,6 +236,7 @@
             <div class="ic-box"><span data-ic="${state==='locked' ? 'lock' : 'target'}" style="width:16px;height:16px"></span></div>
             <div class="t">פרק ${s.id} · ${s.name}</div>
             <div class="m">${state === 'active' ? 'התחנה הפעילה שלך' : (state === 'done' ? 'הושלם' : 'נעול')}</div>
+            ${lesLine}
           </div>`;
         if (state !== 'locked') node.onclick = () => go(s.id);
         nodes.appendChild(node);

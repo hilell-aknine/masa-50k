@@ -8,3 +8,8 @@ brand/
 content-source/
 content-mapping.md
 design/
+
+# פסולת של פריסת פיירבייס
+.firebase/
+firebase-debug.log
+firestore-debug.log
