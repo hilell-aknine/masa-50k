@@ -98,6 +98,27 @@
     .notes textarea{width:100%;min-height:110px;resize:vertical;background:var(--input-bg);border:1px solid var(--line);border-radius:12px;padding:13px 15px;color:var(--text);font-family:Inter,sans-serif;font-size:14px;line-height:1.6;outline:none}
     .notes textarea::placeholder{color:var(--text-faint)}
     .notes .hint{font-size:11.5px;color:var(--text-faint);margin-top:8px}
+    /* תגובות פומביות · שדה נפרד מההערות הפרטיות */
+    .notes.talk{margin-top:14px}
+    .cempty{font-size:13px;color:var(--text-faint);padding:10px 0 14px}
+    .citem{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+    .citem .av{width:32px;height:32px;flex:none;border-radius:50%;display:grid;place-items:center;
+      background:var(--input-bg);border:1px solid var(--line);font-weight:700;font-size:13px;color:var(--text-strong)}
+    .citem .cb{flex:1;min-width:0}
+    .citem .cwho{font-size:12.5px;font-weight:700;color:var(--text-strong)}
+    .citem .cwho .tag{font-size:10.5px;font-weight:700;margin-inline-start:6px;padding:2px 7px;
+      border-radius:30px;background:#C2456A;color:#fff}
+    .citem .cwhen{font-size:11px;color:var(--text-faint);margin-inline-start:7px;font-weight:400}
+    .citem .ctxt{font-size:13.5px;line-height:1.65;color:var(--text);margin-top:3px;
+      white-space:pre-wrap;overflow-wrap:anywhere}
+    .citem .cdel{flex:none;background:none;border:0;color:var(--text-faint);cursor:pointer;
+      font-size:12px;padding:4px 6px;font-family:inherit;align-self:flex-start}
+    .citem .cdel:hover{color:var(--text-strong)}
+    .crow{display:flex;align-items:center;gap:12px;margin-top:10px}
+    .cpost{background:var(--text-strong);color:var(--surface);border:0;border-radius:var(--radius-pill);
+      min-height:44px;padding:0 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+    .cpost:disabled{opacity:.55;cursor:default}
+    .cmsg{font-size:12px;color:var(--text-faint)}
 
     @media(max-width:520px){
       .st-title{font-size:22px}
@@ -269,7 +290,20 @@
       '<div class="notes">' +
         '<div class="nh"><h3><span data-ic="note"></span> ההערות שלי</h3><span class="saved" id="notesSaved">נשמר ✓</span></div>' +
         '<textarea id="notesArea" placeholder="כתוב כאן הערות, תובנות או שאלות מהתחנה הזו..."></textarea>' +
-        '<div class="hint">נשמר אוטומטית · פרטי לך בלבד</div>' +
+        '<div class="hint">🔒 נשמר אוטומטית · פרטי לך בלבד. אף אחת לא רואה את זה, גם לא אוריאן.</div>' +
+      '</div>';
+
+    // תגובות פומביות · שדה נפרד לגמרי מההערות הפרטיות (החלטת הלל 08.09)
+    var commentsHtml =
+      '<div class="notes talk">' +
+        '<div class="nh"><h3><span data-ic="note"></span> מה כתבו כאן</h3></div>' +
+        '<div class="hint" style="margin:0 0 12px">👥 מה שתכתבי כאן מוצג בשם שלך לכל המשתתפות בתחנה הזו.</div>' +
+        '<div id="cList"><div class="cempty">טוען...</div></div>' +
+        '<textarea id="cArea" maxlength="1000" placeholder="משהו שעזר לך בתחנה הזו? שתפי את שאר המשתתפות..."></textarea>' +
+        '<div class="crow">' +
+          '<button class="cpost" id="cPost" type="button">פרסום</button>' +
+          '<span class="cmsg" id="cMsg"></span>' +
+        '</div>' +
       '</div>';
 
     app.innerHTML =
@@ -285,6 +319,7 @@
       gainsHtml +
       '<div class="workbook">' + wbHtml + '</div>' +
       notesHtml +
+      commentsHtml +
       '<div class="actions">' +
         '<button class="btn-primary" id="finishBtn">סיימתי את התחנה ✓ · לתחנה הבאה</button>' +
         '<a class="btn-secondary" href="index.html">→ חזרה למפה</a>' +
@@ -331,6 +366,98 @@
       localStorage.setItem(PROGRESS_KEY, Math.max(done, station.id));
       location.href = 'index.html';
     });
+
+    // ---------- תגובות פומביות בתחנה ----------
+    // שדה נפרד לגמרי מההערות הפרטיות. כאן כותבות בשם מלא וכולן רואות.
+    // אוריאן מוחקת כל תגובה, וכל אחת מוחקת את שלה. אכיפה בכללי השרת.
+    (function () {
+      var db = window.ORIANE_DB;
+      var meUser = window.ORIANE_USER || {};
+      var list = document.getElementById('cList');
+      var area = document.getElementById('cArea');
+      var post = document.getElementById('cPost');
+      var cmsg = document.getElementById('cMsg');
+      if (!db || !list) return;
+
+      function when(ts) {
+        if (!ts || typeof ts.toDate !== 'function') return '';
+        var d = ts.toDate(), diff = (Date.now() - d.getTime()) / 1000;
+        if (diff < 60) return 'ממש עכשיו';
+        if (diff < 3600) return 'לפני ' + Math.floor(diff / 60) + ' דק׳';
+        if (diff < 86400) return 'לפני ' + Math.floor(diff / 3600) + ' שעות';
+        return d.toLocaleDateString('he-IL');
+      }
+
+      function draw(items) {
+        if (!items.length) {
+          list.innerHTML = '<div class="cempty">עוד לא כתבו כאן. את יכולה להיות הראשונה.</div>';
+          return;
+        }
+        list.innerHTML = items.map(function (c) {
+          var nm = (c.name || 'משתתפת').trim();
+          var mine = c.uid === meUser.uid;
+          var canDel = mine || meUser.isAdmin;
+          return '<div class="citem">' +
+            '<div class="av">' + esc(nm.charAt(0).toUpperCase() || '🙂') + '</div>' +
+            '<div class="cb">' +
+              '<div class="cwho">' + esc(nm) +
+                (c.isAdmin ? '<span class="tag">אוריאן</span>' : '') +
+                '<span class="cwhen">' + esc(when(c.created_at)) + '</span>' +
+              '</div>' +
+              '<div class="ctxt">' + esc(c.body) + '</div>' +
+            '</div>' +
+            (canDel ? '<button class="cdel" data-del="' + esc(c.id) + '" title="מחיקה">מחיקה</button>' : '') +
+          '</div>';
+        }).join('');
+
+        Array.prototype.forEach.call(list.querySelectorAll('[data-del]'), function (b) {
+          b.addEventListener('click', function () {
+            if (!confirm('למחוק את התגובה?')) return;
+            b.disabled = true;
+            db.collection('comments').doc(b.getAttribute('data-del')).delete()
+              .catch(function (e) { b.disabled = false; cmsg.textContent = 'המחיקה נכשלה'; console.error(e); });
+          });
+        });
+      }
+
+      // מאזין חי · תגובה חדשה מופיעה לכולן בלי רענון
+      db.collection('comments').where('stationId', '==', station.id)
+        .onSnapshot(function (snap) {
+          var items = snap.docs.map(function (d) { var o = d.data(); o.id = d.id; return o; });
+          items.sort(function (a, b) {
+            var ta = a.created_at && a.created_at.toMillis ? a.created_at.toMillis() : 0;
+            var tb = b.created_at && b.created_at.toMillis ? b.created_at.toMillis() : 0;
+            return tb - ta;
+          });
+          draw(items);
+        }, function (e) {
+          list.innerHTML = '<div class="cempty">לא הצלחנו לטעון את התגובות.</div>';
+          console.error('[comments]', e);
+        });
+
+      post.addEventListener('click', function () {
+        var body = (area.value || '').trim();
+        if (body.length < 2) { cmsg.textContent = 'כתבי משהו קצר לפני הפרסום'; return; }
+        if (body.length > 999) { cmsg.textContent = 'התגובה ארוכה מדי'; return; }
+        post.disabled = true;
+        cmsg.textContent = 'מפרסם...';
+        db.collection('comments').add({
+          stationId: station.id,
+          uid: meUser.uid,
+          name: meUser.name || (meUser.email || '').split('@')[0] || 'משתתפת',
+          isAdmin: !!meUser.isAdmin,
+          body: body,
+          created_at: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function () {
+          area.value = '';
+          cmsg.textContent = 'פורסם ✓';
+          setTimeout(function () { cmsg.textContent = ''; }, 2000);
+        }).catch(function (e) {
+          cmsg.textContent = 'הפרסום נכשל. נסי שוב.';
+          console.error(e);
+        }).then(function () { post.disabled = false; });
+      });
+    })();
 
     // ---------- ההערות שלי (פר-משתתף · פר-תחנה) ----------
     var noteUser = localStorage.getItem('oriane_user') || 'guest';

@@ -122,6 +122,29 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // ---------- תגובות פומביות בתחנה ----------
+    // החלטת הלל 08.09: שני שדות נפרדים. `/notes` נשאר פרטי לחלוטין
+    // (גם מאדמין), וכאן יושבת התיבה שכולן רואות, ליצירת קהילתיות.
+    // מי שרוצה להתייעץ בשקט לא נאלצת לעשות את זה מול הקבוצה.
+    match /comments/{cid} {
+      // כל מי שגישתה פעילה רואה את התגובות. זה כל הרעיון.
+      allow read: if hasAccess() || isAdmin();
+
+      // כותבת רק בשם עצמה, בלי לזייף מחברת אחרת, ובאורך שפוי.
+      allow create: if hasAccess()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.stationId is int
+                    && request.resource.data.body is string
+                    && request.resource.data.body.size() > 1
+                    && request.resource.data.body.size() < 1000;
+
+      // עריכה אסורה לכולם. תגובה משתנה אחרי שנקראה היא בעיה.
+      allow update: if false;
+
+      // מחיקה: אוריאן מורידה כל תגובה, וכל אחת מוחקת את שלה.
+      allow delete: if isAdmin() || resource.data.uid == request.auth.uid;
+    }
+
     // ---------- חיובים וחשבוניות ----------
     // כל חיוב נשמר תחת המשתמש שלו. כרגע רק מנהל כותב (ידנית / מהוובהוק
     // של הסליקה בעתיד). המשתמש רואה רק את החיובים של עצמו.
