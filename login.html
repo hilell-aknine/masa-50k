@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>כניסה · המסע ל-50K</title>
 <link rel="stylesheet" href="css/portal.css">
 <style>
@@ -127,6 +130,17 @@
             source: invited ? 'invite' : 'self',
             referred_by: (localStorage.getItem('oriane_ref') || null),
             created_at: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(function () {
+            // רשומת הפניה רזה, כדי שהמפנה תוכל לספור את עצמה.
+            // שאילתה מול profiles פתוחה לאדמין בלבד, ולכן בלי זה
+            // תלמידה מקבלת קישור בלי שום דרך לדעת אם הוא עבד.
+            var code = localStorage.getItem('oriane_ref');
+            if (!code || code === u.uid.slice(0, 8)) return;
+            return db.collection('referrals').add({
+              code: code,
+              uid: u.uid,
+              created_at: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(function (e) { console.error('[referral]', e); });
           });
         });
     }).then(function () {

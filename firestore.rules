@@ -145,6 +145,32 @@ service cloud.firestore {
       allow delete: if isAdmin() || resource.data.uid == request.auth.uid;
     }
 
+    // ---------- הפניות · "חבר מביא חבר" ----------
+    // הבעיה שזה פותר: הספירה נשענה על שאילתה מול profiles, וזה מותר
+    // רק לאדמין. לכן תלמידה קיבלה קישור הפניה בלי שום דרך לדעת אם
+    // הוא עבד. פתיחת profiles לתלמידות הייתה חושפת את רשימת החברות,
+    // ולכן כאן יושבת רשומה רזה שמכילה רק את הקוד המפנה.
+    //
+    // הקוד הוא 8 התווים הראשונים של ה-uid של המפנה, ולכן כל אחת
+    // קוראת אך ורק את ההפניות שלה. שאילתה שאינה מסוננת לפי הקוד שלה
+    // תיחסם על ידי הכלל הזה.
+    match /referrals/{rid} {
+      allow read: if isAdmin()
+                  || (signedIn() && resource.data.code == request.auth.uid[0:8]);
+
+      // נוצר פעם אחת, על ידי המצטרפת עצמה, ברגע ההרשמה.
+      allow create: if signedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.code is string
+                    && request.resource.data.code.size() >= 4
+                    && request.resource.data.code.size() <= 32
+                    && request.resource.data.code != request.auth.uid[0:8];
+
+      // אין עריכה ואין מחיקה עצמית. ספירה שאפשר לשנות היא חסרת ערך.
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
     // ---------- דיווח על תגובה ----------
     // תלמידה מדווחת, ורק אוריאן רואה. אין "כמה דיווחים קיבלת" בממשק
     // התלמידות, כדי שלא ייווצר כלי לחץ חברתי.
