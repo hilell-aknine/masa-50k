@@ -73,6 +73,35 @@
     <button id="btn-biz-save">שמירה</button>
   </div>
 
+  <div class="panel">
+    <h2>כפתור "תמיכה"</h2>
+    <p class="help">הכפתור מופיע בסרגל העליון בכל מסך, ותמיד מוצג. כאן קובעים לאן הוא מוביל: קישור לוואטסאפ, כתובת מייל, טופס פנייה או כל עמוד אחר. כל עוד לא הוגדר יעד, הכפתור מוביל למסך "שאלות לאוריאן" שכבר קיים באתר.</p>
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">יעד הכפתור</label>
+    <input type="text" id="supUrl" placeholder="https://wa.me/972... או mailto:..." style="direction:ltr;text-align:left;margin-bottom:12px">
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">טקסט הכפתור</label>
+    <input type="text" id="supLabel" placeholder="תמיכה" style="margin-bottom:12px">
+    <button id="btn-sup-save">שמירה</button>
+  </div>
+
+  <div class="panel">
+    <h2>באנר "הזדמנות חד פעמית"</h2>
+    <p class="help">באנר ורוד עם כיתוב לבן שמופיע במסך הבית, מעל מפת המסע. מיועד להצעת פגישה אישית עם אוריאן. כל עוד המתג כבוי, התלמידות לא רואות אותו כלל, ורק מנהלת רואה תצוגה מקדימה מסומנת. אפשר לסגור אותו, ושינוי בכותרת או בטקסט מחזיר אותו למי שסגרה.</p>
+    <label style="display:flex;align-items:center;gap:9px;font-size:13.5px;margin-bottom:14px;cursor:pointer">
+      <input type="checkbox" id="otoOn" style="width:auto;margin:0"> הפעלת הבאנר לכל התלמידות
+    </label>
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">תווית קטנה</label>
+    <input type="text" id="otoKicker" placeholder="הזדמנות חד פעמית" style="margin-bottom:12px">
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">כותרת</label>
+    <input type="text" id="otoTitle" placeholder="פגישה אישית עם אוריאן" style="margin-bottom:12px">
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">טקסט</label>
+    <textarea id="otoText" placeholder="הקופי של ההצעה" style="min-height:70px;margin-bottom:12px"></textarea>
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">טקסט הכפתור</label>
+    <input type="text" id="otoCta" placeholder="לתיאום הפגישה" style="margin-bottom:12px">
+    <label style="display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px">יעד הכפתור</label>
+    <input type="text" id="otoUrl" placeholder="https://... יומן פגישות או טופס" style="direction:ltr;text-align:left;margin-bottom:12px">
+    <button id="btn-oto-save">שמירה</button>
+  </div>
+
   <div class="panel" id="q-panel" style="display:none;border-color:var(--accent)">
     <h2>שאלות שממתינות לתשובה <span id="q-n" class="pill pending"></span></h2>
     <p class="help">שאלות שתלמידות שלחו. התשובה מוצגת לשואלת בלבד. אף משתתפת אחרת לא רואה שאלות של אחרות.</p>
@@ -125,6 +154,14 @@ document.addEventListener('oriane:ready', function (ev) {
     var s = snap.exists ? snap.data() : {};
     document.getElementById('bizUrl').value = s.businessLinkUrl || '';
     document.getElementById('bizLabel').value = s.businessLinkLabel || '';
+    document.getElementById('supUrl').value = s.supportUrl || '';
+    document.getElementById('supLabel').value = s.supportLabel || '';
+    document.getElementById('otoOn').checked = s.otoOn === true;
+    document.getElementById('otoKicker').value = s.otoKicker || '';
+    document.getElementById('otoTitle').value = s.otoTitle || '';
+    document.getElementById('otoText').value = s.otoText || '';
+    document.getElementById('otoCta').value = s.otoCta || '';
+    document.getElementById('otoUrl').value = s.otoUrl || '';
   }).catch(function (e) { console.error(e); });
 
   document.getElementById('btn-biz-save').addEventListener('click', function () {
@@ -138,6 +175,42 @@ document.addEventListener('oriane:ready', function (ev) {
     }).then(function () { btn.disabled = false; });
   });
 
+  // ---------- כפתור "תמיכה" ----------
+  document.getElementById('btn-sup-save').addEventListener('click', function () {
+    var btn = this;
+    var url = (document.getElementById('supUrl').value || '').trim();
+    var label = (document.getElementById('supLabel').value || '').trim();
+    if (url && !/^(https?:|mailto:|tel:|whatsapp:)/i.test(url) && !/^[\w.\-]+\.html([?#].*)?$/i.test(url)) {
+      return toast('היעד לא תקין. התחילו ב-https:// או mailto: או שם עמוד באתר');
+    }
+    btn.disabled = true;
+    bizRef.set({ supportUrl: url, supportLabel: label }, { merge: true }).then(function () {
+      toast(url ? 'יעד התמיכה נשמר' : 'היעד רוקן. הכפתור חוזר למסך השאלות');
+    }).catch(function (e) {
+      toast('השמירה נכשלה'); console.error(e);
+    }).then(function () { btn.disabled = false; });
+  });
+
+  // ---------- באנר "הזדמנות חד פעמית" ----------
+  document.getElementById('btn-oto-save').addEventListener('click', function () {
+    var btn = this;
+    var v = function (id) { return (document.getElementById(id).value || '').trim(); };
+    var url = v('otoUrl'), on = document.getElementById('otoOn').checked;
+    if (url && !/^(https?:|mailto:|tel:|whatsapp:)/i.test(url) && !/^[\w.\-]+\.html([?#].*)?$/i.test(url)) {
+      return toast('היעד לא תקין. התחילו ב-https:// או mailto: או שם עמוד באתר');
+    }
+    if (on && !v('otoTitle')) return toast('צריך כותרת לפני שמפעילים את הבאנר');
+    if (on && !url) return toast('צריך יעד לכפתור לפני שמפעילים את הבאנר');
+    btn.disabled = true;
+    bizRef.set({
+      otoOn: on, otoKicker: v('otoKicker'), otoTitle: v('otoTitle'),
+      otoText: v('otoText'), otoCta: v('otoCta'), otoUrl: url
+    }, { merge: true }).then(function () {
+      toast(on ? 'הבאנר נשמר ומוצג לכולן' : 'הבאנר נשמר וכבוי. רק את רואה אותו');
+    }).catch(function (e) {
+      toast('השמירה נכשלה'); console.error(e);
+    }).then(function () { btn.disabled = false; });
+  });
 
   function toast(t) {
     var el = document.getElementById('toast');
@@ -204,6 +277,12 @@ document.addEventListener('oriane:ready', function (ev) {
         var acts = a === 'active'
           ? '<button class="ghost" data-act="revoked" data-id="' + r.id + '">סגירת גישה</button>'
           : '<button data-act="active" data-id="' + r.id + '">פתיחת גישה</button>';
+        // מנהלת מקבלת את מסך הניהול המלא. הכפתור מוצג לכל שורה חוץ מהשורה שלי.
+        if (r.id !== me.uid) {
+          acts += r.role === 'admin'
+            ? '<button class="ghost" data-role="student" data-id="' + r.id + '">הסרת ניהול</button>'
+            : '<button class="ghost" data-role="admin" data-id="' + r.id + '">הפיכה למנהלת</button>';
+        }
         return '<tr>' +
             '<td class="em">' + esc(r.email) + (r.full_name ? '<br><span style="color:var(--text)">' + esc(r.full_name) + '</span>' : '') + '</td>' +
             '<td><span class="pill ' + a + '">' + (LABEL[a] || a) + '</span>' +
@@ -224,6 +303,29 @@ document.addEventListener('oriane:ready', function (ev) {
         b.disabled = true;
         db.collection('profiles').doc(id).update({ access: act }).then(function () {
           toast(act === 'active' ? 'הגישה נפתחה' : 'הגישה נסגרה');
+        }).catch(function (e) {
+          b.disabled = false; toast('הפעולה נכשלה'); console.error(e);
+        });
+      });
+    });
+
+    // ---------- הפיכה למנהלת / הסרת ניהול ----------
+    // מנהלת רואה את כל המסך הזה ויכולה לפתוח ולסגור גישה לכולם.
+    // הפיכה למנהלת פותחת גם את הגישה לתוכן, אחרת היא נחסמת מהשיעורים.
+    Array.prototype.forEach.call(box.querySelectorAll('button[data-role]'), function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-id'), role = b.getAttribute('data-role');
+        if (id === me.uid) return toast('אי אפשר לשנות את התפקיד של עצמך');
+        var row = rows.filter(function (r) { return r.id === id; })[0] || {};
+        var who = row.full_name || row.email || 'המשתמשת';
+        var ask = role === 'admin'
+          ? 'להפוך את ' + who + ' למנהלת? היא תקבל את מסך הניהול המלא ותוכל לפתוח ולסגור גישה לכל המשתמשים.'
+          : 'להסיר ניהול מ' + who + '? היא תאבד את הגישה למסך הניהול.';
+        if (!confirm(ask)) return;
+        b.disabled = true;
+        var patch = role === 'admin' ? { role: 'admin', access: 'active' } : { role: 'student' };
+        db.collection('profiles').doc(id).update(patch).then(function () {
+          toast(role === 'admin' ? who + ' הפכה למנהלת' : 'הניהול הוסר');
         }).catch(function (e) {
           b.disabled = false; toast('הפעולה נכשלה'); console.error(e);
         });

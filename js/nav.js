@@ -13,11 +13,27 @@
 (function () {
   'use strict';
 
+  /* כפתור התמיכה · יעד סופי טרם הוכרע (הלל, 08.09.2026).
+     היעד נשלט ממסך הניהול (settings/site.supportUrl) ולא מהקוד, כדי שאפשר
+     יהיה להחליף אותו בלי פריסה מחדש. עד שיוגדר יעד, הכפתור מוביל למסך
+     "שאלות לאוריאן" שכבר קיים וחי, כדי שלא יהיה כפתור מת. */
+  var SUPPORT_FALLBACK = 'ask.html';
+  var SUPPORT_ICON =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<circle cx="12" cy="12" r="9"/>' +
+    '<path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.3-2.7 2.3"/>' +
+    '<path d="M12 17h.01"/></svg>';
+
   var CSS = [
     "@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');",
     '.onav{position:sticky;top:0;z-index:250;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;',
     '  background:#0a1c38;border-bottom:1px solid rgba(252,193,203,.16);',
-    '  padding:9px 16px;margin:0;min-height:58px;font-family:Heebo,sans-serif}',
+    '  padding:9px 16px;margin:0;min-height:58px;font-family:Heebo,sans-serif;',
+    // בטלפון תוכן הסרגל רחב מהמסך. בלי זה כל הדף נגרר לצדדים ומקבל
+    // פס גלילה אופקי. עכשיו הסרגל עצמו גולל בפנים והדף נשאר במקום.
+    '  max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}',
+    '.onav::-webkit-scrollbar{display:none}',
     '.onav .brand{font-family:"Caveat",cursive;font-size:23px;font-weight:700;color:#fcc1cb;',
     '  text-decoration:none;white-space:nowrap;margin-inline-end:6px}',
     '.onav .menu{display:flex;align-items:center;gap:2px;margin-inline-end:auto}',
@@ -47,11 +63,20 @@
     '  font-size:11.5px;font-weight:600;padding:8px 12px;border-radius:30px;cursor:pointer;',
     '  font-family:inherit;flex:none}',
     '.onav .out:hover{color:#eaf1fb;border-color:rgba(252,193,203,.45)}',
+    '.onav .sup{display:inline-flex;align-items:center;gap:6px;background:transparent;',
+    '  border:1px solid rgba(252,193,203,.22);color:#93a6c4;font-size:11.5px;font-weight:600;',
+    '  padding:8px 12px;border-radius:30px;text-decoration:none;white-space:nowrap;flex:none;',
+    '  margin-inline-end:6px}',
+    '.onav .sup:hover{color:#eaf1fb;border-color:rgba(252,193,203,.45)}',
+    '.onav .sup svg{width:14px;height:14px;flex:none}',
     '@media(max-width:760px){',
     '  .onav .menu a{padding:8px 10px;font-size:12.5px}',
     '  .onav .who .txt{display:none}',
     '  .onav .biz{padding:8px 12px;font-size:12px}',
     '  .onav .crmbtn{padding:8px 12px;font-size:12px}',
+    // בטלפון כפתור התמיכה מצטמצם לאייקון בלבד, כדי לא להוסיף רוחב לסרגל.
+    '  .onav .sup{padding:8px 10px}',
+    '  .onav .sup .lbl{display:none}',
     '}',
     '@media(max-width:460px){ .onav .out{display:none} }'
   ].join('');
@@ -71,6 +96,11 @@
       });
     }
 
+    // חוסם javascript: וכיוצא בו מהגדרה שנשמרה במסד. רק יעדים אמיתיים עוברים.
+    function isSafeUrl(u) {
+      return /^(https?:|mailto:|tel:|whatsapp:)/i.test(u) || /^[\w.\-]+\.html([?#].*)?$/i.test(u);
+    }
+
     function link(href, label, active) {
       return '<a class="' + (active ? 'on' : '') + '" href="' + href + '">' + label + '</a>';
     }
@@ -87,6 +117,10 @@
           (me.isAdmin ? link('admin.html', 'ניהול', here === 'admin.html' || here === 'dashboard.html') : '') +
         '</div>' +
         '<span id="onavBizSlot"></span>' +
+        '<a class="sup" id="onavSup" href="' + SUPPORT_FALLBACK + '" title="תמיכה">' +
+          SUPPORT_ICON +
+          '<span class="lbl">תמיכה</span>' +
+        '</a>' +
         '<button class="who" id="onavWho" type="button" title="עדכון פרטים אישיים">' +
           '<span class="txt"><b>' + esc(me.name || 'המשתמש') + '</b>' + esc(me.email || '') + '</span>' +
           '<span class="avatar">' + esc(initial || '🙂') + '</span>' +
@@ -110,17 +144,37 @@
       });
     });
 
-    // ---------- כפתור "השארת פרטים לתהליך עסקי" ----------
-    // מוצג רק אם המנהל הגדיר קישור במסך הניהול (settings/site).
+    // ---------- הגדרות אתר (settings/site) ----------
+    // קריאה אחת שמזינה גם את כפתור "השארת פרטים" וגם את כפתור התמיכה.
     if (db) {
       db.collection('settings').doc('site').get().then(function (snap) {
         var s = snap.exists ? snap.data() : {};
+
+        // כפתור "השארת פרטים לתהליך עסקי" · מוצג רק אם הוגדר קישור.
         var url = (s.businessLinkUrl || '').trim();
-        if (!url) return;
-        var label = (s.businessLinkLabel || '').trim() || 'השארת פרטים לתהליך עסקי';
-        var slot = document.getElementById('onavBizSlot');
-        if (slot) {
-          slot.innerHTML = '<a class="biz" href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(label) + '</a>';
+        if (url && isSafeUrl(url)) {
+          var label = (s.businessLinkLabel || '').trim() || 'השארת פרטים לתהליך עסקי';
+          var slot = document.getElementById('onavBizSlot');
+          if (slot) {
+            slot.innerHTML = '<a class="biz" href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(label) + '</a>';
+          }
+        }
+
+        // כפתור התמיכה · תמיד מוצג. כאן רק מחליפים את היעד אם הוגדר אחד.
+        var sup = document.getElementById('onavSup');
+        var supUrl = (s.supportUrl || '').trim();
+        if (sup && supUrl && isSafeUrl(supUrl)) {
+          sup.setAttribute('href', supUrl);
+          if (/^https?:/i.test(supUrl)) {
+            sup.setAttribute('target', '_blank');
+            sup.setAttribute('rel', 'noopener');
+          }
+        }
+        var supLabel = (s.supportLabel || '').trim();
+        if (sup && supLabel) {
+          var lbl = sup.querySelector('.lbl');
+          if (lbl) lbl.textContent = supLabel;
+          sup.setAttribute('title', supLabel);
         }
       }).catch(function (e) { console.error('[nav] settings/site', e); });
     }
