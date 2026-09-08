@@ -25,6 +25,11 @@
   button.google{background:var(--surface);color:var(--text-strong);border:1px solid var(--line);
     display:flex;align-items:center;justify-content:center;gap:10px;margin-top:0}
   button.google:hover{border-color:var(--btn-bg)}
+  /* קישור "שכחתי סיסמה" · כפתור טקסטואלי, לא כפתור ראשי */
+  button.linkish{background:none;border:0;color:var(--text-dim);font-size:12.5px;
+    text-decoration:underline;min-height:44px;width:100%;margin-top:4px;cursor:pointer;
+    font-family:inherit}
+  button.linkish:hover{color:var(--text-strong)}
   .or{display:flex;align-items:center;gap:12px;margin:20px 0 4px;color:var(--text-faint);font-size:13px}
   .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
   .hint{margin-top:18px;font-size:13px;color:var(--text-faint);line-height:1.6;text-align:center}
@@ -58,18 +63,11 @@
       <input id="pw-pass" type="password" autocomplete="current-password" placeholder="••••••••" required minlength="6">
       <button id="btn-pw" type="submit">כניסה עם סיסמה</button>
       <button id="btn-pw-signup" type="button" class="google" style="margin-top:10px">אין לי חשבון · הרשמה עם מייל וסיסמה</button>
-    </form>
-
-    <div class="or"><span>או עם קישור למייל</span></div>
-
-    <form id="f" novalidate>
-      <label for="email">כתובת מייל</label>
-      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
-      <button id="btn" type="submit">שלחו לי קישור כניסה</button>
+      <button id="btn-forgot" type="button" class="linkish">שכחתי את הסיסמה</button>
     </form>
 
     <div class="msg" id="msg"></div>
-    <p class="hint">הכניסה עם Google מיידית. קישור במייל עלול להגיע לתיקיית הספאם.</p>
+    <p class="hint">הכניסה עם Google מיידית ובלי לזכור סיסמה.</p>
   </div>
   <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
 </div>
@@ -86,11 +84,7 @@
   var auth = firebase.auth();
   var db = firebase.firestore();
 
-  var f = document.getElementById('f');
-  var email = document.getElementById('email');
-  var btn = document.getElementById('btn');
   var msg = document.getElementById('msg');
-  var KEY = 'oriane_pending_email';
 
   function say(text, kind) {
     msg.textContent = text;
@@ -113,7 +107,7 @@
   }
 
   // ---------- צינור אחד לשתי שיטות הכניסה ----------
-  // גוגל ולינק במייל מגיעים לכאן שניהם. השיטה קובעת רק *מי אתה*,
+  // גוגל ומייל+סיסמה מגיעים לכאן שניהם. השיטה קובעת רק *מי אתה*,
   // ולא *מה מותר לך*. הגישה נקבעת מרשימת ההזמנות, והכללים בצד השרת
   // חוסמים כל ניסיון להיווצר עם access פעיל בלי הזמנה תואמת.
   function afterSignIn(u) {
@@ -225,61 +219,46 @@
       b.disabled = false;
       if (e && e.code === 'auth/popup-closed-by-user') return;
       if (e && e.code === 'auth/operation-not-allowed') {
-        say('הכניסה עם Google עדיין לא הופעלה במערכת. השתמשו בינתיים בקישור למייל.', 'err');
+        say('הכניסה עם Google עדיין לא הופעלה במערכת. היכנסו עם מייל וסיסמה.', 'err');
       } else {
-        say('הכניסה עם Google נכשלה. נסו שוב או השתמשו בקישור למייל.', 'err');
+        say('הכניסה עם Google נכשלה. נסו שוב או היכנסו עם מייל וסיסמה.', 'err');
       }
       console.error(e);
     });
   });
 
-  // ---------- חזרה מהקישור במייל ----------
-  if (auth.isSignInWithEmailLink(location.href)) {
-    var saved = localStorage.getItem(KEY);
-    if (!saved) {
-      saved = window.prompt('לאישור הזהות, הזינו שוב את כתובת המייל שאליה נשלח הקישור');
+  // ---------- שכחתי סיסמה ----------
+  // רשת ביטחון חובה מרגע שביטלנו את הקישור למייל: בלי זה מי ששכחה
+  // את הסיסמה ואין לה חשבון גוגל פשוט נעולה בחוץ.
+  var btnForgot = document.getElementById('btn-forgot');
+  btnForgot.addEventListener('click', function () {
+    var v = (pwEmail.value || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
+      return say('הזינו קודם את כתובת המייל שלכם בשדה למעלה, ואז לחצו כאן.', 'err');
     }
-    if (saved) {
-      say('מאמת את הקישור, רגע אחד...', 'ok');
-      auth.signInWithEmailLink(saved, location.href).then(function (res) {
-        localStorage.removeItem(KEY);
-        return afterSignIn(res.user);
-      }).catch(function (e) {
-        say('הקישור אינו תקף יותר. בקשו קישור חדש למטה.', 'err');
+    btnForgot.disabled = true;
+    btnForgot.textContent = 'שולח...';
+    auth.sendPasswordResetEmail(v).then(function () {
+      // בכוונה לא מגלים אם המייל קיים במערכת, כדי לא לאפשר מיפוי משתמשות
+      say('אם קיים חשבון עם ' + v + ', נשלח אליו מייל לאיפוס סיסמה. אם הוא לא מגיע, בדקו בספאם.', 'ok');
+    }).catch(function (e) {
+      if (e && e.code === 'auth/user-not-found') {
+        say('אם קיים חשבון עם ' + v + ', נשלח אליו מייל לאיפוס סיסמה. אם הוא לא מגיע, בדקו בספאם.', 'ok');
+      } else {
+        say('לא הצלחנו לשלוח כרגע. נסו שוב בעוד רגע.', 'err');
         console.error(e);
-      });
-    }
-  }
-
-  // ---------- כבר מחובר ----------
-  auth.onAuthStateChanged(function (u) {
-    if (!u || auth.isSignInWithEmailLink(location.href)) return;
-    db.collection('profiles').doc(u.uid).get().then(function (snap) {
-      if (snap.exists && snap.data().access === 'active') location.replace(next);
+      }
+    }).finally(function () {
+      btnForgot.disabled = false;
+      btnForgot.textContent = 'שכחתי את הסיסמה';
     });
   });
 
-  // ---------- שליחת הקישור ----------
-  f.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    var v = (email.value || '').trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
-      return say('נראה שכתובת המייל אינה תקינה. בדקו שוב.', 'err');
-    }
-    btn.disabled = true;
-    btn.textContent = 'שולח...';
-    auth.sendSignInLinkToEmail(v, {
-      url: location.origin + location.pathname + '?next=' + encodeURIComponent(next),
-      handleCodeInApp: true
-    }).then(function () {
-      localStorage.setItem(KEY, v);
-      say('שלחנו קישור כניסה אל ' + v + '. פתחו אותו מהמכשיר הזה. אם הוא לא מגיע, בדקו בספאם.', 'ok');
-      btn.textContent = 'נשלח ✓';
-    }).catch(function (e) {
-      btn.disabled = false;
-      btn.textContent = 'שלחו לי קישור כניסה';
-      say('לא הצלחנו לשלוח כרגע. נסו שוב בעוד רגע.', 'err');
-      console.error(e);
+  // ---------- כבר מחובר ----------
+  auth.onAuthStateChanged(function (u) {
+    if (!u) return;
+    db.collection('profiles').doc(u.uid).get().then(function (snap) {
+      if (snap.exists && snap.data().access === 'active') location.replace(next);
     });
   });
 })();
