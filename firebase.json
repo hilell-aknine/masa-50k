@@ -2,7 +2,7 @@
   "firestore": { "rules": "firestore.rules" },
   "hosting": {
     "public": ".",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "supabase/**", "sandbox/**", "design/**", "content-source/**", "brand/**", "**/*.md"],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "supabase/**", "sandbox/**", "design/**", "content-source/**", "brand/**", "**/*.md", "**/*.rules", "**/*.env", "project_config.json"],
     "headers": [
       {
         "source": "**/*.html",
