@@ -59,6 +59,10 @@
     var db = window.ORIANE_DB;
     if (!db) return;
 
+    // לקוחת פרימיום לא רואה הצעות, נקודה. יוצאים לפני הקריאה למסד,
+    // כדי שגם הפעלה שגויה של הבאנר במסך הניהול לא תוכל לדלוף אליה.
+    if (me.isPremium) return;
+
     db.collection('settings').doc('site').get().then(function (snap) {
       var s = snap.exists ? snap.data() : {};
 

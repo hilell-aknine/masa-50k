@@ -169,9 +169,10 @@
   <aside class="acct-side">
     <button class="on" data-tab="journey"><span class="ic" data-ic="compass"></span> המסע שלי</button>
     <button data-tab="details"><span class="ic" data-ic="note"></span> הפרטים שלי</button>
-    <button data-tab="subscription"><span class="ic" data-ic="shield"></span> המנוי שלי</button>
-    <button data-tab="billing"><span class="ic" data-ic="download"></span> חיובים וחשבוניות</button>
-    <button data-tab="affiliate"><span class="ic" data-ic="send"></span> חבר מביא חבר</button>
+    <button data-tab="access" data-premium><span class="ic" data-ic="shield"></span> הגישה שלי</button>
+    <button data-tab="subscription" data-commercial><span class="ic" data-ic="shield"></span> המנוי שלי</button>
+    <button data-tab="billing" data-commercial><span class="ic" data-ic="download"></span> חיובים וחשבוניות</button>
+    <button data-tab="affiliate" data-commercial><span class="ic" data-ic="send"></span> חבר מביא חבר</button>
   </aside>
 
   <main class="acct-main">
@@ -234,8 +235,25 @@
       </div>
     </section>
 
-    <!-- 3. המנוי שלי -->
-    <section class="acct-section" id="tab-subscription">
+    <!-- 3א. הגישה שלי · לקוחות פרימיום בלבד -->
+    <!-- מחליף את "המנוי שלי" ליזמים שאוריאן מלווה אישית.
+         בלי מחיר, בלי שדרוג, בלי תאריך תפוגה, בלי ביטול מנוי.
+         רק אמירה שקטה שהכל פתוח, ומה מקבלים. -->
+    <section class="acct-section" id="tab-access" data-premium>
+      <div class="card">
+        <h2>הגישה שלי</h2>
+        <p class="help">הגישה שלך למסע פתוחה במלואה. אין כאן מה לשדרג ואין מה לחדש.</p>
+        <ul class="plan-feats">
+          <li><span class="ic" data-ic="target"></span> כל 11 התחנות של המסע ל-50K, פתוחות</li>
+          <li><span class="ic" data-ic="brain"></span> CRM לניהול העסק</li>
+          <li><span class="ic" data-ic="send"></span> שאלות ותשובות מול אוריאן</li>
+          <li><span class="ic" data-ic="spark"></span> כל תוכן חדש שנוסף, אוטומטית</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3ב. המנוי שלי · מנויים בלבד -->
+    <section class="acct-section" id="tab-subscription" data-commercial>
       <div class="card">
         <h2>המנוי שלי</h2>
         <p class="help">כרגע נמצאים על המסלול ההתחלתי. אפשר לשדרג בכל שלב לאחד המסלולים למטה.</p>
@@ -283,7 +301,7 @@
     </section>
 
     <!-- 4. חיובים וחשבוניות -->
-    <section class="acct-section" id="tab-billing">
+    <section class="acct-section" id="tab-billing" data-commercial>
       <div class="card">
         <h2>חיובים וחשבוניות</h2>
         <p class="help">כאן יופיע היסטוריית החיובים החודשיים שלך, עם אפשרות להורדת חשבונית לכל חיוב.</p>
@@ -292,7 +310,7 @@
     </section>
 
     <!-- 5. חבר מביא חבר -->
-    <section class="acct-section" id="tab-affiliate">
+    <section class="acct-section" id="tab-affiliate" data-commercial>
       <div class="card">
         <h2>הזמנת חברים</h2>
         <p class="help">זה הקישור האישי שלכם. מי שיצטרף דרכו יירשם על שמכם.</p>
@@ -340,8 +358,16 @@ document.addEventListener('oriane:ready', function (ev) {
   tabs.forEach(function (b) {
     b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); });
   });
+  // לשונית מותרת = כזו שהכפתור שלה באמת מוצג לקהל הזה.
+  // בלי הבדיקה הזו קישור ישן ל-#subscription היה פותח ללקוחת פרימיום
+  // מסך ריק, כי הסקשן מוסתר אבל עדיין מקבל .on
+  function tabAllowed(name) {
+    var b = document.querySelector('.acct-side button[data-tab="' + name + '"]');
+    return !!b && b.offsetParent !== null;
+  }
+
   var initial = (location.hash || '').replace('#', '');
-  if (['journey','details','subscription','billing','affiliate'].indexOf(initial) !== -1) showTab(initial);
+  if (initial && tabAllowed(initial)) showTab(initial);
 
   // ---------- 1. ברכה לפי שעה ----------
   var hour = new Date().getHours();
@@ -359,6 +385,10 @@ document.addEventListener('oriane:ready', function (ev) {
     document.getElementById('greetHi').textContent = greetText + (name ? ', ' + name : '') + ' ✨';
     document.getElementById('name').value = name;
     document.getElementById('phone').value = p.phone || '';
+
+    // "חבר מביא חבר" הוא מנגנון מסחרי, ולכן לא נבנה כלל ללקוחת פרימיום.
+    // בלי היציאה הזו היה נוצר לה קישור לדף המכירה, גם אם מוסתר.
+    if (me.isPremium) return;
 
     var code = me.uid.slice(0, 8);
     var base = location.origin + location.pathname.replace(/me\.html$/, 'landing.html');
@@ -487,6 +517,9 @@ document.addEventListener('oriane:ready', function (ev) {
   });
 
   // ---------- 4. חיובים וחשבוניות ----------
+  // לקוחת פרימיום לא משלמת ולא רואה את הלשונית הזו. לא מושכים לה
+  // חיובים בכלל, כדי שלא ייווצר מצב שבו מספר או מחיר בכלל קיים בדף שלה.
+  if (!me.isPremium) {
   db.collection('billing').doc(me.uid).collection('invoices').orderBy('date', 'desc').get().then(function (q) {
     var box = document.getElementById('billingList');
     if (q.empty) {
@@ -510,6 +543,7 @@ document.addEventListener('oriane:ready', function (ev) {
     document.getElementById('billingList').innerHTML = '<div class="empty">אין עדיין חיובים מתועדים.</div>';
     console.error(e);
   });
+  }
 
   // ---------- 5. העתקת קישור ההפניה ----------
   document.getElementById('copy').addEventListener('click', function () {

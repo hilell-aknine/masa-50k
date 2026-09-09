@@ -313,10 +313,16 @@ document.addEventListener('oriane:ready', function (ev) {
             ? '<button class="ghost" data-role="student" data-id="' + r.id + '">הסרת ניהול</button>'
             : '<button class="ghost" data-role="admin" data-id="' + r.id + '">הפיכה למנהלת</button>';
         }
+        // מעבר בין שתי החוויות. פרימיום = תוכן בלבד, בלי מחירים ובלי הצעות.
+        var isPrem = r.audience === 'premium';
+        acts += isPrem
+          ? '<button class="ghost" data-aud="subscriber" data-id="' + r.id + '">העברה למנוי</button>'
+          : '<button class="ghost" data-aud="premium" data-id="' + r.id + '">סימון כפרימיום</button>';
         return '<tr>' +
             '<td class="em">' + esc(r.email) + (r.full_name ? '<br><span style="color:var(--text)">' + esc(r.full_name) + '</span>' : '') + '</td>' +
             '<td><span class="pill ' + a + '">' + (LABEL[a] || a) + '</span>' +
               (r.role === 'admin' ? ' <span class="pill active">מנהל</span>' : '') +
+              (isPrem ? ' <span class="pill">פרימיום · בלי שיווק</span>' : '') +
               untilPill(r) + '</td>' +
             '<td>' + when(r.last_seen_at) + '</td>' +
             '<td><div class="row-actions">' + acts +
@@ -411,6 +417,27 @@ document.addEventListener('oriane:ready', function (ev) {
         var patch = role === 'admin' ? { role: 'admin', access: 'active' } : { role: 'student' };
         db.collection('profiles').doc(id).update(patch).then(function () {
           toast(role === 'admin' ? who + ' הפכה למנהלת' : 'הניהול הוסר');
+        }).catch(function (e) {
+          b.disabled = false; toast('הפעולה נכשלה'); console.error(e);
+        });
+      });
+    });
+
+    // ---------- מעבר בין שתי החוויות ----------
+    // פרימיום = היזמים שאוריאן מלווה. תוכן בלבד, בלי מחירים, בלי הצעות,
+    // בלי דד-ליין. מנוי = רואה את השכבה המסחרית המלאה.
+    Array.prototype.forEach.call(box.querySelectorAll('button[data-aud]'), function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-id'), aud = b.getAttribute('data-aud');
+        var row = rows.filter(function (r) { return r.id === id; })[0] || {};
+        var who = row.full_name || row.email || 'המשתמשת';
+        var ask = aud === 'premium'
+          ? 'לסמן את ' + who + ' כלקוחת פרימיום? היא תפסיק לראות מחירים, הצעות ושדרוגים, ותקבל תוכן בלבד.'
+          : 'להעביר את ' + who + ' למסלול מנוי? היא תתחיל לראות את מסך המנוי, המחירים וההצעות.';
+        if (!confirm(ask)) return;
+        b.disabled = true;
+        db.collection('profiles').doc(id).update({ audience: aud }).then(function () {
+          toast(aud === 'premium' ? who + ' סומנה כפרימיום' : who + ' הועברה למסלול מנוי');
         }).catch(function (e) {
           b.disabled = false; toast('הפעולה נכשלה'); console.error(e);
         });

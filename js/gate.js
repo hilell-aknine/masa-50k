@@ -19,6 +19,28 @@
   hide.textContent = 'body{visibility:hidden}';
   document.head.appendChild(hide);
 
+  // ============================================================
+  // שני קהלים, שתי חוויות · החלטת הלל 09.09.2026
+  //
+  // premium   = היזמים שאוריאן מלווה אישית. תוכן בלבד.
+  //             אפס שיווק, אפס הצעות, אפס מחירים, אפס דד-ליין.
+  // subscriber = מי שקנה או יקנה מנוי. רואה את השכבה המסחרית.
+  //
+  // כל אלמנט מסחרי בכל דף מסומן data-commercial, וה-CSS כאן מסתיר
+  // אותו לפרימיום. ההסתרה נכנסת *לפני* reveal(), ולכן פרימיום לא
+  // רואה הבזק של מחיר או הצעה גם לא לחלקיק שנייה.
+  //
+  // ברירת מחדל = subscriber. בכוונה: פרופיל בלי שדה מקבל את החוויה
+  // המסחרית, כי הסתרת מחירים ממנוי משלם שוברת את המודל העסקי, בעוד
+  // שהכיוון ההפוך רק מציג הצעה למי שכבר קיבלה גישה חינם.
+  // ============================================================
+  var quiet = document.createElement('style');
+  quiet.id = 'gate-audience';
+  quiet.textContent =
+    'html[data-audience="premium"] [data-commercial]{display:none!important}' +
+    'html:not([data-audience="premium"]) [data-premium]{display:none!important}';
+  document.head.appendChild(quiet);
+
   function reveal() {
     var s = document.getElementById('gate-hide');
     if (s) s.remove();
@@ -59,13 +81,21 @@
         if (p.access_until.toDate().getTime() <= Date.now()) return out('access-expired');
       }
 
+      // רק 'premium' מפורש נחשב פרימיום. כל שאר הערכים, כולל שדה חסר
+      // בפרופילים ישנים, נופלים ל-subscriber.
+      var audience = p.audience === 'premium' ? 'premium' : 'subscriber';
+
       window.ORIANE_USER = {
         uid: user.uid,
         email: user.email,
         name: p.full_name || '',
         role: p.role || 'student',
-        isAdmin: p.role === 'admin'
+        isAdmin: p.role === 'admin',
+        audience: audience,
+        isPremium: audience === 'premium'
       };
+
+      document.documentElement.setAttribute('data-audience', audience);
 
       // מסכי ניהול דורשים תפקיד אדמין
       if ((here === 'admin.html' || here === 'dashboard.html') && !window.ORIANE_USER.isAdmin) {

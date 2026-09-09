@@ -85,6 +85,11 @@
   'use strict';
   firebase.initializeApp(window.ORIANE_FB);
   var auth = firebase.auth();
+
+  // מייל איפוס הסיסמה נשלח מ-Firebase לפי השפה שמוגדרת כאן.
+  // בלי השורה הזו הוא יוצא באנגלית, וזה מייל שמגיע דווקא לאדם
+  // שכבר נתקע בחוץ. עברית.
+  auth.languageCode = 'he';
   var db = firebase.firestore();
 
   var msg = document.getElementById('msg');
@@ -128,6 +133,11 @@
             role: 'student',
             access: invited ? 'active' : 'pending',
             source: invited ? 'invite' : 'self',
+            // הקהל נגזר מדרך הכניסה, ולא נשאל מהמשתמש.
+            // מי שאוריאן הזמינה בשמה = יזמית שהיא מלווה = פרימיום, תוכן בלבד.
+            // מי שנרשמה לבד = מנוי, ורואה את השכבה המסחרית.
+            // אוריאן יכולה להפוך את ההחלטה במסך הניהול. נאכף גם בכללי השרת.
+            audience: invited ? 'premium' : 'subscriber',
             referred_by: (localStorage.getItem('oriane_ref') || null),
             created_at: firebase.firestore.FieldValue.serverTimestamp()
           }).then(function () {
@@ -254,10 +264,10 @@
     btnForgot.textContent = 'שולח...';
     auth.sendPasswordResetEmail(v).then(function () {
       // בכוונה לא מגלים אם המייל קיים במערכת, כדי לא לאפשר מיפוי משתמשות
-      say('אם קיים חשבון עם ' + v + ', נשלח אליו מייל לאיפוס סיסמה. אם הוא לא מגיע, בדקו בספאם.', 'ok');
+      say('אם קיים חשבון עם ' + v + ', נשלח אליו מייל לאיפוס סיסמה. אם הוא לא מגיע, בדקו בספאם. ואם נכנסתם בעבר עם Google, אין סיסמה לאפס: פשוט לחצו על "המשיכו עם Google".', 'ok');
     }).catch(function (e) {
       if (e && e.code === 'auth/user-not-found') {
-        say('אם קיים חשבון עם ' + v + ', נשלח אליו מייל לאיפוס סיסמה. אם הוא לא מגיע, בדקו בספאם.', 'ok');
+        say('אם קיים חשבון עם ' + v + ', נשלח אליו מייל לאיפוס סיסמה. אם הוא לא מגיע, בדקו בספאם. ואם נכנסתם בעבר עם Google, אין סיסמה לאפס: פשוט לחצו על "המשיכו עם Google".', 'ok');
       } else {
         say('לא הצלחנו לשלוח כרגע. נסו שוב בעוד רגע.', 'err');
         console.error(e);

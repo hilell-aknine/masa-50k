@@ -41,10 +41,14 @@ service cloud.firestore {
 
     // השדות שמשתמש רגיל לעולם לא משנה בעצמו
     // access_until חייב להיות כאן, אחרת תלמידה מאריכה לעצמה את הגישה
+    // audience נמצא כאן כי הוא קובע איזו חוויה נטענת (פרימיום = בלי שיווק).
+    // בלי ההקפאה הזו מנוי היה מסמן את עצמו פרימיום ומעלים לעצמו את
+    // מסך התשלום. רק מנהלת משנה קהל.
     function keepsProtectedFields() {
       return request.resource.data.role   == resource.data.role
           && request.resource.data.access == resource.data.access
-          && request.resource.data.get('access_until', null) == resource.data.get('access_until', null);
+          && request.resource.data.get('access_until', null) == resource.data.get('access_until', null)
+          && request.resource.data.get('audience', 'subscriber') == resource.data.get('audience', 'subscriber');
     }
 
     // ---------- פרופילים ----------
@@ -63,6 +67,12 @@ service cloud.firestore {
                               request.resource.data.access == 'active'
                               && exists(/databases/$(database)/documents/invites/$(request.auth.token.email))
                             )
+                       )
+                    // קהל פרימיום נפתח רק למי שאוריאן הזמינה בשמה.
+                    // הרשמה עצמית שתנסה להיוולד 'premium' תיחסם כאן.
+                    && (
+                         request.resource.data.get('audience', 'subscriber') == 'subscriber'
+                         || exists(/databases/$(database)/documents/invites/$(request.auth.token.email))
                        );
 
       // עדכון עצמי: שם וטלפון בלבד. תפקיד וגישה מוקפאים.
