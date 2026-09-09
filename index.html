@@ -81,7 +81,10 @@
   .path svg.track{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
   .nodes{position:relative;z-index:1}
 
-  .node{display:flex;flex-direction:column;align-items:center;min-height:170px;position:relative;justify-content:flex-start}
+  /* ⚠️ min-height חייב להיות זהה ל-NH שב-buildTrack.
+     גובה ה-path מחושב כ-מספר-תחנות × NH, ולכן צומת שגבוה מזה גולש
+     החוצה ומתנגש בפרק הבא ובקופסת היעד. נמדד: הצומת הגבוה דורש 243px. */
+  .node{display:flex;flex-direction:column;align-items:center;min-height:248px;position:relative;justify-content:flex-start}
   .node.p-r{align-items:flex-start;padding-inline-start:8%}
   .node.p-l{align-items:flex-end;padding-inline-end:8%}
 
@@ -108,6 +111,13 @@
     padding:3px 9px;border-radius:30px;color:var(--hp-text-dim);
     background:rgba(127,127,127,.14)}
   .card .lcount.full{color:#fff;background:#C2456A}
+  /* סימון תוכן · בקשת אוריאן 09.09: לראות במבט אחד איפה כבר יש חומר.
+     משתמש רק בפלטה הקיימת של הדף (ורוד המותג + קו המתאר הקיים). */
+  .card .lcount.ready{color:var(--hp-pink);background:rgba(252,193,203,.14)}
+  .card .lcount.empty{color:var(--hp-text-dim);background:transparent;
+    border:1px dashed var(--hp-line);font-weight:600}
+  /* המספרים בתוך התווית נשארים בכיוון שלהם ולא מתהפכים ב-RTL */
+  .card .lcount .n{unicode-bidi:isolate}
 
   .start-flag,.end-flag{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--hp-pink);margin-bottom:8px}
   .start-flag .box,.end-flag .box{padding:6px 16px;border:1px solid var(--hp-line);border-radius:8px;background:var(--hp-card);letter-spacing:2px}
@@ -171,17 +181,59 @@
 <script src="data/content.js"></script>
 <script src="js/lesson-progress.js"></script>
 <script>
+  /* ============================================================
+     נעילת ההתקדמות · כבויה זמנית לקראת ההשקה (החלטת הלל 09.09.2026)
+     false = כל התחנות פתוחות וניתנות ללחיצה.
+     true  = חוזרים לנעילה הסדרתית, תחנה נפתחת רק אחרי שקודמתה הסתיימה.
+     ⚠️ זו המילה היחידה שצריך להחליף כדי להחזיר את הנעילה אחרי ההשקה.
+        אותו קבוע קיים גם ב-station.html ושניהם חייבים להיות זהים.
+     ============================================================ */
+  const PROGRESS_LOCK_ENABLED = false;
+
   const KEY = 'oriane_journey_progress';
   const CH = window.COURSE.chapters;
   const TOTAL = window.COURSE.totalStations;
-  let done = +(localStorage.getItem(KEY) || 3);
+
+  /* ברירת המחדל היא 0 ולא 3.
+     קודם היא סימנה שלושה פרקים כ"הושלם" למי שלא צפתה בכלום,
+     ושניים מהם בכלל ריקים מווידאו. */
+  let done = +(localStorage.getItem(KEY) || 0);
   done = Math.max(0, Math.min(TOTAL, done));
+
+  /* האם בתחנה יש בכלל חומר · לפי מה שקיים באמת ב-data/content.js,
+     גם סרטון בודד וגם מערך שיעורים. */
+  function stationHasContent(s){
+    return !!s.youtubeId || (Array.isArray(s.lessons) && s.lessons.length > 0);
+  }
+
+  /* "הושלם" נקבע אך ורק ממה שקרה בפועל:
+     או שהתחנה סומנה בכפתור "סיום תחנה", או שכל שיעוריה נצפו.
+     תחנה ריקה לעולם לא תיחשב הושלמה. */
+  function stationDone(s){
+    if (s.id <= done) return true;
+    const n = Array.isArray(s.lessons) ? s.lessons.length : 0;
+    if (n && window.OrianeLessons) return window.OrianeLessons.watchedCount(s.id) >= n;
+    return false;
+  }
+
+  /* התחנה הבאה לעבוד עליה · מעדיפה את הראשונה שיש בה תוכן ולא הושלמה,
+     כדי שהבאנר העליון יוביל לחומר אמיתי ולא לתחנה ריקה. */
+  function firstOpenStationId(){
+    const all = window.COURSE.allStations;
+    const ready = all.filter(s => stationHasContent(s) && !stationDone(s));
+    if (ready.length) return ready[0].id;
+    const rest = all.filter(s => !stationDone(s));
+    return rest.length ? rest[0].id : TOTAL;
+  }
+
+  let nextId = firstOpenStationId();
 
   function go(n){ location.href = 'station.html?id=' + n; }
 
   // בונה נתיב SVG מתעקל בין מרכזי הצמתים בפרק
   function buildTrack(positions){
-    const NH = 170, xOf = p => p === 'r' ? 18 : 82;
+    // NH חייב להיות זהה ל-min-height של .node ב-CSS למעלה.
+    const NH = 248, xOf = p => p === 'r' ? 18 : 82;
     let d = '', h = positions.length * NH;
     positions.forEach((p, i) => {
       const x = xOf(p), y = i * NH + 60;
@@ -217,7 +269,12 @@
 
       ch.stations.forEach((s, i) => {
         const pos = positions[i];
-        const state = s.id <= done ? 'done' : (s.id === done + 1 ? 'active' : 'locked');
+
+        // נעול רק אם המתג למעלה דלוק. כרגע הוא כבוי ולכן הכל פתוח.
+        const locked = PROGRESS_LOCK_ENABLED && s.id > done + 1;
+        const isDone = stationDone(s);
+        const state = locked ? 'locked' : (isDone ? 'done' : (s.id === nextId ? 'active' : 'open'));
+
         const node = document.createElement('div');
         node.className = `node ${state} p-${pos}`;
 
@@ -225,12 +282,26 @@
         if (s.id === 1) flag = '<div class="start-flag"><div class="box">START</div></div>';
         if (s.id === lastStationId) flag = '<div class="end-flag"><span class="star">★</span></div>';
 
-        // מונה שיעורים · בקשת אוריאן 08.09. מוצג רק בתחנה שיש בה שיעורים.
+        /* סימון תוכן · בקשת אוריאן 09.09.
+           נכון לכל התחנות לפי מה שבאמת קיים ב-data/content.js:
+           מודול עם שיעורים מציג מונה, סרטון בודד מציג "יש תוכן",
+           ותחנה בלי שום וידאו מציגה "עדיין ריק". */
         const nLes = Array.isArray(s.lessons) ? s.lessons.length : 0;
         const seen = nLes && window.OrianeLessons ? window.OrianeLessons.watchedCount(s.id) : 0;
-        const lesLine = nLes
-          ? `<div class="lcount${seen >= nLes ? ' full' : ''}">${Math.min(seen, nLes)}/${nLes} שיעורים</div>`
-          : '';
+        let lesLine;
+        if (nLes) {
+          lesLine = `<div class="lcount${seen >= nLes ? ' full' : ''}">` +
+                    `<span class="n">${Math.min(seen, nLes)}/${nLes}</span> שיעורים</div>`;
+        } else if (stationHasContent(s)) {
+          lesLine = `<div class="lcount ready">יש תוכן · שיעור אחד</div>`;
+        } else {
+          lesLine = `<div class="lcount empty">עדיין ריק</div>`;
+        }
+
+        const label = state === 'active' ? 'התחנה הפעילה שלך'
+                    : state === 'done'   ? 'הושלם'
+                    : state === 'locked' ? 'נעול'
+                    : '';
 
         node.innerHTML = `
           ${flag}
@@ -238,7 +309,7 @@
           <div class="card">
             <div class="ic-box"><span data-ic="${state==='locked' ? 'lock' : 'target'}" style="width:16px;height:16px"></span></div>
             <div class="t">פרק ${s.id} · ${s.name}</div>
-            <div class="m">${state === 'active' ? 'התחנה הפעילה שלך' : (state === 'done' ? 'הושלם' : 'נעול')}</div>
+            ${label ? `<div class="m">${label}</div>` : ''}
             ${lesLine}
           </div>`;
         if (state !== 'locked') node.onclick = () => go(s.id);
@@ -253,11 +324,14 @@
   }
 
   function updateProgress(){
-    document.getElementById('pval').textContent = `${done} / ${TOTAL} הושלמו`;
-    document.getElementById('pfill').style.width = (done / TOTAL * 100) + '%';
-    const left = TOTAL - done;
+    // נספרות רק תחנות שהושלמו באמת, ולא ברירת מחדל שהניחה שלוש.
+    const doneCount = window.COURSE.allStations.filter(stationDone).length;
+    nextId = firstOpenStationId();
+
+    document.getElementById('pval').textContent = `${doneCount} / ${TOTAL} הושלמו`;
+    document.getElementById('pfill').style.width = (doneCount / TOTAL * 100) + '%';
+    const left = TOTAL - doneCount;
     document.getElementById('goalSub').textContent = left > 0 ? `עוד ${left} תחנות והגעת לפסגה` : 'הגעת לפסגה · 50K';
-    const nextId = Math.min(done + 1, TOTAL);
     document.getElementById('ctaContinue').href = 'station.html?id=' + nextId;
 
     // ---------- באנר "המשך לצפות" ----------
@@ -285,7 +359,7 @@
 
       document.getElementById('nbThumb').style.backgroundImage =
         'url(https://i.ytimg.com/vi/' + encodeURIComponent(yt) + '/mqdefault.jpg)';
-      document.getElementById('nbKick').textContent = done ? 'המשך לאן שהפסקת' : 'מתחילים כאן';
+      document.getElementById('nbKick').textContent = doneCount ? 'המשך לאן שהפסקת' : 'מתחילים כאן';
       document.getElementById('nbName').textContent = label;
       document.getElementById('nbSub').textContent = sub;
       ban.style.display = '';

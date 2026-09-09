@@ -148,6 +148,14 @@
   <script src="js/lesson-progress.js"></script>
   <script>
   (function(){
+    /* ============================================================
+       נעילת ההתקדמות · כבויה זמנית לקראת ההשקה (החלטת הלל 09.09.2026)
+       false = אפשר להיכנס לכל תחנה, גם בקישור ישיר בכתובת.
+       true  = חוזרים לנעילה הסדרתית.
+       ⚠️ חייב להיות זהה לקבוע שבראש הסקריפט ב-index.html.
+       ============================================================ */
+    var PROGRESS_LOCK_ENABLED = false;
+
     var PROGRESS_KEY = 'oriane_journey_progress';
 
     // ---------- פרמטר ?id ----------
@@ -159,7 +167,8 @@
     var station = stations.find(function(s){ return s.id == id; });
 
     var done = parseInt(localStorage.getItem(PROGRESS_KEY), 10);
-    if (isNaN(done)) done = 3;
+    // ברירת מחדל 0 ולא 3, אחרת שלוש תחנות נחשבות מושלמות בלי שנצפו.
+    if (isNaN(done)) done = 0;
 
     var app = document.getElementById('app');
 
@@ -183,7 +192,7 @@
     }
 
     // ---------- נעילת התקדמות ----------
-    if (station.id > done + 1) {
+    if (PROGRESS_LOCK_ENABLED && station.id > done + 1) {
       app.innerHTML =
         '<div class="locked-card">' +
           '<div class="ic"><span data-ic="lock"></span></div>' +
