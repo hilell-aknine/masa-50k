@@ -125,6 +125,31 @@
     .cpost:disabled{opacity:.55;cursor:default}
     .cmsg{font-size:12px;color:var(--text-faint)}
 
+    /* ============================================================
+       תיבת התגובות לבנה · בקשת אוריאן 09.09.2026.
+       בלשונה: "להפוך את התיבה הזו לצבע לבן".
+       הצבעים כתובים במפורש ולא דרך טוקנים, כדי שהתיבה תישאר לבנה
+       וקריאה גם במצב הכהה של הפורטל. כל הטקסטים כהים על לבן,
+       הבהיר ביותר הוא ‎#6B7280 ביחס ניגודיות 5.2:1 מול לבן.
+       ============================================================ */
+    .notes.talk{background:#FFFFFF;border-color:#E5E7EB}
+    .notes.talk h3{color:#111827}
+    .notes.talk .nh [data-ic]{color:#1E3A5F}
+    .notes.talk .hint{color:#4B5563}
+    .notes.talk .cempty{color:#6B7280}
+    .notes.talk .citem{border-bottom-color:#E5E7EB}
+    .notes.talk .citem .av{background:#F3F4F6;border-color:#E5E7EB;color:#111827}
+    .notes.talk .citem .cwho{color:#111827}
+    .notes.talk .citem .cwhen{color:#6B7280}
+    .notes.talk .citem .ctxt{color:#1F2937}
+    .notes.talk .citem .cdel{color:#6B7280}
+    .notes.talk .citem .cdel:hover{color:#111827}
+    .notes.talk textarea{background:#FFFFFF;border-color:#D1D5DB;color:#111827}
+    .notes.talk textarea::placeholder{color:#6B7280}
+    .notes.talk textarea:focus{border-color:#1E3A5F}
+    .notes.talk .cpost{background:#1E3A5F;color:#FFFFFF}
+    .notes.talk .cmsg{color:#4B5563}
+
     @media(max-width:520px){
       .st-title{font-size:22px}
       .btn-primary{font-size:15px}
@@ -155,6 +180,15 @@
        ⚠️ חייב להיות זהה לקבוע שבראש הסקריפט ב-index.html.
        ============================================================ */
     var PROGRESS_LOCK_ENABLED = false;
+
+    /* ============================================================
+       בלוק "מה תפיק מהתחנה" · מוסתר לבקשת אוריאן 09.09.2026.
+       בלשונה: "כאן ראיתי שזה מופיע בכל פרק, לדעתי כרגע נוריד את זה
+       עד שנבין איך לקחת את התמלול ובאמת לתת נושאים שיהיו מסקרנים".
+       הבלוק היה גנרי וזהה בכל 11 הפרקים ולכן לא הוסיף ערך.
+       ⚠️ הקוד לא נמחק. כשיהיו נושאים אמיתיים מהתמלול, מחזירים ל-true.
+       ============================================================ */
+    var SHOW_STATION_GAINS = false;
 
     var PROGRESS_KEY = 'oriane_journey_progress';
 
@@ -270,7 +304,7 @@
       'צעדים קונקרטיים שמקדמים אותך לתחנה הבאה במסע',
       'נקודת מדידה לראות איפה אתה עומד היום ולאן ממשיכים'
     ];
-    var gainsHtml =
+    var gainsHtml = !SHOW_STATION_GAINS ? '' :
       '<div class="gains">' +
         '<h3>מה תפיק מהתחנה</h3>' +
         '<ul>' +
@@ -294,8 +328,9 @@
     var prevHtml = prevId >= 1
       ? '<a href="station.html?id=' + prevId + '">→ התחנה הקודמת</a>'
       : '<span>→ התחנה הקודמת</span>';
-    // הבאה זמינה רק אם לא חורגת מהנעילה הנוכחית
-    var nextHtml = (nextId <= total && nextId <= done + 1)
+    // הבאה זמינה רק אם לא חורגת מהנעילה הנוכחית.
+    // כשהנעילה כבויה כל תחנה קיימת זמינה, אחרת הקישור היה מת בכל התחנות.
+    var nextHtml = (nextId <= total && (!PROGRESS_LOCK_ENABLED || nextId <= done + 1))
       ? '<a href="station.html?id=' + nextId + '">התחנה הבאה ←</a>'
       : '<span>התחנה הבאה ←</span>';
 
@@ -313,7 +348,7 @@
         '<div class="nh"><h3><span data-ic="note"></span> מה כתבו כאן</h3></div>' +
         '<div class="hint" style="margin:0 0 12px">👥 מה שתכתבי כאן מוצג בשם שלך לכל המשתתפות בתחנה הזו.</div>' +
         '<div id="cList"><div class="cempty">טוען...</div></div>' +
-        '<textarea id="cArea" maxlength="1000" placeholder="משהו שעזר לך בתחנה הזו? שתפי את שאר המשתתפות..."></textarea>' +
+        '<textarea id="cArea" maxlength="1000" placeholder="כתבו כאן תגובה לקהילת המסע"></textarea>' +
         '<div class="crow">' +
           '<button class="cpost" id="cPost" type="button">פרסום</button>' +
           '<span class="cmsg" id="cMsg"></span>' +
@@ -322,7 +357,9 @@
 
     app.innerHTML =
       '<div class="st-tags">' +
-        '<span class="tier">' + esc(station.tier) + '</span>' +
+        // dir=ltr כי "0 → 10K" מתהפך ויזואלית ל-"10K → 0" בהקשר RTL,
+        // ואז נראה כאילו המדרגה יורדת מ-10K לאפס.
+        '<span class="tier" dir="ltr">' + esc(station.tier) + '</span>' +
         '<span class="ctitle">' + esc(station.chapterTitle) + '</span>' +
       '</div>' +
       '<h1 class="st-title">תחנה ' + station.id + ' · ' + esc(station.name) + '</h1>' +

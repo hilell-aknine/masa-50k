@@ -8,6 +8,8 @@ brand/
 content-source/
 content-mapping.md
 design/
+# הקשר לקוח מתוך שיחת הוואטסאפ הפרטית. מכיל ציטוטים, טלפון ומודל עסקי.
+CLIENT-CONTEXT.md
 
 # פסולת של פריסת פיירבייס
 .firebase/
