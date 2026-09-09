@@ -83,7 +83,7 @@
 
   /* ⚠️ min-height חייב להיות זהה ל-NH שב-buildTrack.
      גובה ה-path מחושב כ-מספר-תחנות × NH, ולכן צומת שגבוה מזה גולש
-     החוצה ומתנגש בפרק הבא ובקופסת היעד. נמדד: הצומת הגבוה דורש 243px. */
+     החוצה ומתנגש במדרגה הבאה ובקופסת היעד. נמדד: הצומת הגבוה דורש 243px. */
   .node{display:flex;flex-direction:column;align-items:center;min-height:248px;position:relative;justify-content:flex-start}
   .node.p-r{align-items:flex-start;padding-inline-start:8%}
   .node.p-l{align-items:flex-end;padding-inline-end:8%}
@@ -147,7 +147,7 @@
 <div class="wrap">
   <div class="hero">
     <h1>The Road to 50K</h1>
-    <div class="sub">כל הפרקים, הכלים והליווי במקום אחד.</div>
+    <div class="sub">כל התחנות, הכלים והליווי במקום אחד.</div>
     <div class="progress-box">
       <div class="progress-top">
         <span class="label">ההתקדמות שלך</span>
@@ -195,7 +195,7 @@
   const TOTAL = window.COURSE.totalStations;
 
   /* ברירת המחדל היא 0 ולא 3.
-     קודם היא סימנה שלושה פרקים כ"הושלם" למי שלא צפתה בכלום,
+     קודם היא סימנה שלוש תחנות כ"הושלם" למי שלא צפתה בכלום,
      ושניים מהם בכלל ריקים מווידאו. */
   let done = +(localStorage.getItem(KEY) || 0);
   done = Math.max(0, Math.min(TOTAL, done));
@@ -230,7 +230,7 @@
 
   function go(n){ location.href = 'station.html?id=' + n; }
 
-  // בונה נתיב SVG מתעקל בין מרכזי הצמתים בפרק
+  // בונה נתיב SVG מתעקל בין מרכזי הצמתים במדרגה
   function buildTrack(positions){
     // NH חייב להיות זהה ל-min-height של .node ב-CSS למעלה.
     const NH = 248, xOf = p => p === 'r' ? 18 : 82;
@@ -255,7 +255,11 @@
     CH.forEach((ch, ci) => {
       const tag = document.createElement('div');
       tag.className = 'chapter-tag';
-      tag.innerHTML = `פרק ${ci+1} · <b>${ch.title}</b> · יעד ${(ch.goal/1000)}K`;
+      // ⚠️ זו הכותרת של הקבוצה (3 מדרגות ההכנסה), לא של תחנה בודדת.
+      // אסור לקרוא לה "תחנה" כי אז "תחנה 1 · הבסיס" ו"תחנה 1 · תודעה
+      // ומיינדסט" יופיעו על אותו מסך ויתנגשו. "מדרגה" הוא המונח שכבר
+      // מופיע ב-SKILL.md לשלוש הקבוצות.
+      tag.innerHTML = `מדרגה ${ci+1} · <b>${ch.title}</b> · יעד ${(ch.goal/1000)}K`;
       root.appendChild(tag);
 
       const positions = ch.stations.map((_, i) => ((gi + i) % 2 === 0) ? 'r' : 'l');
@@ -308,7 +312,7 @@
           <div class="pin"><div class="num">${s.id}</div></div>
           <div class="card">
             <div class="ic-box"><span data-ic="${state==='locked' ? 'lock' : 'target'}" style="width:16px;height:16px"></span></div>
-            <div class="t">פרק ${s.id} · ${s.name}</div>
+            <div class="t">תחנה ${s.id} · ${s.name}</div>
             ${label ? `<div class="m">${label}</div>` : ''}
             ${lesLine}
           </div>`;

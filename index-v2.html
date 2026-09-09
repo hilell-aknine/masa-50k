@@ -159,7 +159,7 @@ a{text-decoration:none;color:inherit}
   <div class="script l">יעדים גדולים<br>מתחילים בצעד קטן</div>
   <div class="kicker">SMALL STEPS <b>♥</b> BIG RESULTS</div>
   <h1>ברוכה הבאה למסע שלך!</h1>
-  <p>כאן תמצאי את כל הפרקים, הכלים והליווי בדרך לגרסה הכי טובה שלך.</p>
+  <p>כאן תמצאי את כל התחנות, הכלים והליווי בדרך לגרסה הכי טובה שלך.</p>
   <button class="cta" id="continue" type="button">המשך לאן שהפסקת ←</button>
 </section>
 
@@ -198,7 +198,7 @@ document.addEventListener('oriane:ready', function (ev) {
   function esc(t){ var d=document.createElement('div'); d.textContent = t==null?'':t; return d.innerHTML; }
 
   function draw(done) {
-    // מציגים פרקים על המפה, לא תחנות. בדיוק כמו בהדמיה של אוריאן.
+    // מציגים מדרגות על המפה, לא תחנות בודדות. בדיוק כמו בהדמיה של אוריאן.
     var n = chapters.length;
     var W = 1140, H = 470;
 
@@ -241,7 +241,7 @@ document.addEventListener('oriane:ready', function (ev) {
         '</div>' +
         '<div class="card' + (locked ? ' locked' : '') + '" data-go="' + Math.max(first, Math.min(doneStations + 1, last)) + '" ' +
              'style="inset-inline-end:calc(' + (p.x / W * 100) + '% - 110px);top:' + (cardY / H * 100) + '%">' +
-          '<span class="t">פרק ' + (i + 1) + ' · ' + esc(ch.title) + '</span>' +
+          '<span class="t">מדרגה ' + (i + 1) + ' · ' + esc(ch.title) + '</span>' +
           '<span class="s">' + esc(ch.tier) + '</span>' +
           '<span class="prog"><i style="width:' + Math.round(chDone / ch.stations.length * 100) + '%"></i></span>' +
           '<span class="s">' + chDone + ' מתוך ' + ch.stations.length + ' תחנות</span>' +

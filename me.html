@@ -212,7 +212,7 @@
           <div class="stat"><b id="d-done">–</b><span>תחנות שהושלמו</span></div>
           <div class="stat"><b id="d-total">–</b><span>סה"כ תחנות במסע</span></div>
           <div class="stat"><b id="d-pct">–</b><span>אחוז התקדמות</span></div>
-          <div class="stat"><b id="d-chapter">–</b><span>הפרק הנוכחי</span></div>
+          <div class="stat"><b id="d-chapter">–</b><span>המדרגה הנוכחית</span></div>
         </div>
         <h2 style="margin-top:20px">הישגים</h2>
         <div class="badges" id="badges"></div>
@@ -394,7 +394,7 @@ document.addEventListener('oriane:ready', function (ev) {
     document.getElementById('d-total').textContent = total;
     document.getElementById('d-pct').textContent = pct + '%';
 
-    // מציאת הפרק הנוכחי (הפרק שמכיל את התחנה הבאה שטרם הושלמה)
+    // מציאת המדרגה הנוכחית (זו שמכילה את התחנה הבאה שטרם הושלמה)
     var nextId = Math.min(done + 1, total);
     var curChapterIdx = 0;
     CH.forEach(function (c, ci) {
@@ -403,8 +403,8 @@ document.addEventListener('oriane:ready', function (ev) {
     document.getElementById('d-chapter').textContent = CH[curChapterIdx] ? CH[curChapterIdx].title : '–';
 
     // ---------- מפת כביש אופקית · תחנה 1 משמאל, תחנה 11 מימין ----------
-    // הרצף כולל את כל 11 התחנות האמיתיות מתוכן הקורס, ובין כל פרק לפרק
-    // (מלבד אחרי האחרון) מוכנסת "תחנת התרעננות" · בדיוק 3 פרקים = 2 עצירות.
+    // הרצף כולל את כל 11 התחנות האמיתיות מתוכן הקורס, ובין כל מדרגה למדרגה
+    // (מלבד אחרי האחרונה) מוכנסת "תחנת התרעננות" · בדיוק 3 מדרגות = 2 עצירות.
     var slots = [];
     CH.forEach(function (c, ci) {
       c.stations.forEach(function (s) {
