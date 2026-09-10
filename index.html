@@ -74,37 +74,71 @@
 
   /* ---------- Road / journey ---------- */
   .road-section{margin-top:50px;position:relative}
-  .chapter-tag{text-align:center;margin:36px 0 6px;font-size:12.5px;letter-spacing:2px;font-weight:700;color:var(--hp-text-dim);text-transform:uppercase}
+  .chapter-tag{position:relative;z-index:1;text-align:center;margin:36px 0 6px;font-size:12.5px;letter-spacing:2px;font-weight:700;color:var(--hp-text-dim);text-transform:uppercase}
   .chapter-tag b{color:var(--hp-pink)}
 
-  .path{position:relative;padding:10px 0}
-  .path svg.track{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-  .nodes{position:relative;z-index:1}
+  /* מסלול רציף אחד לכל המסע (מצויר לפי מיקום אמיתי של הפינים בדום,
+     לא לפי הערכה מראש) · בקשת אוריאן 10.09: הקו נמחק בין מדרגה 2 ל-3
+     כי כל מדרגה ציירה נתיב נפרד. עכשיו יש רק SVG אחד שרץ ברצף על פני
+     כל התחנות, כולל האזור שבין המדרגות, ולכן הוא לעולם לא נעלם. */
+  .track-all{position:absolute;top:0;left:0;width:100%;z-index:0;pointer-events:none}
 
-  /* ⚠️ min-height חייב להיות זהה ל-NH שב-buildTrack.
-     גובה ה-path מחושב כ-מספר-תחנות × NH, ולכן צומת שגבוה מזה גולש
-     החוצה ומתנגש במדרגה הבאה ובקופסת היעד.
-     נמדד 09.09 אחרי הוספת התיאור לכרטיס: הצומת הגבוה דורש 297px. */
+  .nodes{position:relative;z-index:1}
   .node{display:flex;flex-direction:column;align-items:center;min-height:302px;position:relative;justify-content:flex-start}
   .node.p-r{align-items:flex-start;padding-inline-start:8%}
   .node.p-l{align-items:flex-end;padding-inline-end:8%}
 
+  /* סמן הסיום · בית + דגל, אחרי התחנה האחרונה. בקשת אוריאן 10.09. */
+  .finish-marker{position:absolute;transform:translate(-50%,-46%);display:flex;flex-direction:column;
+    align-items:center;gap:6px;z-index:1}
+  .finish-marker .fm-icons{display:flex;align-items:flex-end;gap:2px;font-size:36px;line-height:1;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
+  .finish-marker .fm-txt{font-size:11.5px;font-weight:800;color:var(--hp-pink);background:var(--hp-card);
+    padding:5px 14px;border-radius:20px;border:1px solid var(--hp-line);white-space:nowrap}
+
   .pin{width:56px;height:56px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;
     background:var(--hp-card);border:2px solid var(--hp-line);position:relative;flex-shrink:0;transition:transform .15s}
-  .node:not(.locked) .pin{cursor:pointer}
-  .node:not(.locked) .pin:active{transform:rotate(-45deg) scale(.94)}
+  .node:not(.locked):not(.empty) .pin{cursor:pointer}
+  .node:not(.locked):not(.empty) .pin:active{transform:rotate(-45deg) scale(.94)}
   .pin .num{transform:rotate(45deg);font-size:19px;font-weight:800;color:var(--hp-text)}
 
   .node.done .pin{background:var(--hp-card);border-color:var(--hp-pink)}
   .node.done .pin .num{color:var(--hp-pink)}
   .node.active .pin{background:var(--hp-pink);border-color:var(--hp-pink);box-shadow:var(--hp-glow)}
   .node.active .pin .num{color:#2a1018}
-  .node.locked .pin{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.08)}
+  /* אטום לגמרי בכל מצב · פין עם רקע שקוף היה מאפשר לקו הצהוב להיראות
+     מבעד לו ולהסתיר את המספר (בקשת אוריאן 10.09). */
+  .node.locked .pin{background:#11233e;border-color:rgba(255,255,255,.16)}
   .node.locked .pin .num{color:var(--hp-text-dim)}
+  /* תחנה ריקה (אין וידאו/שיעורים) · פין בגוון ורוד-כהה אטום, לא לחיץ */
+  .node.empty .pin{background:#363a52;border-color:var(--hp-pink)}
+  .node.empty .pin .num{color:var(--hp-pink)}
 
-  .card{margin-top:14px;background:var(--hp-card);border:1px solid var(--hp-line);border-radius:14px;padding:12px 16px;max-width:220px;text-align:center}
-  .node.locked .card{opacity:.55}
-  .card .ic-box{width:34px;height:34px;border-radius:9px;background:rgba(252,193,203,.1);color:var(--hp-pink);display:grid;place-items:center;margin:0 auto 8px}
+  /* דמות "היא" · עומדת תמיד מימין למספר של התחנה הנוכחית בהתקדמות,
+     ומחזיקה שק זהב אחד צמוד ללב (לא מצטבר בין תחנה לתחנה, בקשת אוריאן 10.09). */
+  .pin-wrap{position:relative;display:inline-flex}
+  .walker{position:absolute;top:50%;left:100%;transform:translateY(-50%);margin-left:6px;
+    display:flex;flex-direction:column;align-items:center;z-index:3;pointer-events:none}
+  .walker svg{width:30px;height:42px;filter:drop-shadow(0 3px 7px rgba(0,0,0,.5))}
+  @media(max-width:520px){ .walker svg{width:24px;height:34px} }
+
+  /* כרטיס התחנה · רקע ורוד-בהיר עדין עם ניגודיות ברורה מול הרקע הכהה
+     (בקשת אוריאן 10.09: הכרטיסים "נבלעו" ברקע). מסגרת ורודה בולטת יותר
+     וצל עדין שמפריד אותם חזותית מהעמוד. אותו מראה חל על כל הקוביות,
+     כולל תחנות ריקות · הן מסומנות רק ע"י תג המנעול הצהוב, לא ע"י כרטיס דהוי. */
+  .card{margin-top:14px;border-radius:14px;padding:12px 16px;max-width:220px;text-align:center;
+    background:linear-gradient(160deg, rgba(252,193,203,.20), rgba(252,193,203,.05) 65%), #0f2141;
+    border:1px solid rgba(252,193,203,.38);
+    box-shadow:0 6px 20px rgba(0,0,0,.28);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease}
+  .node:not(.locked):not(.empty) .card{cursor:pointer}
+  .node:not(.locked):not(.empty):hover .card{transform:translateY(-3px);border-color:var(--hp-pink);
+    box-shadow:0 10px 28px rgba(252,193,203,.2)}
+  .node.active .card{border-color:var(--hp-pink);box-shadow:0 0 0 1px var(--hp-pink), 0 10px 26px rgba(252,193,203,.22)}
+  /* נעול לפי מתג ההתקדמות (כרגע כבוי) · היחיד שנשאר מרוכך, כי הוא מייצג
+     חסימה זמנית ולא חוסר תוכן קבוע. */
+  .node.locked .card{opacity:.62;background:#0d1b30;border-color:rgba(255,255,255,.1);box-shadow:none}
+  .card .ic-box{width:34px;height:34px;border-radius:9px;background:rgba(252,193,203,.14);color:var(--hp-pink);display:grid;place-items:center;margin:0 auto 8px}
   .card .t{font-size:14px;font-weight:700;color:var(--hp-text)}
   .card .m{font-size:11.5px;color:var(--hp-text-dim);margin-top:3px}
   /* תיאור קצר על הכרטיס · בקשת הלל 09.09.
@@ -120,8 +154,12 @@
   /* סימון תוכן · בקשת אוריאן 09.09: לראות במבט אחד איפה כבר יש חומר.
      משתמש רק בפלטה הקיימת של הדף (ורוד המותג + קו המתאר הקיים). */
   .card .lcount.ready{color:var(--hp-pink);background:rgba(252,193,203,.14)}
-  .card .lcount.empty{color:var(--hp-text-dim);background:transparent;
-    border:1px dashed var(--hp-line);font-weight:600}
+  /* תווית "נעול" צהובה · בקשת אוריאן 10.09: תחנה בלי שום תוכן לא לחיצה,
+     ומסומנת ככפתור נעול צהוב במקום פשוט "עדיין ריק". פלטת הצהוב זהה
+     ל-devbar הקיים כבר בקוד, כדי לא להמציא צבע אזהרה נוסף. */
+  .card .lockbtn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;margin-top:7px;
+    padding:4px 11px;border-radius:30px;color:#e8c97a;background:#3a2d12;border:1px solid #7a5c1e}
+  .card .lockbtn svg{width:11px;height:11px;flex:none}
   /* המספרים בתוך התווית נשארים בכיוון שלהם ולא מתהפכים ב-RTL */
   .card .lcount .n{unicode-bidi:isolate}
 
@@ -129,7 +167,12 @@
   .start-flag .box,.end-flag .box{padding:6px 16px;border:1px solid var(--hp-line);border-radius:8px;background:var(--hp-card);letter-spacing:2px}
   .end-flag .star{font-size:26px}
 
-  .goal{text-align:center;margin-top:40px;padding:28px 18px;background:var(--hp-card);border:1px solid var(--hp-line);border-radius:18px;max-width:520px;margin-inline:auto}
+  /* קופסת היעד · אותה ערכת עיצוב כמו הכרטיסים (גרדיאנט ורוד-בהיר +
+     מסגרת בולטת + צל), כדי שהיא "תסתנכרן" חזותית עם שאר המסע. בקשת אוריאן 10.09. */
+  .goal{text-align:center;margin-top:56px;padding:30px 20px;border-radius:18px;max-width:520px;margin-inline:auto;
+    background:linear-gradient(160deg, rgba(252,193,203,.20), rgba(252,193,203,.05) 65%), #0f2141;
+    border:1px solid rgba(252,193,203,.38);
+    box-shadow:0 6px 20px rgba(0,0,0,.28)}
   .goal .ring{width:64px;height:64px;border-radius:50%;background:var(--hp-pink);color:#2a1018;font-weight:800;font-size:16px;display:grid;place-items:center;margin:0 auto 10px;box-shadow:var(--hp-glow)}
   .goal .gt{font-size:18px;font-weight:800;color:var(--hp-pink)}
   .goal .gs{font-size:13px;color:var(--hp-text-dim);margin-top:5px}
@@ -236,20 +279,55 @@
 
   function go(n){ location.href = 'station.html?id=' + n; }
 
-  // בונה נתיב SVG מתעקל בין מרכזי הצמתים במדרגה
-  function buildTrack(positions){
-    // NH חייב להיות זהה ל-min-height של .node ב-CSS למעלה.
-    const NH = 302, xOf = p => p === 'r' ? 18 : 82;
-    let d = '', h = positions.length * NH;
-    positions.forEach((p, i) => {
-      const x = xOf(p), y = i * NH + 60;
-      if (i === 0) d = `M ${x} ${y}`;
-      else {
-        const px = xOf(positions[i-1]), my = ((i-1)*NH + 60 + y) / 2;
-        d += ` C ${px} ${my}, ${x} ${my}, ${x} ${y}`;
-      }
+  // מצייר נתיב SVG רציף אחד לכל המסע, לפי מיקום אמיתי של כל פין בדום
+  // (ולא לפי הערכה מראש) · פותר גם את הפער שנוצר בין מדרגה למדרגה
+  // וגם את חוסר הדיוק בכל תחנה. רץ אחרי שהדום כבר מוצב, ומצטרף
+  // מחדש בכל שינוי גודל חלון.
+  function drawTrackAndFinish(root, pinEls){
+    const rootRect = root.getBoundingClientRect();
+    const pts = pinEls.map(function (el) {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2 - rootRect.left, y: r.top + r.height / 2 - rootRect.top };
     });
-    return { d, h };
+    if (!pts.length) return;
+
+    const last = pts[pts.length - 1];
+    const finishY = last.y + 190;
+    const finishX = last.x;
+    const allPts = pts.concat([{ x: finishX, y: finishY }]);
+
+    let d = '';
+    allPts.forEach(function (p, i) {
+      if (i === 0) { d = `M ${p.x} ${p.y}`; return; }
+      const prev = allPts[i - 1];
+      const my = (prev.y + p.y) / 2;
+      d += ` C ${prev.x} ${my}, ${p.x} ${my}, ${p.x} ${p.y}`;
+    });
+
+    let svg = root.querySelector('.track-all');
+    if (!svg) {
+      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'track-all');
+      root.insertBefore(svg, root.firstChild);
+    }
+    const totalH = finishY + 80;
+    svg.setAttribute('viewBox', `0 0 ${rootRect.width} ${totalH}`);
+    svg.style.height = totalH + 'px';
+    svg.innerHTML = `<path d="${d}" fill="none" stroke="#FFD54A" stroke-opacity="0.92" stroke-width="3" stroke-dasharray="11 11" stroke-linecap="round"/>`;
+
+    // ---------- סמן הסיום · דגל אדום, כאילו סיימו את המסע ----------
+    let finishEl = document.getElementById('finishMarker');
+    if (!finishEl) {
+      finishEl = document.createElement('div');
+      finishEl.id = 'finishMarker';
+      finishEl.className = 'finish-marker';
+      finishEl.innerHTML = '<div class="fm-icons"><span>🚩</span></div><div class="fm-txt">סיימת את המסע!</div>';
+      root.appendChild(finishEl);
+    }
+    finishEl.style.left = finishX + 'px';
+    finishEl.style.top = finishY + 'px';
+
+    root.style.minHeight = (totalH + 40) + 'px';
   }
 
   function render(){
@@ -257,6 +335,21 @@
     root.innerHTML = '';
     let gi = 0; // אינדקס גלובלי לזיג-זג רציף
     const lastStationId = CH[CH.length - 1].stations[CH[CH.length - 1].stations.length - 1].id;
+    const pinEls = []; // אוסף את כל אלמנטי ה-pin-wrap, לפי סדר התחנות, לציור המסלול
+
+    // מספר התחנות שהושלמו בפועל · מוצג בטולטיפ של הדמות בלבד
+    const doneCountForWalker = window.COURSE.allStations.filter(stationDone).length;
+    // דמות מיוצרת פעם אחת ומוצבת ליד פין התחנה הנוכחית בהתקדמות.
+    // מחזיקה שק זהב אחד צמוד ללב · לא מצטבר בין תחנה לתחנה (בקשת אוריאן 10.09).
+    const walkerSvg =
+      '<svg viewBox="0 0 24 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<circle cx="12" cy="6" r="4.6" fill="#fff"/>' +
+        '<path d="M6.5 14.5c0-2.1 2.2-3.2 5.5-3.2s5.5 1.1 5.5 3.2l1.8 13.2H4.7Z" fill="#fff"/>' +
+        '<path d="M9 27.7 7 38M15 27.7l2 10.3" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>' +
+        '<circle cx="12" cy="17.5" r="3.2" fill="#e8c97a" stroke="#8a6a1e" stroke-width="0.6"/>' +
+        '<path d="M10.4 15.7c0-1 .7-1.6 1.6-1.6s1.6.6 1.6 1.6" fill="none" stroke="#8a6a1e" stroke-width="0.6" stroke-linecap="round"/>' +
+      '</svg>';
+    const walkerHtml = `<div class="walker" title="ההתקדמות שלך · ${doneCountForWalker} תחנות מאחורייך">${walkerSvg}</div>`;
 
     CH.forEach((ch, ci) => {
       const tag = document.createElement('div');
@@ -269,11 +362,6 @@
       root.appendChild(tag);
 
       const positions = ch.stations.map((_, i) => ((gi + i) % 2 === 0) ? 'r' : 'l');
-      const { d, h } = buildTrack(positions);
-      const path = document.createElement('div');
-      path.className = 'path';
-      path.style.height = h + 'px';
-      path.innerHTML = `<svg class="track" viewBox="0 0 100 ${h}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="var(--hp-line)" stroke-width="0.6" stroke-dasharray="2.5 2.5" stroke-linecap="round"/></svg>`;
       const nodes = document.createElement('div');
       nodes.className = 'nodes';
 
@@ -283,7 +371,13 @@
         // נעול רק אם המתג למעלה דלוק. כרגע הוא כבוי ולכן הכל פתוח.
         const locked = PROGRESS_LOCK_ENABLED && s.id > done + 1;
         const isDone = stationDone(s);
-        const state = locked ? 'locked' : (isDone ? 'done' : (s.id === nextId ? 'active' : 'open'));
+        const hasContent = stationHasContent(s);
+        // תחנה בלי שום תוכן (לא סרטון ולא שיעורים) לעולם לא לחיצה,
+        // גם אם הנעילה הסדרתית כבויה. בקשת אוריאן 10.09.
+        const state = locked ? 'locked'
+                    : !hasContent ? 'empty'
+                    : isDone ? 'done'
+                    : (s.id === nextId ? 'active' : 'open');
 
         const node = document.createElement('div');
         node.className = `node ${state} p-${pos}`;
@@ -292,20 +386,19 @@
         if (s.id === 1) flag = '<div class="start-flag"><div class="box">START</div></div>';
         if (s.id === lastStationId) flag = '<div class="end-flag"><span class="star">★</span></div>';
 
-        /* סימון תוכן · בקשת אוריאן 09.09.
-           נכון לכל התחנות לפי מה שבאמת קיים ב-data/content.js:
+        /* סימון תוכן · בקשת אוריאן 09.09, ועודכן 10.09.
            מודול עם שיעורים מציג מונה, סרטון בודד מציג "יש תוכן",
-           ותחנה בלי שום וידאו מציגה "עדיין ריק". */
+           ותחנה בלי שום וידאו מציגה כפתור "נעול" צהוב (לא לחיץ). */
         const nLes = Array.isArray(s.lessons) ? s.lessons.length : 0;
         const seen = nLes && window.OrianeLessons ? window.OrianeLessons.watchedCount(s.id) : 0;
         let lesLine;
         if (nLes) {
           lesLine = `<div class="lcount${seen >= nLes ? ' full' : ''}">` +
                     `<span class="n">${Math.min(seen, nLes)}/${nLes}</span> שיעורים</div>`;
-        } else if (stationHasContent(s)) {
+        } else if (hasContent) {
           lesLine = `<div class="lcount ready">יש תוכן · שיעור אחד</div>`;
         } else {
-          lesLine = `<div class="lcount empty">עדיין ריק</div>`;
+          lesLine = `<div class="lockbtn">${window.icHTML ? window.icHTML('lock') : ''} נעול</div>`;
         }
 
         // תיאור קצר על הכרטיס. אותו מקור כמו מסך התחנה, נחתך ל-2 שורות ב-CSS.
@@ -318,22 +411,33 @@
 
         node.innerHTML = `
           ${flag}
-          <div class="pin"><div class="num">${s.id}</div></div>
+          <div class="pin-wrap"><div class="pin"><div class="num">${s.id}</div></div>${s.id === nextId ? walkerHtml : ''}</div>
           <div class="card">
-            <div class="ic-box"><span data-ic="${state==='locked' ? 'lock' : 'target'}" style="width:16px;height:16px"></span></div>
+            <div class="ic-box"><span data-ic="${(state==='locked'||state==='empty') ? 'lock' : 'target'}" style="width:16px;height:16px"></span></div>
             <div class="t">תחנה ${s.id} · ${s.name}</div>
             ${descLine}
             ${label ? `<div class="m">${label}</div>` : ''}
             ${lesLine}
           </div>`;
-        if (state !== 'locked') node.onclick = () => go(s.id);
+        if (state !== 'locked' && state !== 'empty') node.onclick = () => go(s.id);
         nodes.appendChild(node);
+        pinEls.push(node.querySelector('.pin-wrap'));
       });
 
-      path.appendChild(nodes);
-      root.appendChild(path);
+      root.appendChild(nodes);
       gi += ch.stations.length;
     });
+
+    requestAnimationFrame(() => drawTrackAndFinish(root, pinEls));
+    if (!window.__roadResizeBound) {
+      window.__roadResizeBound = true;
+      let t;
+      window.addEventListener('resize', function () {
+        clearTimeout(t);
+        t = setTimeout(() => drawTrackAndFinish(root, pinEls), 150);
+      });
+    }
+
     updateProgress();
   }
 
