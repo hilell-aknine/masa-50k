@@ -51,10 +51,10 @@ window.COURSE = {
       { id:5, name:'שיווק אורגני', youtubeId:'', durationMin:0, workbookUrl:'',
         desc:'את בונה משפך חשיפה אורגני עם פוסט קרוסלה וסטורי. וגם לומדת את מבנה הפוסט שעובד: כותרת, הוק, גוף, סגירה וקריאה לפעולה.' },
       /* ✅ מודול מלא · 6 שיעורים · צילום אולפן 05-06.09.2026 */
-      { id:6, name:'משפך VSL', youtubeId:'5YTeDo6IUok', durationMin:52, workbookUrl:'',
+      { id:6, name:'משפך VSL', youtubeId:'CYKCQ_SvP14', durationMin:52, workbookUrl:'',
         desc:'המנוע שמוכר מוצרי פרימיום של 30,000 ₪ ומעלה. מודעה, דף נחיתה, הדרכה מצולמת, השארת פרטים ו-CRM. שישה שיעורים שבונים את המשפך מהרעיון ועד הדף החי.',
         lessons:[
-          { n:'1 · מה זה משפך VSL?',            youtubeId:'5YTeDo6IUok', min:10 },
+          { n:'1 · מה זה משפך VSL?',            youtubeId:'CYKCQ_SvP14', min:10 },
           { n:'2 · למי משפך VSL מיועד?',        youtubeId:'SgrFv2Di9qg', min:3  },
           { n:'3 · הנחיות לבניית הקופי להדרכה', youtubeId:'IcDcmV_Jcbo', min:10 },
           { n:'4 · כתיבת קופי להדרכה',          youtubeId:'tQGbecqgxTU', min:6  },
