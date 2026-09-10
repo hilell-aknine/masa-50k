@@ -35,8 +35,34 @@
   .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
   .devbar{background:#211a0c;border:1px solid #4d3c14;color:#c9a84e;font-size:11.5px;text-align:center;padding:7px 12px}
 
+  /* ---------- Hero banner (תמונה) ---------- */
+  /* באנר עליון עם התמונה שסיפקה אוריאן (Dream·Plan·Build·Scale).
+     הטקסט הראשי כבר "אפוי" בתוך התמונה עצמה, כך שכאן רק מוסיפים
+     שכבת הצללה עדינה לקריאות + כפתור CTA שמוביל לתחנה הבאה בהתקדמות.
+     בקשת אוריאן 10.09. */
+  .hero-banner{position:relative;border-radius:20px;overflow:hidden;margin-top:8px;
+    box-shadow:0 10px 34px rgba(0,0,0,.4)}
+  .hero-banner .hb-img{display:block;width:100%;height:auto}
+  .hero-banner .hb-fade{position:absolute;inset:0;
+    background:linear-gradient(0deg, rgba(1,15,36,.85) 0%, rgba(1,15,36,.15) 38%, transparent 60%)}
+  .hero-banner .hb-content{position:absolute;left:0;bottom:0;padding:18px 26px 24px;
+    display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:60%}
+  .hero-banner .hb-desc{font-size:13.5px;line-height:1.55;color:#eaf1fb;text-align:start;direction:rtl}
+  .hero-banner .hb-cta{display:inline-flex;align-items:center;gap:8px;background:var(--hp-pink);
+    color:#2a1018;font-weight:700;font-size:14px;padding:12px 24px;border-radius:30px;
+    text-decoration:none;box-shadow:var(--hp-glow);transition:.15s;white-space:nowrap}
+  .hero-banner .hb-cta:active{transform:scale(.97)}
+  @media(max-width:700px){
+    .hero-banner .hb-content{max-width:100%;padding:14px 16px 18px}
+    .hero-banner .hb-desc{font-size:12px}
+    .hero-banner .hb-cta{font-size:13px;padding:10px 20px}
+  }
+  @media(max-width:460px){
+    .hero-banner .hb-desc{display:none}
+  }
+
   /* ---------- Nav ---------- */
-  .hero{position:relative;text-align:center;padding:34px 18px 26px}
+  .hero{position:relative;text-align:center;padding:20px 18px 26px}
   .hero .side-note{position:absolute;top:38px;font-family:'Caveat',cursive;font-size:19px;line-height:1.35;color:var(--hp-pink-soft)}
   .hero .side-note.right{inset-inline-start:0;text-align:start}
   .hero .side-note.left{inset-inline-end:0;text-align:end}
@@ -194,9 +220,16 @@
 <body>
 
 <div class="wrap">
+  <div class="hero-banner">
+    <img class="hb-img" src="img/hero-banner.jpg" alt="המסע ל-50K בחודש · Dream Plan Build Scale">
+    <div class="hb-fade"></div>
+    <div class="hb-content">
+      <div class="hb-desc">זה מסע שהולך לקחת את העסק שלך שלב אחר שלב, מהבסיס ועד לסקיילינג ל-50,000 ₪ בחודש.</div>
+      <a class="hb-cta" href="#" id="ctaContinue">המשך מהמקום שעצרתי →</a>
+    </div>
+  </div>
+
   <div class="hero">
-    <h1>The Road to 50K</h1>
-    <div class="sub">כל התחנות, הכלים והליווי במקום אחד.</div>
     <div class="progress-box">
       <div class="progress-top">
         <span class="label">ההתקדמות שלך</span>
@@ -213,7 +246,6 @@
         <span class="sub2" id="nbSub"></span>
       </div>
     </div>
-    <a class="cta" href="#" id="ctaContinue" style="display:none">המשך לאן שהפסקת →</a>
   </div>
 
   <div class="road-section" id="journey"></div>
@@ -453,14 +485,14 @@
     document.getElementById('ctaContinue').href = 'station.html?id=' + nextId;
 
     // ---------- באנר "המשך לצפות" ----------
-    // מציג את השיעור הבא עם התמונה הממוזערת שלו מיוטיוב.
-    // אם אין וידאו לתחנה הבאה, נופל חזרה לכפתור הטקסטואלי.
+    // מציג את השיעור הבא עם התמונה הממוזערת שלו מיוטיוב, כתוספת מידע
+    // מתחת לכפתור ה-CTA הראשי שבתמונת הבאנר העליון (שתמיד מוצג).
     (function () {
       var all = (window.COURSE && window.COURSE.allStations) || [];
       var next = all.filter(function (s) { return s.id === nextId; })[0];
       var ban = document.getElementById('nextBan');
       var cta = document.getElementById('ctaContinue');
-      if (!next || !ban) return;
+      if (!next || !ban || !cta) return;
 
       var yt = next.youtubeId;
       var label = next.name, sub = next.tier || '';
@@ -473,7 +505,8 @@
         sub = next.name + ' · ' + next.lessons.length + ' שיעורים';
         href += '&l=1';
       }
-      if (!yt) { cta.style.display = ''; return; }   // אין וידאו — נשארים עם הכפתור
+      cta.href = href;
+      if (!yt) { ban.style.display = 'none'; return; }   // אין וידאו — נשארים עם כרטיס הבאנר בלבד
 
       document.getElementById('nbThumb').style.backgroundImage =
         'url(https://i.ytimg.com/vi/' + encodeURIComponent(yt) + '/mqdefault.jpg)';
@@ -481,7 +514,7 @@
       document.getElementById('nbName').textContent = label;
       document.getElementById('nbSub').textContent = sub;
       ban.style.display = '';
-      ban.addEventListener('click', function () { location.href = href; });
+      ban.onclick = function () { location.href = href; };
     })();
     // כרטיס "הקורס שלי" הוסר בבקשת אוריאן [פגישה 07.09, 20:02].
     // נשמרת בדיקת קיום כדי שהסרת אלמנט לא תפיל את כל הסקריפט.
