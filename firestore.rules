@@ -106,6 +106,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ---------- בקשות הצטרפות ----------
+    // הטופס הציבורי אוסף פרטי קשר בלבד. אין בו הרשאה ליצור משתמש או לפתוח גישה;
+    // רק מנהלת יכולה לקרוא, לאשר או לדחות בקשה.
+    match /join_requests/{requestId} {
+      allow create: if request.resource.data.email is string
+                    && request.resource.data.email.size() >= 5
+                    && request.resource.data.email.size() <= 160
+                    && request.resource.data.phone is string
+                    && request.resource.data.phone.size() >= 7
+                    && request.resource.data.phone.size() <= 20
+                    && request.resource.data.status == 'pending';
+      allow read: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
     // ---------- הגדרות אתר ----------
     // מסמך יחיד (settings/site) עם קישור "השארת פרטים לתהליך עסקי" וכד'.
     // כל מחובר רשאי לקרוא כדי להציג את הכפתור בסרגל הניווט. רק מנהל כותב.

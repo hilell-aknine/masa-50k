@@ -50,7 +50,13 @@
     padding:13px 18px;border-radius:var(--radius-card);font-size:14px;display:none;z-index:400;max-width:90vw}
   .toast.on{display:block}
   .credit{margin-top:26px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+  .request-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:13px 0;border-bottom:1px solid var(--line)}
+  .request-row:last-child{border-bottom:0}
+  .request-details{font-size:13.5px;line-height:1.55}
+  .request-details small{display:block;color:var(--text-dim);font-size:12px}
   @media(max-width:640px){ th:nth-child(3),td:nth-child(3){display:none} }
+  @media(max-width:520px){.request-row{align-items:stretch;flex-direction:column}.request-row button{width:100%}}
 </style>
 </head>
 <body>
@@ -69,6 +75,12 @@
     <h2>ממתינים לאישור <span id="pend-n" class="pill pending"></span></h2>
     <p class="help">נרשמו לפורטל ועדיין אין להם גישה. הם רואים מסך המתנה ולא רואים אף שיעור.</p>
     <div id="pend-list"></div>
+  </div>
+
+  <div class="panel" id="join-panel" style="display:none;border-color:var(--accent)">
+    <h2>בקשות הצטרפות <span id="join-n" class="pill pending"></span></h2>
+    <p class="help">מי שמילאה את טופס “התחלה במסע”. אישור ייצור הזמנה למייל ויאפשר לה להירשם למסע.</p>
+    <div id="join-list"></div>
   </div>
 
   <div class="panel">
@@ -454,6 +466,63 @@ document.addEventListener('oriane:ready', function (ev) {
   }, function (e) {
     document.getElementById('list').innerHTML = '<div class="empty">שגיאה בטעינת המשתמשים</div>';
     console.error(e);
+  });
+
+  // ---------- בקשות הצטרפות ----------
+  db.collection('join_requests').onSnapshot(function (snap) {
+    var all = snap.docs.map(function (d) { var o = d.data(); o.id = d.id; return o; });
+    var open = all.filter(function (r) { return (r.status || 'pending') === 'pending'; });
+    var panel = document.getElementById('join-panel');
+    if (!open.length) { panel.style.display = 'none'; return; }
+    panel.style.display = '';
+    document.getElementById('join-n').textContent = open.length;
+    open.sort(function (a, b) { return ms(b.created_at) - ms(a.created_at); });
+    document.getElementById('join-list').innerHTML = open.map(function (r) {
+      return '<div class="request-row">' +
+        '<div class="request-details"><b>' + esc(r.email || '') + '</b>' +
+        '<small>' + esc(r.phone || '') + ' · ' + when(r.created_at) + '</small></div>' +
+        '<div class="row-actions">' +
+          '<button data-join-act="approve" data-join-id="' + esc(r.id) + '">אישור והזמנה</button>' +
+          '<button class="ghost" data-join-act="reject" data-join-id="' + esc(r.id) + '">דחייה</button>' +
+        '</div></div>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-join-act]'), function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-join-id');
+        var request = open.filter(function (r) { return r.id === id; })[0];
+        if (!request) return;
+        var act = b.getAttribute('data-join-act');
+        if (act === 'reject' && !confirm('לדחות את הבקשה?')) return;
+        b.disabled = true;
+        var update = act === 'approve'
+          ? db.collection('invites').doc(request.email).set({
+              email: request.email,
+              phone: request.phone || '',
+              created_at: firebase.firestore.FieldValue.serverTimestamp(),
+              created_by: me.uid
+            }).then(function () {
+              return db.collection('join_requests').doc(id).update({
+                status: 'approved',
+                reviewed_at: firebase.firestore.FieldValue.serverTimestamp(),
+                reviewed_by: me.uid
+              });
+            })
+          : db.collection('join_requests').doc(id).update({
+              status: 'rejected',
+              reviewed_at: firebase.firestore.FieldValue.serverTimestamp(),
+              reviewed_by: me.uid
+            });
+        update.then(function () {
+          toast(act === 'approve' ? 'הבקשה אושרה ונוצרה הזמנה' : 'הבקשה נדחתה');
+        }).catch(function (e) {
+          b.disabled = false;
+          toast('הפעולה נכשלה');
+          console.error(e);
+        });
+      });
+    });
+  }, function (e) {
+    console.error('[join_requests]', e);
   });
 
   // ---------- 🚩 תגובות שדווחו ----------

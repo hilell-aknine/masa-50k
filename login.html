@@ -4,39 +4,122 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>כניסה · המסע ל-50K</title>
 <link rel="stylesheet" href="css/portal.css">
+<link rel="stylesheet" href="css/journey-theme.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Heebo:wght@400;500;600;700;800&display=swap">
+<script src="js/icons.js"></script>
 <style>
-  .wrap{max-width:420px;margin:0 auto;padding:40px 0 60px}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:26px 22px}
-  h1{font-size:26px;color:var(--text-strong);margin-bottom:6px}
-  .sub{font-size:14.5px;color:var(--text-dim);margin-bottom:22px;line-height:1.55}
-  label{display:block;font-size:13.5px;color:var(--text-dim);margin-bottom:7px}
-  input{width:100%;padding:14px 15px;font-size:16px;font-family:inherit;direction:ltr;text-align:left;
-    background:var(--input-bg);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-pill);min-height:48px}
-  input:focus{outline:none;border-color:var(--btn-bg)}
-  button{width:100%;margin-top:14px;padding:15px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;
-    background:var(--btn-bg);color:var(--btn-text);border:0;border-radius:var(--radius-pill);min-height:48px;transition:.15s}
-  button:disabled{opacity:.55;cursor:default}
-  .msg{margin-top:16px;padding:14px 16px;border-radius:var(--radius-card);font-size:14.5px;line-height:1.6;display:none}
+  /* ============================================================
+     מסך כניסה · שני חלקים: ויזואל (תמונת הבאנר) + כרטיס כניסה
+     בהשראת ההדמיה שסיפקה אוריאן 10.09. במובייל נשאר רק הכרטיס,
+     ממורכז, בדיוק כמו קודם.
+     ============================================================ */
+  :root{
+    --hp-bg:#010f24;
+    --hp-card:#0a1c38;
+    --hp-line:rgba(252,193,203,.16);
+    --hp-pink:#fcc1cb;
+    --hp-pink-soft:rgba(252,193,203,.55);
+    --hp-text:#eaf1fb;
+    --hp-text-dim:#93a6c4;
+    --hp-glow:0 0 18px rgba(252,193,203,.55), 0 0 40px rgba(252,193,203,.25);
+  }
+  html,body{background:var(--hp-bg) !important;min-height:100%}
+  body{padding:0}
+  .theme-toggle{display:none !important}
+
+  .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;direction:ltr;
+    background:#010f24}
+
+  /* ---------- לוח ויזואלי ----------
+     התמונה ממלאת את כל גובה המסך, כפי שבדוגמת העיצוב, ללא מסגרת
+     או תוכן נוסף שמסיח את הדעת מכרטיס הכניסה. */
+  .auth-visual{display:none}
+  .auth-visual .av-photo{width:100%;height:100%;display:block;object-fit:cover;object-position:center;
+    border-radius:0;box-shadow:none}
+  @media(max-width:900px){ .auth-visual{display:none} }
+
+  /* ---------- כרטיס הכניסה ---------- */
+  .auth-side{width:100%;display:flex;align-items:center;justify-content:center;padding:32px 20px;direction:rtl}
+
+  .card{width:100%;max-width:496px;background:linear-gradient(160deg, rgba(252,193,203,.08), rgba(252,193,203,.015) 65%), #07172f;
+    border:1px solid rgba(252,193,203,.8);border-radius:22px;padding:38px 46px 30px;
+    box-shadow:0 0 22px rgba(252,193,203,.35),0 12px 38px rgba(0,0,0,.45)}
+  h1{font-size:30px;font-weight:800;color:var(--hp-pink);margin-bottom:8px;text-align:center;line-height:1.25}
+  .sub{font-size:14px;color:var(--hp-text);margin-bottom:28px;line-height:1.55;text-align:center}
+
+  label{display:block;font-size:12.5px;color:var(--hp-text-dim);margin-bottom:6px}
+  .field{position:relative;margin-bottom:14px}
+  .field .fic{position:absolute;top:50%;transform:translateY(-50%);inset-inline-start:15px;
+    color:var(--hp-text-dim);width:17px;height:17px;pointer-events:none}
+  input{width:100%;padding:13px 15px 13px 15px;padding-inline-start:42px;font-size:15.5px;font-family:inherit;
+    direction:ltr;text-align:left;background:#071b38;color:var(--hp-text);border:1px solid var(--hp-line);
+    border-radius:15px;min-height:48px}
+  input::placeholder{color:var(--hp-text-dim)}
+  input:focus{outline:none;border-color:var(--hp-pink)}
+  .field .toggle-eye{position:absolute;top:50%;transform:translateY(-50%);inset-inline-end:15px;
+    background:none;border:0;color:var(--hp-text-dim);cursor:pointer;padding:2px;width:18px;height:18px;
+    display:flex;align-items:center;justify-content:center}
+  .field .toggle-eye:hover{color:var(--hp-text)}
+
+  button.google{width:100%;background:transparent;color:var(--hp-text);border:1px solid rgba(252,193,203,.8);
+    display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;font-size:14.5px;font-weight:600;
+    font-family:inherit;border-radius:15px;cursor:pointer;min-height:50px;transition:.15s}
+  button.google:hover{border-color:var(--hp-pink-soft)}
+  button.google:disabled{opacity:.55;cursor:default}
+
+  .or{display:flex;align-items:center;gap:12px;margin:20px 0 18px;color:var(--hp-text-dim);font-size:12.5px}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--hp-line)}
+
+  button.primary{width:100%;margin-top:6px;padding:14px;font-size:15px;font-weight:700;font-family:inherit;
+    cursor:pointer;background:var(--hp-pink);color:#2a1018;border:0;border-radius:30px;min-height:48px;
+    box-shadow:var(--hp-glow);transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+  button.primary:active{transform:scale(.98)}
+  button.primary:disabled{opacity:.55;cursor:default;box-shadow:none}
+
+  .switchline{text-align:center;font-size:13px;color:var(--hp-text-dim);margin-top:16px}
+  .switchline a,.switchline button.linklike{color:var(--hp-pink);font-weight:700;text-decoration:underline;
+    background:none;border:0;cursor:pointer;font-family:inherit;font-size:inherit;padding:0}
+
+  button.linkish{background:none;border:0;color:var(--hp-text-dim);font-size:12px;
+    text-decoration:underline;min-height:auto;width:100%;margin-top:10px;cursor:pointer;
+    font-family:inherit;text-align:center;display:block}
+  button.linkish:hover{color:var(--hp-text)}
+
+  .msg{margin-top:14px;padding:12px 15px;border-radius:14px;font-size:13.5px;line-height:1.6;display:none}
   .msg.on{display:block}
-  .msg.ok{background:var(--surface-2);border:1px solid var(--btn-bg);color:var(--text-strong)}
-  .msg.err{background:var(--surface-2);border:1px solid var(--accent);color:var(--text-strong)}
-  button.google{background:var(--surface);color:var(--text-strong);border:1px solid var(--line);
-    display:flex;align-items:center;justify-content:center;gap:10px;margin-top:0}
-  button.google:hover{border-color:var(--btn-bg)}
-  /* קישור "שכחתי סיסמה" · כפתור טקסטואלי, לא כפתור ראשי */
-  button.linkish{background:none;border:0;color:var(--text-dim);font-size:12.5px;
-    text-decoration:underline;min-height:44px;width:100%;margin-top:4px;cursor:pointer;
-    font-family:inherit}
-  button.linkish:hover{color:var(--text-strong)}
-  .or{display:flex;align-items:center;gap:12px;margin:20px 0 4px;color:var(--text-faint);font-size:13px}
-  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
-  .hint{margin-top:18px;font-size:13px;color:var(--text-faint);line-height:1.6;text-align:center}
-  .credit{margin-top:30px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+  .msg.ok{background:rgba(252,193,203,.08);border:1px solid var(--hp-pink);color:var(--hp-text)}
+  .msg.err{background:rgba(224,49,49,.08);border:1px solid #E03131;color:var(--hp-text)}
+
+  .card-tagline{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:28px;
+    color:var(--hp-text-dim);font-size:10px;letter-spacing:2px;text-transform:uppercase}
+  .card-tagline::before,.card-tagline::after{content:"";width:34px;height:1px;background:var(--hp-line)}
+  .credit{display:none}
+  .join-modal{position:fixed;inset:0;z-index:500;display:none;place-items:center;padding:20px;
+    background:rgba(1,15,36,.82)}
+  .join-modal.on{display:grid}
+  .join-box{width:min(100%,430px);background:#07172f;border:1px solid rgba(252,193,203,.7);
+    border-radius:20px;padding:28px;box-shadow:0 0 28px rgba(252,193,203,.28);position:relative}
+  .join-box h2{color:var(--hp-pink);font-size:24px;text-align:center;margin:0 0 8px}
+  .join-box p{color:var(--hp-text-dim);font-size:13.5px;line-height:1.5;text-align:center;margin:0 0 20px}
+  .join-box label{margin-top:12px}
+  .join-box input{margin-bottom:2px}
+  .join-close{position:absolute;top:10px;inset-inline-end:13px;background:none;border:0;
+    color:var(--hp-text-dim);font-size:24px;cursor:pointer;padding:2px 7px}
+  .join-submit{width:100%;margin-top:18px;padding:13px;border:0;border-radius:15px;
+    background:var(--hp-pink);color:#2a1018;font:700 15px inherit;cursor:pointer}
+  .join-submit:disabled{opacity:.55;cursor:default}
+  .join-status{display:none;margin-top:13px;font-size:13px;line-height:1.5;text-align:center}
+  .join-status.on{display:block}
+  @media(max-width:600px){
+    .auth-side{padding:24px 16px}
+    .card{padding:30px 22px 24px;border-radius:18px}
+    h1{font-size:25px}
+  }
 </style>
 <script>
 /* לוכד קוד הפניה מהכתובת ושומר אותו עד ההרשמה בפועל */
@@ -47,39 +130,72 @@
 </script>
 </head>
 <body>
-<div class="wrap">
-  <div class="card">
-    <h1>כניסה למסע</h1>
-    <p class="sub">הכניסה מיועדת למשתתפים מאושרים בלבד. בחרו את הדרך הנוחה לכם.</p>
+<div class="auth-wrap">
 
-    <button id="btn-google" class="google" type="button">
-      <svg viewBox="0 0 48 48" width="19" height="19" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.1 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9.1h12.4c-.5 2.9-2.1 5.3-4.6 6.9l7.2 5.6c4.2-3.9 6.6-9.6 6.6-16.4z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4l-7.9-6.1C1 16.9 0 20.3 0 24s1 7.1 2.6 10.2l7.9-5.5z"/><path fill="#34A853" d="M24 48c6.3 0 11.7-2.1 15.6-5.7l-7.2-5.6c-2 1.4-4.7 2.3-8.4 2.3-6.3 0-11.6-3.6-13.5-8.8l-7.9 5.5C6.5 42.6 14.6 48 24 48z"/></svg>
-      המשיכו עם Google
-    </button>
-
-    <div class="or"><span>או עם מייל וסיסמה</span></div>
-
-    <form id="fpw" novalidate>
-      <label for="pw-email">כתובת מייל</label>
-      <input id="pw-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
-      <label for="pw-pass" style="margin-top:12px">סיסמה</label>
-      <input id="pw-pass" type="password" autocomplete="current-password" placeholder="••••••••" required minlength="6">
-      <button id="btn-pw" type="submit">כניסה עם סיסמה</button>
-      <button id="btn-pw-signup" type="button" class="google" style="margin-top:10px">אין לי חשבון · הרשמה עם מייל וסיסמה</button>
-      <button id="btn-forgot" type="button" class="linkish">שכחתי את הסיסמה</button>
-    </form>
-
-    <div class="msg" id="msg"></div>
-    <p class="hint">הכניסה עם Google מיידית ובלי לזכור סיסמה.</p>
+  <div class="auth-visual">
+    <img class="av-photo" src="img/hero-banner.jpg" alt="המסע ל-50K בחודש · Dream Plan Build Scale">
   </div>
-  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+
+  <div class="auth-side">
+    <div class="card">
+      <h1>ברוכים הבאים למסע ל-50K</h1>
+      <p class="sub">הגישה לפורטל פתוחה לחברי המסע הבלעדי בלבד.</p>
+
+      <button id="btn-google" class="google" type="button">
+        <svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.1 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9.1h12.4c-.5 2.9-2.1 5.3-4.6 6.9l7.2 5.6c4.2-3.9 6.6-9.6 6.6-16.4z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4l-7.9-6.1C1 16.9 0 20.3 0 24s1 7.1 2.6 10.2l7.9-5.5z"/><path fill="#34A853" d="M24 48c6.3 0 11.7-2.1 15.6-5.7l-7.2-5.6c-2 1.4-4.7 2.3-8.4 2.3-6.3 0-11.6-3.6-13.5-8.8l-7.9 5.5C6.5 42.6 14.6 48 24 48z"/></svg>
+        המשיכו עם Google
+      </button>
+
+      <div class="or"><span>או</span></div>
+
+      <form id="fpw" novalidate>
+        <label for="pw-email">כתובת מייל</label>
+        <div class="field">
+          <span class="fic" data-ic="mail"></span>
+          <input id="pw-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
+
+        <label for="pw-pass">סיסמה</label>
+        <div class="field">
+          <span class="fic" data-ic="lock"></span>
+          <input id="pw-pass" type="password" autocomplete="current-password" placeholder="••••••••" required minlength="6">
+          <button type="button" class="toggle-eye" id="btn-eye" aria-label="הצג/הסתר סיסמה"><span data-ic="eye"></span></button>
+        </div>
+
+        <button id="btn-pw" class="primary" type="submit"><span>→</span> כניסה למסע</button>
+        <button id="btn-forgot" type="button" class="linkish">שכחתי את הסיסמה</button>
+      </form>
+
+      <div class="switchline">
+        אין לך חשבון? <button type="button" class="linklike" id="btn-pw-signup">התחלה במסע</button>
+      </div>
+
+      <div class="msg" id="msg"></div>
+      <div class="card-tagline">More Than a Business · A New You</div>
+    </div>
+  </div>
+</div>
+<div class="credit" style="position:fixed;bottom:8px;left:0;right:0">נבנה ע"י <b>הלל אקנין</b></div>
+<div class="join-modal" id="join-modal" aria-hidden="true">
+  <div class="join-box" role="dialog" aria-modal="true" aria-labelledby="join-title">
+    <button class="join-close" id="join-close" type="button" aria-label="סגירה">×</button>
+    <h2 id="join-title">התחלה במסע</h2>
+    <p>השאירו פרטים ונשלח את הבקשה לאישור. לאחר האישור תוכלו להירשם ולהיכנס למסע.</p>
+    <form id="join-form" novalidate>
+      <label for="join-email">כתובת מייל</label>
+      <input id="join-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+      <label for="join-phone">טלפון</label>
+      <input id="join-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="050-0000000" required>
+      <button class="join-submit" id="join-submit" type="submit">שליחת בקשה</button>
+    </form>
+    <div class="join-status" id="join-status"></div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
-<script src="js/theme.js"></script>
 <script>
 (function () {
   'use strict';
@@ -171,6 +287,64 @@
   var pwPass = document.getElementById('pw-pass');
   var btnPw = document.getElementById('btn-pw');
   var btnPwSignup = document.getElementById('btn-pw-signup');
+  var joinModal = document.getElementById('join-modal');
+  var joinForm = document.getElementById('join-form');
+  var joinEmail = document.getElementById('join-email');
+  var joinPhone = document.getElementById('join-phone');
+  var joinSubmit = document.getElementById('join-submit');
+  var joinStatus = document.getElementById('join-status');
+
+  function showJoinStatus(text, ok) {
+    joinStatus.textContent = text;
+    joinStatus.style.color = ok ? 'var(--hp-pink)' : '#ff9da9';
+    joinStatus.className = 'join-status on';
+  }
+
+  function closeJoinModal() {
+    joinModal.classList.remove('on');
+    joinModal.setAttribute('aria-hidden', 'true');
+  }
+
+  btnPwSignup.addEventListener('click', function () {
+    joinEmail.value = (pwEmail.value || '').trim();
+    joinPhone.value = '';
+    joinStatus.className = 'join-status';
+    joinSubmit.disabled = false;
+    joinSubmit.textContent = 'שליחת בקשה';
+    joinModal.classList.add('on');
+    joinModal.setAttribute('aria-hidden', 'false');
+    setTimeout(function () { (joinEmail.value ? joinPhone : joinEmail).focus(); }, 0);
+  });
+  document.getElementById('join-close').addEventListener('click', closeJoinModal);
+  joinModal.addEventListener('click', function (ev) { if (ev.target === joinModal) closeJoinModal(); });
+  joinForm.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var email = (joinEmail.value || '').trim().toLowerCase();
+    var phone = (joinPhone.value || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      return showJoinStatus('הזינו כתובת מייל תקינה.', false);
+    }
+    if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) {
+      return showJoinStatus('הזינו מספר טלפון תקין.', false);
+    }
+    joinSubmit.disabled = true;
+    joinSubmit.textContent = 'שולח...';
+    db.collection('join_requests').add({
+      email: email,
+      phone: phone,
+      status: 'pending',
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      showJoinStatus('הבקשה נשלחה בהצלחה. נחזור אליכם לאחר האישור.', true);
+      joinForm.reset();
+      joinSubmit.textContent = 'הבקשה נשלחה';
+    }).catch(function (e) {
+      joinSubmit.disabled = false;
+      joinSubmit.textContent = 'שליחת בקשה';
+      showJoinStatus('לא הצלחנו לשלוח כרגע. נסו שוב בעוד רגע.', false);
+      console.error(e);
+    });
+  });
 
   function pwCreds() {
     var v = (pwEmail.value || '').trim().toLowerCase();
@@ -205,30 +379,21 @@
     var c = pwCreds();
     if (!c) return;
     btnPw.disabled = true;
-    btnPw.textContent = 'מתחבר...';
     auth.signInWithEmailAndPassword(c.email, c.pass).then(function (res) {
       return afterSignIn(res.user);
     }).catch(function (e) {
       pwError(e);
     }).finally(function () {
       btnPw.disabled = false;
-      btnPw.textContent = 'כניסה עם סיסמה';
     });
   });
 
-  btnPwSignup.addEventListener('click', function () {
-    var c = pwCreds();
-    if (!c) return;
-    btnPwSignup.disabled = true;
-    btnPwSignup.textContent = 'נרשם...';
-    auth.createUserWithEmailAndPassword(c.email, c.pass).then(function (res) {
-      return afterSignIn(res.user);
-    }).catch(function (e) {
-      pwError(e);
-    }).finally(function () {
-      btnPwSignup.disabled = false;
-      btnPwSignup.textContent = 'אין לי חשבון · הרשמה עם מייל וסיסמה';
-    });
+  // ---------- הצג/הסתר סיסמה ----------
+  document.getElementById('btn-eye').addEventListener('click', function () {
+    var showing = pwPass.type === 'text';
+    pwPass.type = showing ? 'password' : 'text';
+    var iconName = showing ? 'eye' : 'eye-off';
+    this.innerHTML = window.icHTML ? window.icHTML(iconName) : '';
   });
 
   // ---------- כניסה עם גוגל ----------
