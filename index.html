@@ -103,6 +103,50 @@
   .chapter-tag{position:relative;z-index:1;text-align:center;margin:36px 0 6px;font-size:12.5px;letter-spacing:2px;font-weight:700;color:var(--hp-text-dim);text-transform:uppercase}
   .chapter-tag b{color:var(--hp-pink)}
 
+  /* ---------- כפתור הפתיח · בקשת אוריאן 15.09 (הקלטה קולית) ----------
+     "כפתור ירוק פליי ממש לפני הקובייה אחת, שזה יהיה באמצע, ומשם הקו
+      המקווקו יתחיל. ואז ההתחלה תהיה שם, אנשים ילחצו, ומשם הם יעברו
+      לפרק אחד."
+     הכפתור הוא נקודת ההתחלה הוויזואלית של המסע: drawTrackAndFinish
+     מוסיף את מרכזו כנקודה הראשונה בנתיב, ולכן הקו המקווקו יוצא ממנו
+     ולא מתחנה 1. הוא בזרימה רגילה וממורכז, ולכן לא נוגע בסדר התחנות
+     ולא שובר את המפה במובייל. */
+  .start-play{position:relative;z-index:1;display:flex;flex-direction:column;
+    align-items:center;gap:9px;margin:0 0 4px}
+  .sp-btn{width:66px;height:66px;border-radius:50%;border:0;cursor:pointer;
+    display:grid;place-items:center;background:linear-gradient(160deg,#34d977,#16a34a);
+    box-shadow:0 8px 22px rgba(22,163,74,.45);transition:transform .15s,box-shadow .15s}
+  .sp-btn:hover{transform:scale(1.06);box-shadow:0 10px 28px rgba(22,163,74,.60)}
+  .sp-btn:active{transform:scale(.95)}
+  .sp-btn svg{width:25px;height:25px;margin-inline-start:4px}
+  /* שבב רקע · הקו המקווקו יוצא מהכפתור ועובר בדיוק דרך הכיתוב.
+     אותה תבנית של .fm-txt בסמן הסיום, כדי שהטקסט יישאר קריא. */
+  .sp-txt{font-size:12.5px;font-weight:800;color:#8ef0b4;letter-spacing:.4px;
+    background:var(--hp-card);padding:5px 14px;border-radius:20px;
+    border:1px solid rgba(52,217,119,.30);white-space:nowrap}
+  @media(max-width:520px){ .sp-btn{width:58px;height:58px} .sp-btn svg{width:21px;height:21px}
+    .sp-txt{font-size:11.5px;padding:4px 12px} }
+
+  /* מודאל הפתיח · נבחר על פני דף ייעודי כדי לא להוסיף מסלול חדש ולא
+     לגעת בסדר התחנות. הצופה נשאר על המפה וממשיך משם לתחנה 1.
+     ⚠️ ה-src מתרוקן בסגירה, אחרת היוטיוב ממשיך להשמיע ברקע. */
+  .vm{position:fixed;inset:0;z-index:90;display:none;place-items:center;padding:16px;
+    background:rgba(1,8,20,.88)}
+  .vm.on{display:grid}
+  .vm-box{width:min(900px,100%);max-height:92vh;overflow:auto;background:#0f2141;
+    border:1px solid var(--hp-line);border-radius:16px}
+  .vm-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px}
+  .vm-head h3{font-size:14.5px;font-weight:800;color:#eaf1fb}
+  .vm-x{background:none;border:0;color:var(--hp-text-dim);font-size:26px;line-height:1;
+    cursor:pointer;padding:0 6px}
+  .vm-x:hover{color:#fff}
+  .vm-video{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+  .vm-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vm-foot{padding:14px 16px 16px;text-align:center}
+  .vm-next{display:inline-flex;align-items:center;gap:7px;background:var(--hp-pink);
+    color:#2a1018;font-weight:700;font-size:13.5px;padding:11px 22px;border-radius:24px;
+    text-decoration:none}
+
   /* מסלול רציף אחד לכל המסע (מצויר לפי מיקום אמיתי של הפינים בדום,
      לא לפי הערכה מראש) · בקשת אוריאן 10.09: הקו נמחק בין מדרגה 2 ל-3
      כי כל מדרגה ציירה נתיב נפרד. עכשיו יש רק SVG אחד שרץ ברצף על פני
@@ -323,6 +367,16 @@
     });
     if (!pts.length) return;
 
+    // כפתור הפתיח הוא הנקודה הראשונה במסלול · הקו המקווקו יוצא ממנו
+    // ולא מתחנה 1 (בקשת אוריאן 15.09). אם אין פתיח, המסלול מתחיל
+    // מתחנה 1 בדיוק כמו קודם.
+    const spBtn = root.querySelector('.sp-btn');
+    if (spBtn) {
+      const sr = spBtn.getBoundingClientRect();
+      pts.unshift({ x: sr.left + sr.width / 2 - rootRect.left,
+                    y: sr.top + sr.height / 2 - rootRect.top });
+    }
+
     const last = pts[pts.length - 1];
     const finishY = last.y + 190;
     const finishX = last.x;
@@ -365,6 +419,23 @@
   function render(){
     const root = document.getElementById('journey');
     root.innerHTML = '';
+
+    /* כפתור הפתיח · ממורכז, ממש לפני תחנה 1. מוזרק רק אם יש מזהה
+       ב-content.js, כך שהמפה לא נשברת אם הפתיח יוסר. */
+    const introId = (window.COURSE.brand && window.COURSE.brand.introYoutubeId) || '';
+    if (introId) {
+      const sp = document.createElement('div');
+      sp.className = 'start-play';
+      sp.innerHTML =
+        '<button class="sp-btn" id="spBtn" aria-label="נגן את סרטון הפתיח">' +
+          '<svg viewBox="0 0 24 24" fill="#04240f" aria-hidden="true"><path d="M8 5.2v13.6L19 12z"/></svg>' +
+        '</button>' +
+        '<span class="sp-txt">' +
+          ((window.COURSE.brand && window.COURSE.brand.introTitle) || 'צפי בפתיח') +
+        '</span>';
+      root.appendChild(sp);
+    }
+
     let gi = 0; // אינדקס גלובלי לזיג-זג רציף
     const lastStationId = CH[CH.length - 1].stations[CH[CH.length - 1].stations.length - 1].id;
     const pinEls = []; // אוסף את כל אלמנטי ה-pin-wrap, לפי סדר התחנות, לציור המסלול
@@ -523,7 +594,65 @@
   }
 
   render();
+
+  /* ---------- מודאל הפתיח ----------
+     הצופה נשאר על המפה. הכפתור התחתון מוביל לתחנה 1, בדיוק כפי
+     שאוריאן תיארה: "אנשים ילחצו, ומשם הם יעברו לפרק אחד". */
+  /* ⚠️ החיווט מושהה ל-DOMContentLoaded בכוונה: תגית המודאל יושבת בסוף
+     ה-body, אחרי בלוק הסקריפט הזה, ולכן בזמן ריצה ישירה getElementById
+     מחזיר null וההאזנה פשוט לא נרשמת — בשקט, בלי שגיאה. */
+  function wireIntroModal() {
+    const modal = document.getElementById('introModal');
+    const frame = document.getElementById('vmFrame');
+    const btn   = document.getElementById('spBtn');
+    const xBtn  = document.getElementById('vmClose');
+    const brand = window.COURSE.brand || {};
+    if (!modal || !frame || !btn) return;
+
+    const title = document.getElementById('vmTitle');
+    if (title && brand.introTitle) title.textContent = brand.introTitle;
+
+    function open() {
+      frame.src = 'https://www.youtube.com/embed/' +
+        encodeURIComponent(brand.introYoutubeId) + '?autoplay=1&rel=0';
+      modal.classList.add('on');
+      document.body.style.overflow = 'hidden';
+    }
+    // ⚠️ ריקון ה-src הוא חובה · בלעדיו היוטיוב ממשיך להשמיע ברקע
+    //    אחרי הסגירה, וזה נשמע כמו באג במערכת.
+    function close() {
+      frame.src = '';
+      modal.classList.remove('on');
+      document.body.style.overflow = '';
+    }
+
+    btn.addEventListener('click', open);
+    if (xBtn) xBtn.addEventListener('click', close);
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('on')) close();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireIntroModal);
+  } else {
+    wireIntroModal();
+  }
 </script>
+<!-- מודאל הפתיח · נשלט מכפתור הפליי הירוק בראש המפה -->
+<div class="vm" id="introModal" role="dialog" aria-modal="true" aria-labelledby="vmTitle">
+  <div class="vm-box">
+    <div class="vm-head">
+      <h3 id="vmTitle">פתיח</h3>
+      <button class="vm-x" id="vmClose" aria-label="סגירה">&times;</button>
+    </div>
+    <div class="vm-video"><iframe id="vmFrame" src="" title="פתיח" allowfullscreen
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>
+    <div class="vm-foot"><a class="vm-next" id="vmNext" href="station.html?id=1">להתחיל מתחנה 1 →</a></div>
+  </div>
+</div>
+
 <script src="js/ai-tutor.js"></script>
 </body>
 </html>
