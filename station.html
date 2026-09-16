@@ -61,6 +61,12 @@
       display:grid;place-items:center;padding:0 7px}
     .lcard .thumb .min{position:absolute;inset-inline-end:8px;bottom:8px;background:rgba(0,0,0,.7);
       color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:5px}
+    /* עיגול ירוק עם וי · מופיע על שיעור שנצפה בפועל (80%+ מהסרטון),
+       בקשת אוריאן 16.09. עומד לצד "num" בפינה הנגדית של התמונה הממוזערת. */
+    .lcard .thumb .done-badge{position:absolute;inset-inline-end:8px;top:8px;width:22px;height:22px;
+      border-radius:50%;background:#22c55e;color:#fff;font-size:13px;font-weight:800;
+      display:none;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+    .lcard .thumb .done-badge.on{display:flex}
     .lcard .thumb .play{position:absolute;inset:0;display:grid;place-items:center;
       color:#fff;font-size:26px;opacity:0;transition:.16s;text-shadow:0 2px 10px rgba(0,0,0,.6)}
     .lcard:hover .thumb .play{opacity:1}
@@ -162,6 +168,8 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/gate.js"></script>
 <script src="js/nav.js"></script>
+<!-- YouTube IFrame API · מאפשר מעקב זמן צפייה אמיתי (בקשת אוריאן 16.09: וי ירוק אחרי 80% מהסרטון) -->
+<script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 
@@ -253,7 +261,8 @@
     if (openId) {
       videoHtml =
         '<div class="video">' +
-          '<iframe id="stFrame" src="https://www.youtube.com/embed/' + encodeURIComponent(openId) + '" ' +
+          '<iframe id="stFrame" src="https://www.youtube.com/embed/' + encodeURIComponent(openId) +
+            '?enablejsapi=1&origin=' + encodeURIComponent(location.origin) + '" ' +
             'title="' + esc(station.name) + '" allowfullscreen ' +
             'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>' +
         '</div>';
@@ -280,6 +289,7 @@
                           'data-yt="' + esc(l.youtubeId) + '">' +
                        '<div class="thumb" style="background-image:url(' + thumb + ')">' +
                          '<span class="num">' + (i + 1) + '</span>' +
+                         '<span class="done-badge' + (window.OrianeLessons && window.OrianeLessons.isWatched(station.id, i) ? ' on' : '') + '" data-done-i="' + i + '">✓</span>' +
                          '<span class="min">' + esc(l.min) + ' דק׳</span>' +
                          '<span class="play">▶</span>' +
                        '</div>' +
@@ -377,14 +387,80 @@
       '</div>' +
       '<div class="stepnav">' + prevHtml + nextHtml + '</div>';
 
+    // ---------- מעקב צפייה אמיתית · וי ירוק אחרי 80% מהסרטון ----------
+    // בקשת אוריאן 16.09: "האימוג'י הזה ייצבע ברגע שהיוזר צפה ב-80%
+    // מהסרטון". לכן השיעור מסומן "נצפה" (markWatched) רק כשהתקדמות
+    // הצפייה בפועל, לפי ה-YouTube IFrame API, חוצה את סף ה-80%,
+    // ולא ברגע שהנגן נפתח כמו קודם.
+    var ytPlayer = null;
+    var ytPollTimer = null;
+    var currentLessonIdx = lessonIdx;
+
+    function markLessonWatched(idx) {
+      if (idx == null || !window.OrianeLessons) return;
+      var already = window.OrianeLessons.isWatched(station.id, idx);
+      window.OrianeLessons.markWatched(station.id, idx);
+      if (!already) {
+        var badge = document.querySelector('.done-badge[data-done-i="' + idx + '"]');
+        if (badge) badge.classList.add('on');
+      }
+    }
+
+    function startYtWatchPolling() {
+      if (ytPollTimer) return;
+      ytPollTimer = setInterval(function () {
+        if (!ytPlayer || typeof ytPlayer.getPlayerState !== 'function') return;
+        try {
+          if (ytPlayer.getPlayerState() !== 1 /* YT.PlayerState.PLAYING */) return;
+          var dur = ytPlayer.getDuration();
+          if (!dur) return;
+          var frac = ytPlayer.getCurrentTime() / dur;
+          if (frac >= 0.8) markLessonWatched(currentLessonIdx);
+        } catch (e) {}
+      }, 1000);
+    }
+
+    function createYtPlayer() {
+      if (!document.getElementById('stFrame') || !window.YT || !window.YT.Player) return;
+      ytPlayer = new YT.Player('stFrame', {
+        events: {
+          onReady: startYtWatchPolling,
+          onStateChange: function (ev) {
+            if (ev.data === 1 /* PLAYING */) startYtWatchPolling();
+          }
+        }
+      });
+    }
+
+    if (openId) {
+      if (window.YT && window.YT.Player) {
+        createYtPlayer();
+      } else {
+        // ה-API עוד בטעינה · מצטרפים לתור, בלי לדרוס callback אחר בעמוד
+        var prevReady = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = function () {
+          if (typeof prevReady === 'function') prevReady();
+          createYtPlayer();
+        };
+      }
+    }
+
     // ---------- כניסה לשיעור ספציפי מהקרוסלה ----------
     var cards = document.querySelectorAll('.lcard');
     Array.prototype.forEach.call(cards, function (el) {
       el.addEventListener('click', function () {
         var i = parseInt(el.getAttribute('data-i'), 10);
-        var frame = document.getElementById('stFrame');
-        if (!frame) return;
-        frame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(el.getAttribute('data-yt')) + '?autoplay=1';
+        var yt = el.getAttribute('data-yt');
+        currentLessonIdx = i;
+
+        // מעדיף להחליף וידאו דרך ה-player (jsapi) כדי שהמעקב אחרי 80%
+        // ימשיך לעבוד; אם ה-API עוד לא נטען, נופל חזרה על שינוי ה-src.
+        if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+          ytPlayer.loadVideoById(yt);
+        } else {
+          var frame = document.getElementById('stFrame');
+          if (frame) frame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(yt) + '?autoplay=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+        }
 
         Array.prototype.forEach.call(cards, function (o) {
           o.classList.remove('on');
@@ -393,9 +469,6 @@
         el.classList.add('on');
         var st = el.querySelector('.st'); if (st) st.textContent = 'מנוגן עכשיו';
 
-        // מסמן את השיעור כנצפה, כדי שהמונה במסך הבית יתעדכן
-        if (window.OrianeLessons) window.OrianeLessons.markWatched(station.id, i);
-
         // הכתובת משקפת את השיעור, כך שאפשר לשלוח קישור ישיר אליו
         try {
           var u = new URL(location.href);
@@ -403,14 +476,10 @@
           history.replaceState(null, '', u.toString());
         } catch (e) {}
 
-        frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var frameEl = document.getElementById('stFrame');
+        if (frameEl) frameEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
     });
-
-    // השיעור שנפתח עם הדף נספר גם הוא, כי הנגן שלו כבר על המסך
-    if (window.OrianeLessons && station.lessons && station.lessons.length) {
-      window.OrianeLessons.markWatched(station.id, lessonIdx);
-    }
 
     // ---------- סיום תחנה ----------
     document.getElementById('finishBtn').addEventListener('click', function(){

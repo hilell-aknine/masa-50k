@@ -42,23 +42,21 @@
      בקשת אוריאן 10.09. */
   .hero-banner{position:relative;border-radius:20px;overflow:hidden;margin-top:8px;
     box-shadow:0 10px 34px rgba(0,0,0,.4)}
-  .hero-banner .hb-img{display:block;width:100%;height:auto}
+  .hero-banner .hb-img{display:block;width:100%;height:auto;aspect-ratio:2.55/1;object-fit:cover;object-position:center 32%}
+  @media(max-width:700px){
+    .hero-banner .hb-img{aspect-ratio:1.7/1;object-position:center 30%}
+  }
   .hero-banner .hb-fade{position:absolute;inset:0;
     background:linear-gradient(0deg, rgba(1,15,36,.85) 0%, rgba(1,15,36,.15) 38%, transparent 60%)}
-  .hero-banner .hb-content{position:absolute;left:0;bottom:0;padding:18px 26px 24px;
-    display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:60%}
-  .hero-banner .hb-desc{font-size:13.5px;line-height:1.55;color:#eaf1fb;text-align:start;direction:rtl}
+  .hero-banner .hb-content{position:absolute;left:0;right:0;bottom:0;padding:18px 26px 24px;
+    display:flex;flex-direction:column;align-items:center;gap:14px}
   .hero-banner .hb-cta{display:inline-flex;align-items:center;gap:8px;background:var(--hp-pink);
     color:#2a1018;font-weight:700;font-size:14px;padding:12px 24px;border-radius:30px;
     text-decoration:none;box-shadow:var(--hp-glow);transition:.15s;white-space:nowrap}
   .hero-banner .hb-cta:active{transform:scale(.97)}
   @media(max-width:700px){
-    .hero-banner .hb-content{max-width:100%;padding:14px 16px 18px}
-    .hero-banner .hb-desc{font-size:12px}
+    .hero-banner .hb-content{padding:14px 16px 18px}
     .hero-banner .hb-cta{font-size:13px;padding:10px 20px}
-  }
-  @media(max-width:460px){
-    .hero-banner .hb-desc{display:none}
   }
 
   /* ---------- Nav ---------- */
@@ -91,12 +89,23 @@
     .nextban{flex-direction:column}
     .nextban .th{flex:none;height:150px}
   }
-  .progress-box{background:var(--hp-card);border:1px solid var(--hp-line);border-radius:16px;padding:15px 20px;max-width:520px;margin:24px auto 0}
-  .progress-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
-  .progress-top .label{font-size:13px;color:var(--hp-text-dim);font-weight:500}
-  .progress-top .val{font-size:14px;color:var(--hp-pink);font-weight:700}
-  .bar{height:8px;background:rgba(255,255,255,.06);border-radius:20px;overflow:hidden}
+  /* ---------- progress-box · overlay שקוף על תמונת הבאנר (בקשת אוריאן 16.09) ----------
+     במקום widget צף שרחף על כל הדף, ההתקדמות עכשיו "יושבת" בפינה
+     הימנית-עליונה של תמונת הבאנר עצמה, עם רקע זכוכית שקוף שמתערבב
+     בתמונה במקום להסתיר אותה. */
+  .progress-box{position:absolute;top:16px;right:16px;z-index:2;
+    background:rgba(1,15,36,.45);border:1px solid rgba(255,255,255,.18);border-radius:14px;
+    padding:10px 14px;width:158px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .progress-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:8px}
+  .progress-top .label{font-size:11px;color:#dbe6f7;font-weight:500;white-space:nowrap}
+  .progress-top .val{font-size:11.5px;color:var(--hp-pink);font-weight:700;white-space:nowrap}
+  .bar{height:6px;background:rgba(255,255,255,.18);border-radius:20px;overflow:hidden}
   .bar>span{display:block;height:100%;width:0;background:var(--hp-pink);border-radius:20px;transition:width .5s}
+  @media(max-width:520px){
+    .progress-box{width:118px;padding:7px 10px;top:10px;right:10px}
+    .progress-top .label{font-size:9px}
+    .progress-top .val{font-size:9.5px}
+  }
 
   /* ---------- Road / journey ---------- */
   .road-section{margin-top:50px;position:relative}
@@ -268,20 +277,19 @@
     <img class="hb-img" src="img/hero-banner.jpg" alt="המסע ל-50K בחודש · Dream Plan Build Scale">
     <div class="hb-fade"></div>
     <div class="hb-content">
-      <div class="hb-desc">זה מסע שהולך לקחת את העסק שלך שלב אחר שלב, מהבסיס ועד לסקיילינג ל-50,000 ₪ בחודש.</div>
       <a class="hb-cta" href="#" id="ctaContinue">המשך מהמקום שעצרתי →</a>
     </div>
-  </div>
-
-  <div class="hero">
-    <div class="progress-box">
+    <!-- ווידג'ט התקדמות · שוכב עם רקע שקוף מעל תמונת הבאנר (בקשת אוריאן 16.09) -->
+    <div class="progress-box" id="progressBox">
       <div class="progress-top">
         <span class="label">ההתקדמות שלך</span>
         <span class="val" id="pval">…</span>
       </div>
       <div class="bar"><span id="pfill"></span></div>
     </div>
+  </div>
 
+  <div class="hero">
     <div class="nextban" id="nextBan" style="display:none">
       <div class="th" id="nbThumb"><span class="pl">▶</span></div>
       <div class="tx">
@@ -399,7 +407,27 @@
     const totalH = finishY + 80;
     svg.setAttribute('viewBox', `0 0 ${rootRect.width} ${totalH}`);
     svg.style.height = totalH + 'px';
-    svg.innerHTML = `<path d="${d}" fill="none" stroke="#FFD54A" stroke-opacity="0.92" stroke-width="3" stroke-dasharray="11 11" stroke-linecap="round"/>`;
+    // קו רציף עם זוהר ניאון (לא מקווקו יותר) שממשיך את קונספט פס האור
+    // מתמונת הבאנר העליון: זוהר רך מסביב + ליבה בהירה במרכז (בקשת אוריאן 16.09).
+    const first = allPts[0];
+    svg.innerHTML = `<defs>
+        <linearGradient id="trackGrad" gradientUnits="userSpaceOnUse" x1="${first.x}" y1="${first.y}" x2="${finishX}" y2="${finishY}">
+          <stop offset="0%" stop-color="#ff5fa2"/>
+          <stop offset="45%" stop-color="#fcc1cb"/>
+          <stop offset="100%" stop-color="#FFD54A"/>
+        </linearGradient>
+        <filter id="trackGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <path d="${d}" fill="none" stroke="url(#trackGrad)" stroke-width="9" stroke-linecap="round" opacity="0.55" filter="url(#trackGlow)"/>
+      <path d="${d}" fill="none" stroke="url(#trackGrad)" stroke-opacity="0.95" stroke-width="3" stroke-linecap="round"/>
+      <path d="${d}" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="1" stroke-linecap="round"/>`;
 
     // ---------- סמן הסיום · דגל אדום, כאילו סיימו את המסע ----------
     let finishEl = document.getElementById('finishMarker');
