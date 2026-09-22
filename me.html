@@ -62,7 +62,13 @@
       background:var(--surface-2);border:1px solid var(--line);color:var(--text);cursor:pointer}
   }
 
-  .acct-main{flex:1;min-width:0}
+  /* max-width חובה כאן, לא רק min-width:0.
+     ‎.road11 מקבל min-width:640px במובייל בכוונה כדי שמפת הדרך
+     תיגלל. בלי max-width הרוחב הזה טיפס במעלה השרשרת, main התנפח
+     ל-686 בתוך מסך של 390, ו-.road11-wrap גדל יחד איתו ולכן לא
+     גלל כלום. התוצאה: כל הדף נגרר הצידה, 722px במסך של 390.
+     נמדד ותוקן 22.09.2026. */
+  .acct-main{flex:1;min-width:0;max-width:100%}
   .acct-section{display:none}
   .acct-section.on{display:block;animation:fadein .2s ease}
   @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
