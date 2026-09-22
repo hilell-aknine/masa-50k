@@ -15,6 +15,12 @@
     /* ---------- רכיבים ייחודיים למסך התחנה ---------- */
     .wrap{max-width:var(--maxw);margin:0 auto}
 
+    /* חזרה למפה, בראש הדף · בקשת אוריאן 22.09 */
+    .back-map{display:inline-flex;align-items:center;gap:6px;margin:18px auto 0;
+      font-size:13.5px;color:var(--text-dim);text-decoration:none;
+      padding:8px 0;min-height:44px}
+    .back-map:hover{color:var(--text-strong)}
+
     /* תווית מדרגה + שם הקבוצה */
     .st-tags{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px auto 0}
     .st-tags .tier{font-size:12px;font-weight:700;color:var(--btn-text);background:var(--btn-bg);padding:4px 12px;border-radius:var(--radius-pill)}
@@ -200,6 +206,16 @@
        ============================================================ */
     var SHOW_STATION_GAINS = false;
 
+    /* ============================================================
+       אורכי השיעורים · מוסתרים לבקשת אוריאן 22.09.2026.
+       בלשונה, מתוך ההקלטה: "יש שם גם אני רואה שמונה דקות עשר
+       דקות זה סתם, זה לא מעניין כמה זמן זה."
+       מסתיר גם את התווית על כרטיס השיעור וגם את סך התחנה.
+       ⚠️ הקוד והנתונים לא נמחקו. הדקות עדיין יושבות ב-content.js
+          ומשמשות לחישובים, רק לא מוצגות. החזרה = true.
+       ============================================================ */
+    var SHOW_DURATIONS = false;
+
     var PROGRESS_KEY = 'oriane_journey_progress';
 
     // ---------- פרמטר ?id ----------
@@ -292,7 +308,7 @@
                        '<div class="thumb" style="background-image:url(' + thumb + ')">' +
                          '<span class="num">' + (i + 1) + '</span>' +
                          '<span class="done-badge' + (window.OrianeLessons && window.OrianeLessons.isWatched(station.id, i) ? ' on' : '') + '" data-done-i="' + i + '">✓</span>' +
-                         '<span class="min">' + esc(l.min) + ' דק׳</span>' +
+                         (SHOW_DURATIONS ? '<span class="min">' + esc(l.min) + ' דק׳</span>' : '') +
                          '<span class="play">▶</span>' +
                        '</div>' +
                        '<div class="body"><span class="nm">' + esc(l.n) + '</span>' +
@@ -330,7 +346,7 @@
       : '<span class="btn-wb off"><span data-ic="book"></span> חוברת עבודה · תתווסף</span>';
 
     // משך
-    var durHtml = station.durationMin
+    var durHtml = (SHOW_DURATIONS && station.durationMin)
       ? '<div class="st-dur"><span data-ic="clock"></span> כ-' + esc(station.durationMin) + ' דק׳</div>'
       : '';
 
@@ -360,6 +376,10 @@
       '</div>';
 
     app.innerHTML =
+      // חזרה למפה בראש הדף · בקשת אוריאן 22.09: "שיהיה גם כפתור
+      // כזה חץ חזרה למסע הבית". הקישור התחתון נשאר, אבל הוא היה
+      // מגיע רק אחרי כל הגלילה וזו הייתה התלונה.
+      '<a class="back-map" href="index.html">→ חזרה למסע</a>' +
       '<div class="st-tags">' +
         // dir=ltr כי "0 → 10K" מתהפך ויזואלית ל-"10K → 0" בהקשר RTL,
         // ואז נראה כאילו המדרגה יורדת מ-10K לאפס.
