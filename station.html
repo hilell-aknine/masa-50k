@@ -163,9 +163,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- נדרש ליועצת הדיגיטלית: הקריאה ל-askAdvisor רצה דרך Cloud Functions -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/gate.js"></script>
 <script src="js/nav.js"></script>
+<!-- חוברת העבודה שהתלמידה ממלאת · מתלבש על #wbForm בגוף הדף -->
+<script src="js/workbook-form.js"></script>
 <!-- YouTube IFrame API · מאפשר מעקב זמן צפייה אמיתי (בקשת אוריאן 16.09: וי ירוק אחרי 80% מהסרטון) -->
 <script src="https://www.youtube.com/iframe_api"></script>
 </head>
@@ -369,6 +373,9 @@
       descHtml +
       gainsHtml +
       '<div class="workbook">' + wbHtml + '</div>' +
+      // חוברת העבודה האינטראקטיבית · js/workbook-form.js מתלבש על זה.
+      // מסתיר את עצמו לבד כשאוריאן עוד לא הגדירה שאלות לתחנה.
+      '<div id="wbForm" data-station="' + station.id + '"></div>' +
       commentsHtml +
       '<div class="actions">' +
         '<button class="btn-primary" id="finishBtn">סיימתי את התחנה ✓ · לתחנה הבאה</button>' +
