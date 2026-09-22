@@ -291,6 +291,21 @@ service cloud.firestore {
       allow write: if request.auth.uid == uid && hasAccess();
     }
 
+    // ---------- רישום עלויות ----------
+    // ⚠️ קריאה למנהלת בלבד. זה מי שאל מה ומתי, וזה גם נתון עסקי.
+    // ⚠️ כתיבה חסומה לכולם, כולל למנהלת: הרישום נעשה אך ורק בצד
+    // שרת, שעוקף את הכללים האלה. אם הדפדפן היה יכול לכתוב כאן,
+    // אפשר היה לאפס את המונה ולעקוף את תקרת התקציב.
+    match /advisor_usage/{id} {
+      allow read:  if isAdmin();
+      allow write: if false;
+    }
+
+    match /advisor_usage_monthly/{ym} {
+      allow read:  if isAdmin();
+      allow write: if false;
+    }
+
     // ---------- ברירת מחדל: חסום ----------
     match /{document=**} {
       allow read, write: if false;

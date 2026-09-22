@@ -113,7 +113,8 @@
         'dashboard.html',
         'advisor.html',          // מרכז היועצת הדיגיטלית
         'workbook-builder.html', // בונה חוברות העבודה
-        'student-file.html'      // תיק המשתמשת
+        'student-file.html',     // תיק המשתמשת
+        'advisor-costs.html'     // עלויות היועצת
       ];
       if (ADMIN_PAGES.indexOf(here) !== -1 && !window.ORIANE_USER.isAdmin) {
         return out('not-admin');

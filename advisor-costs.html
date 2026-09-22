@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>עלויות היועצת · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .wrap{max-width:960px;margin:0 auto;padding:26px 0 80px}
+  h1{font-size:26px;color:var(--text-strong)}
+  .sub{font-size:14px;color:var(--text-dim);margin-top:5px;line-height:1.6}
+  .backlink{display:inline-block;margin-bottom:14px;font-size:13.5px;color:var(--text-dim)}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:18px;margin-bottom:16px}
+  .panel h2{font-size:16px;color:var(--text-strong);margin-bottom:8px}
+  .panel p.help{font-size:13.5px;color:var(--text-dim);margin-bottom:14px;line-height:1.6}
+
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .k{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .k b{display:block;font-size:23px;color:var(--text-strong);line-height:1.25;direction:ltr;text-align:right}
+  .k span{font-size:12.5px;color:var(--text-dim)}
+
+  .bar{height:10px;border-radius:6px;background:var(--surface-3);overflow:hidden;margin-top:14px}
+  .bar i{display:block;height:100%;background:var(--btn-bg);transition:width .3s}
+  .bar i.warn{background:#E8A33D}
+  .bar i.over{background:var(--accent)}
+  .barlbl{font-size:12.5px;color:var(--text-dim);margin-top:8px;line-height:1.6}
+
+  label.fl{display:block;font-size:13px;font-weight:600;color:var(--text-strong);margin:14px 0 6px}
+  label.fl small{display:block;font-weight:400;color:var(--text-dim);font-size:12px;margin-top:3px;line-height:1.5}
+  input[type=text],input[type=number],select{width:100%;padding:11px 13px;font-size:15px;font-family:inherit;
+    background:var(--input-bg);color:var(--text);border:1px solid var(--line);border-radius:12px;min-height:46px;
+    direction:ltr;text-align:right}
+  input:focus,select:focus{outline:none;border-color:var(--btn-bg)}
+  .chk{display:flex;align-items:center;gap:9px;margin-top:14px;font-size:14px;color:var(--text)}
+  .chk input{width:auto;min-height:auto;margin:0}
+
+  button{padding:11px 17px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;min-height:44px;
+    background:var(--btn-bg);color:var(--btn-text);border:0;border-radius:var(--radius-pill)}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  button.sm{padding:8px 13px;font-size:13px;min-height:38px}
+  button:disabled{opacity:.5;cursor:default}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+  .tblwrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;margin-top:6px;min-width:420px}
+  th{text-align:right;font-size:12.5px;color:var(--text-dim);font-weight:600;padding:8px 8px;
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:11px 8px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+  td.num{direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:0}
+
+  .pill{display:inline-block;padding:3px 10px;border-radius:var(--radius-pill);font-size:11.5px;font-weight:700}
+  .pill.prev{background:var(--surface-3);color:var(--text-dim)}
+
+  .note{border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-top:14px;
+    font-size:12.5px;line-height:1.65;color:var(--text-dim)}
+  .note b{color:var(--text-strong)}
+  .note.warn{border-color:var(--accent)}
+  .note.warn b{color:var(--accent)}
+
+  .empty{padding:24px;text-align:center;color:var(--text-faint);font-size:14px;line-height:1.7}
+  .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--btn-bg);color:var(--btn-text);
+    padding:13px 18px;border-radius:var(--radius-card);font-size:14px;display:none;z-index:400;max-width:90vw}
+  .toast.on{display:block}
+  .toast.bad{background:var(--accent);color:#fff}
+  .credit{margin-top:30px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+  @media(max-width:600px){ .actions button{flex:1 1 auto} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="admin.html">← חזרה לניהול</a>
+  <h1>עלויות היועצת</h1>
+  <p class="sub">כמה עולה היועצת הדיגיטלית, מי משתמש בה, וכמה נשאר בתקציב החודשי.</p>
+
+  <!-- ===== החודש ===== -->
+  <div class="panel">
+    <h2 id="mtitle">החודש</h2>
+    <div class="kv">
+      <div class="k"><b id="m-cost">–</b><span>עלות החודש</span></div>
+      <div class="k"><b id="m-calls">–</b><span>שאלות</span></div>
+      <div class="k"><b id="m-tok">–</b><span>טוקנים</span></div>
+      <div class="k"><b id="m-avg">–</b><span>עלות לשאלה</span></div>
+    </div>
+    <div class="bar"><i id="bar" style="width:0%"></i></div>
+    <div class="barlbl" id="barlbl">טוען...</div>
+  </div>
+
+  <!-- ===== היום ===== -->
+  <div class="panel">
+    <h2>היום</h2>
+    <div class="kv">
+      <div class="k"><b id="d-cost">–</b><span>עלות היום</span></div>
+      <div class="k"><b id="d-calls">–</b><span>שאלות</span></div>
+      <div class="k"><b id="d-users">–</b><span>משתמשות פעילות</span></div>
+    </div>
+  </div>
+
+  <!-- ===== לפי משתמשת ===== -->
+  <div class="panel">
+    <h2>מי משתמש בה</h2>
+    <p class="help">לפי החודש הנוכחי. שורה מסומנת "מבחן" היא ניסוי של מנהלת במרכז היועצת ולא שאלה של תלמידה.</p>
+    <div class="tblwrap"><div id="byuser"><div class="empty">טוען...</div></div></div>
+  </div>
+
+  <!-- ===== שאלות אחרונות ===== -->
+  <div class="panel">
+    <h2>הקריאות האחרונות</h2>
+    <div class="tblwrap"><div id="recent"><div class="empty">טוען...</div></div></div>
+  </div>
+
+  <!-- ===== תקציב ===== -->
+  <div class="panel">
+    <h2>תקרת תקציב</h2>
+    <p class="help">ההגנה על הכסף. כשהתקרה נחצית והעצירה דלוקה, היועצת מפסיקה לענות ואומרת את זה בנימוס, במקום להמשיך לחייב.</p>
+
+    <label class="fl">תקרה חודשית בדולרים
+      <small>אפס מבטל את התקרה לגמרי.</small>
+    </label>
+    <input type="number" id="b-limit" min="0" step="1" inputmode="decimal">
+
+    <label class="chk"><input type="checkbox" id="b-stop"> לעצור את היועצת כשחוצים את התקרה</label>
+
+    <div class="actions">
+      <button id="b-save">שמירת התקציב</button>
+    </div>
+  </div>
+
+  <!-- ===== מחירון ===== -->
+  <div class="panel">
+    <h2>מחירון</h2>
+    <p class="help">דולר למיליון טוקנים. משמש לחישוב ההערכות במסך הזה. מעדכנים כאן כשהספק משנה מחיר, בלי פריסה מחדש.</p>
+    <div class="tblwrap"><div id="pricing"></div></div>
+    <div class="actions">
+      <button id="p-save">שמירת המחירון</button>
+      <button id="p-add" class="ghost sm">+ מודל</button>
+    </div>
+
+    <div class="note">
+      <b>שימו לב:</b> כל הסכומים כאן הם <b>הערכה</b> שמחושבת ממספר הטוקנים שהספק דיווח, כפול המחירון שלמעלה.
+      זה לא החיוב בפועל. מקור האמת לחיוב הוא חשבון הספק עצמו.
+    </div>
+  </div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/nav.js"></script>
+<script src="data/content.js"></script>
+<script src="js/advisor-data.js"></script>
+<script>
+document.addEventListener('oriane:ready', function () {
+  'use strict';
+  var A = window.Advisor;
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* חודש ויום לפי שעון ישראל, בדיוק כמו בצד השרת. חישוב ב-UTC
+     היה מגלגל את היום ב-21:00 בערב ומציג הוצאה ביום הלא נכון. */
+  function ym() {
+    return new Intl.DateTimeFormat('en-CA', { timeZone:'Asia/Jerusalem', year:'numeric', month:'2-digit' }).format(new Date());
+  }
+  function today() {
+    return new Intl.DateTimeFormat('en-CA', { timeZone:'Asia/Jerusalem', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date());
+  }
+  /* סכומי היועצת קטנים מאוד. toFixed(2) היה מציג "$0.00" על
+     הוצאה אמיתית והמסך היה נראה כאילו כלום לא קורה. מתחת לדולר
+     מציגים 4 ספרות אחרי הנקודה, ומעליו שתיים. */
+  function money(n) {
+    n = n || 0;
+    if (n === 0) return '$0';
+    return n < 1 ? '$' + n.toFixed(4) : '$' + n.toFixed(2);
+  }
+  var usd = money, usd2 = money;
+  var num = function (n) { return (n || 0).toLocaleString('he-IL'); };
+
+  var PRICING_DEFAULT = { 'gpt-4o-mini': { in: 0.15, out: 0.60 }, 'gpt-4o': { in: 2.50, out: 10.00 } };
+  var pricing = null, budget = { monthly_limit_usd: 20, hard_stop: true };
+
+  $('mtitle').textContent = 'החודש · ' + ym();
+
+  /* ---------- מונה חודשי ---------- */
+  A.db().collection('advisor_usage_monthly').doc(ym()).onSnapshot(function (s) {
+    var d = s.exists ? s.data() : { calls: 0, cost_usd: 0, prompt_tokens: 0, completion_tokens: 0 };
+    var tok = (d.prompt_tokens || 0) + (d.completion_tokens || 0);
+    $('m-cost').textContent  = usd2(d.cost_usd);
+    $('m-calls').textContent = num(d.calls);
+    $('m-tok').textContent   = num(tok);
+    $('m-avg').textContent   = d.calls ? usd(d.cost_usd / d.calls) : '–';
+    paintBar(d.cost_usd || 0);
+  }, function (e) { console.error(e); });
+
+  function paintBar(spent) {
+    var lim = budget.monthly_limit_usd || 0;
+    var bar = $('bar');
+    if (!lim) {
+      bar.style.width = '0%'; bar.className = '';
+      $('barlbl').innerHTML = 'אין תקרה מוגדרת. היועצת תמשיך לענות ללא הגבלה.';
+      return;
+    }
+    var pct = Math.min(100, Math.round(spent / lim * 100));
+    bar.style.width = pct + '%';
+    bar.className = pct >= 100 ? 'over' : (pct >= 80 ? 'warn' : '');
+    $('barlbl').innerHTML =
+      usd2(spent) + ' מתוך ' + usd2(lim) + ' (' + pct + '%)' +
+      (pct >= 100
+        ? '<br><b style="color:var(--accent)">התקרה נחצתה.' +
+          (budget.hard_stop ? ' היועצת עצרה ולא עונה כרגע.' : ' העצירה כבויה, ולכן החיוב ממשיך.') + '</b>'
+        : (pct >= 80 ? '<br><b style="color:#E8A33D">מתקרבים לתקרה.</b>' : ''));
+  }
+
+  /* ---------- פירוט הקריאות ---------- */
+  A.db().collection('advisor_usage').where('ym', '==', ym())
+    .onSnapshot(function (snap) {
+      var rows = snap.docs.map(function (d) { return d.data(); });
+
+      // --- היום ---
+      var t = today();
+      var td = rows.filter(function (r) { return r.day === t; });
+      $('d-cost').textContent  = usd2(td.reduce(function (a, r) { return a + (r.cost_usd || 0); }, 0));
+      $('d-calls').textContent = num(td.length);
+      $('d-users').textContent = num(new Set(td.map(function (r) { return r.uid; })).size);
+
+      // --- לפי משתמשת ---
+      var by = {};
+      rows.forEach(function (r) {
+        var k = r.uid || '?';
+        by[k] = by[k] || { name: r.name || '', email: r.email || '', calls: 0, cost: 0, tok: 0, prev: 0 };
+        by[k].calls++; by[k].cost += (r.cost_usd || 0);
+        by[k].tok += (r.total_tokens || 0);
+        if (r.preview) by[k].prev++;
+        if (!by[k].name && r.name) by[k].name = r.name;
+      });
+      var list = Object.keys(by).map(function (k) { return by[k]; })
+                   .sort(function (a, b) { return b.cost - a.cost; });
+
+      $('byuser').innerHTML = list.length
+        ? '<table><tr><th>משתמשת</th><th>שאלות</th><th>טוקנים</th><th>עלות</th></tr>' +
+          list.map(function (u) {
+            return '<tr><td>' + A.esc(u.name || u.email || '(לא ידוע)') +
+              (u.prev ? ' <span class="pill prev">' + u.prev + ' מבחן</span>' : '') +
+              '<br><small style="color:var(--text-dim);direction:ltr;display:inline-block">' + A.esc(u.email) + '</small></td>' +
+              '<td class="num">' + num(u.calls) + '</td>' +
+              '<td class="num">' + num(u.tok) + '</td>' +
+              '<td class="num">' + usd(u.cost) + '</td></tr>';
+          }).join('') + '</table>'
+        : '<div class="empty">עוד לא נרשם שימוש החודש.</div>';
+
+      // --- אחרונות ---
+      var rec = rows.filter(function (r) { return r.created_at; })
+        .sort(function (a, b) { return b.created_at.seconds - a.created_at.seconds; })
+        .slice(0, 20);
+      $('recent').innerHTML = rec.length
+        ? '<table><tr><th>מתי</th><th>מי</th><th>תחנה</th><th>טוקנים</th><th>עלות</th></tr>' +
+          rec.map(function (r) {
+            return '<tr><td style="white-space:nowrap">' + A.when(r.created_at) + '</td>' +
+              '<td>' + A.esc(r.name || r.email || '—') + (r.preview ? ' <span class="pill prev">מבחן</span>' : '') + '</td>' +
+              '<td>' + (r.station_id ? 'תחנה ' + r.station_id : 'כללי') + '</td>' +
+              '<td class="num">' + num(r.total_tokens) + '</td>' +
+              '<td class="num">' + usd(r.cost_usd) + '</td></tr>';
+          }).join('') + '</table>'
+        : '<div class="empty">אין עדיין קריאות.</div>';
+    }, function (e) {
+      console.error(e);
+      $('byuser').innerHTML = '<div class="empty">טעינת הנתונים נכשלה.</div>';
+    });
+
+  /* ---------- תקציב ---------- */
+  A.col('config').doc('budget').onSnapshot(function (s) {
+    if (s.exists) budget = Object.assign({ monthly_limit_usd: 20, hard_stop: true }, s.data());
+    $('b-limit').value = budget.monthly_limit_usd;
+    $('b-stop').checked = budget.hard_stop !== false;
+    paintBar(parseFloat($('m-cost').textContent.replace('$','')) || 0);
+  }, function (e) { console.error(e); });
+
+  $('b-save').addEventListener('click', function () {
+    var lim = parseFloat($('b-limit').value);
+    if (isNaN(lim) || lim < 0) return A.toast('תקרה לא תקינה', true);
+    var b = this; b.disabled = true;
+    A.write(A.col('config').doc('budget').set({
+      monthly_limit_usd: lim,
+      hard_stop: $('b-stop').checked,
+      updated_at: A.now()
+    }, { merge: true }), 'התקציב נשמר')
+     .catch(function () {}).then(function () { b.disabled = false; });
+  });
+
+  /* ---------- מחירון ---------- */
+  function drawPricing() {
+    var keys = Object.keys(pricing);
+    $('pricing').innerHTML = keys.length
+      ? '<table><tr><th>מודל</th><th>קלט</th><th>פלט</th><th></th></tr>' +
+        keys.map(function (k) {
+          return '<tr data-m="' + A.esc(k) + '">' +
+            '<td><input type="text" data-name value="' + A.esc(k) + '" style="min-width:150px"></td>' +
+            '<td><input type="number" data-in step="0.01" min="0" value="' + (pricing[k].in || 0) + '" style="min-width:90px"></td>' +
+            '<td><input type="number" data-out step="0.01" min="0" value="' + (pricing[k].out || 0) + '" style="min-width:90px"></td>' +
+            '<td><button class="ghost sm" data-del>×</button></td></tr>';
+        }).join('') + '</table>'
+      : '<div class="empty">אין מחירון. הוסיפי מודל.</div>';
+  }
+
+  A.col('config').doc('pricing').get().then(function (s) {
+    pricing = (s.exists && s.data().models) ? s.data().models : JSON.parse(JSON.stringify(PRICING_DEFAULT));
+    drawPricing();
+  }).catch(function (e) {
+    console.error(e);
+    pricing = JSON.parse(JSON.stringify(PRICING_DEFAULT));
+    drawPricing();
+  });
+
+  $('p-add').addEventListener('click', function () {
+    pricing['מודל-חדש-' + (Object.keys(pricing).length + 1)] = { in: 0, out: 0 };
+    drawPricing();
+  });
+
+  $('pricing').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-del]'); if (!b) return;
+    var tr = b.closest('tr');
+    delete pricing[tr.getAttribute('data-m')];
+    drawPricing();
+  });
+
+  $('p-save').addEventListener('click', function () {
+    var out = {};
+    var bad = false;
+    Array.prototype.forEach.call($('pricing').querySelectorAll('tr[data-m]'), function (tr) {
+      var n = tr.querySelector('[data-name]').value.trim();
+      if (!n) { bad = true; return; }
+      out[n] = {
+        in:  parseFloat(tr.querySelector('[data-in]').value)  || 0,
+        out: parseFloat(tr.querySelector('[data-out]').value) || 0
+      };
+    });
+    if (bad) return A.toast('יש מודל בלי שם', true);
+    var b = this; b.disabled = true;
+    A.write(A.col('config').doc('pricing').set({ models: out, updated_at: A.now() }, { merge: true }),
+            'המחירון נשמר')
+     .then(function () { pricing = out; drawPricing(); })
+     .catch(function () {}).then(function () { b.disabled = false; });
+  });
+});
+</script>
+</body>
+</html>

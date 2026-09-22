@@ -38,6 +38,39 @@ const MODEL = 'gpt-4o-mini';
 const MAX_DOC_CHARS = 120000;   // תקרת חומר. מעבר לה חותכים מפורשות ומדווחים, לא בשקט.
 const MAX_ANSWER_TOKENS = 700;
 
+/* ============================================================
+   מחירון · דולר למיליון טוקנים
+   ------------------------------------------------------------
+   ⚠️ אלה מחירי רשימה שאנחנו מתחזקים ביד, ולכן כל סכום במסך
+   העלויות הוא **הערכה** ולא חיוב בפועל. הספק הוא מקור האמת.
+   המחירון ניתן לעדכון מהמסך בלי פריסה, דרך advisor_config/pricing.
+   ============================================================ */
+const PRICING_FALLBACK = {
+  'gpt-4o-mini': { in: 0.15, out: 0.60 },
+  'gpt-4o':      { in: 2.50, out: 10.00 }
+};
+
+const BUDGET_FALLBACK = { monthly_limit_usd: 20, hard_stop: true };
+
+/* חודש לפי שעון ישראל. UTC היה מגלגל את החודש ב-21:00 או 22:00
+   בערב האחרון, והדוח היה מציג הוצאה בחודש הלא נכון. */
+function ymIsrael() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jerusalem', year: 'numeric', month: '2-digit'
+  }).format(new Date());   // "2026-09"
+}
+
+function dayIsrael() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jerusalem', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(new Date());   // "2026-09-22"
+}
+
+function costOf(model, pricing, inTok, outTok) {
+  const p = pricing[model] || PRICING_FALLBACK[model] || { in: 0, out: 0 };
+  return (inTok / 1e6) * p.in + (outTok / 1e6) * p.out;
+}
+
 /* אישיות ברירת מחדל. משמשת רק אם אוריאן עוד לא שמרה אישיות משלה,
    כדי שהיועצת לא תרוץ בלי שום גבולות ביום הראשון. */
 const PERSONA_FALLBACK = {
@@ -119,6 +152,30 @@ export const askAdvisor = onCall(
     /* preview = מבחן של מנהלת במרכז היועצת. לא נשמר בתיק של אף
        תלמידה, אחרת הניסויים של אוריאן היו מזהמים את הדאטה. */
     const preview = !!req.data?.preview && isAdmin;
+
+    /* ---- 1.5 שומר התקציב ----
+       רץ לפני הקריאה למודל, כי אחריה הכסף כבר יצא. קורא מסמך
+       מונה יחיד ולא סורק את כל הקריאות, אחרת כל שאלה הייתה
+       מייצרת שאילתה שגדלה עם הזמן. */
+    const ym = ymIsrael();
+    const [budgetSnap, monthSnap, pricingSnap] = await Promise.all([
+      db.collection('advisor_config').doc('budget').get(),
+      db.collection('advisor_usage_monthly').doc(ym).get(),
+      db.collection('advisor_config').doc('pricing').get()
+    ]);
+
+    const budget = budgetSnap.exists ? { ...BUDGET_FALLBACK, ...budgetSnap.data() } : BUDGET_FALLBACK;
+    const pricing = pricingSnap.exists ? (pricingSnap.data().models || {}) : {};
+    const spent = monthSnap.exists ? (monthSnap.data().cost_usd || 0) : 0;
+
+    if (budget.hard_stop && budget.monthly_limit_usd > 0 && spent >= budget.monthly_limit_usd) {
+      /* נכשל-סגור על תקציב. עדיף שהיועצת תשתוק מאשר שחשבון
+         הלקוחה יתרוקן בלי שאף אחד ישים לב. */
+      throw new HttpsError(
+        'resource-exhausted',
+        'היועצת הגיעה לתקרת השימוש החודשית שהוגדרה. אוריאן יכולה להעלות אותה במסך העלויות.'
+      );
+    }
 
     /* ---- 2. שליפת החומר של אוריאן ---- */
     const [personaSnap, docsSnap, qaSnap, stationSnap] = await Promise.all([
@@ -203,6 +260,7 @@ export const askAdvisor = onCall(
 
     /* ---- 5. קריאה למודל ---- */
     let answer;
+    let usage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
     try {
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -232,6 +290,17 @@ export const askAdvisor = onCall(
       const json = await res.json();
       answer = json.choices?.[0]?.message?.content?.trim();
       if (!answer) throw new HttpsError('internal', 'התקבלה תשובה ריקה');
+
+      /* ספירת הטוקנים נלקחת ממה שהספק מדווח בפועל, לא מהערכה
+         שלנו. הערכה מקומית סוטה בעשרות אחוזים בעברית ותהפוך
+         את מסך העלויות למספר שנראה אמין ואינו. */
+      if (json.usage) {
+        usage = {
+          prompt_tokens: json.usage.prompt_tokens || 0,
+          completion_tokens: json.usage.completion_tokens || 0,
+          total_tokens: json.usage.total_tokens || 0
+        };
+      }
     } catch (e) {
       if (e instanceof HttpsError) throw e;
       console.error('[advisor] fetch', e);
@@ -253,6 +322,43 @@ export const askAdvisor = onCall(
       await batch.commit();
     }
 
-    return { answer, sources: used, truncated, preview };
+    /* ---- 7. רישום עלות ----
+       נרשם גם על preview, כי מבחן של מנהלת עולה כסף בדיוק כמו
+       שאלה של תלמידה. השדה preview מאפשר להפריד בדוח.
+       הכתיבה לא חוסמת את התשובה: אם הרישום נכשל, עדיף שהמשתמשת
+       תקבל את מה שכבר שילמנו עליו. */
+    const cost = costOf(MODEL, pricing, usage.prompt_tokens, usage.completion_tokens);
+    try {
+      const batch2 = db.batch();
+      batch2.set(db.collection('advisor_usage').doc(), {
+        uid, email: prof.email || '', name: prof.full_name || '',
+        station_id: stationId, model: MODEL, provider: 'openai',
+        prompt_tokens: usage.prompt_tokens,
+        completion_tokens: usage.completion_tokens,
+        total_tokens: usage.total_tokens,
+        cost_usd: cost, preview,
+        ym, day: dayIsrael(),
+        created_at: FieldValue.serverTimestamp()
+      });
+      /* מונה מצטבר. increment אטומי, ולכן שתי שאלות במקביל לא
+         דורסות זו את זו ולא מאבדות ספירה. */
+      batch2.set(db.collection('advisor_usage_monthly').doc(ym), {
+        ym,
+        calls: FieldValue.increment(1),
+        prompt_tokens: FieldValue.increment(usage.prompt_tokens),
+        completion_tokens: FieldValue.increment(usage.completion_tokens),
+        cost_usd: FieldValue.increment(cost),
+        updated_at: FieldValue.serverTimestamp()
+      }, { merge: true });
+      await batch2.commit();
+    } catch (e) {
+      console.error('[advisor] usage log failed', e);
+    }
+
+    return {
+      answer, sources: used, truncated, preview,
+      usage: { ...usage, cost_usd: cost },
+      budget: { spent_usd: spent + cost, limit_usd: budget.monthly_limit_usd }
+    };
   }
 );
