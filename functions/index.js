@@ -199,6 +199,23 @@ export const askAdvisor = onCall(
 
     /* ---- 3. ההקשר האישי של המשתמשת ---- */
     let personalContext = '';
+
+    /* הנוכחות הדיגיטלית שהיא מילאה באזור האישי. זה מה שמאפשר
+       ליועצת להגיד "ראיתי שהאינסטגרם שלך על X" במקום לדבר בכללי.
+       נכנס גם ב-preview, כי זה הפרופיל של מי ששואלת בפועל. */
+    const lk = prof.links || {};
+    const presence = [];
+    if (lk.business) presence.push('מה העסק שלה עושה: ' + String(lk.business).slice(0, 300));
+    for (const [k, label] of [
+      ['instagram', 'אינסטגרם'], ['facebook', 'פייסבוק'], ['tiktok', 'טיקטוק'],
+      ['youtube', 'יוטיוב'], ['linkedin', 'לינקדאין'], ['website', 'אתר']
+    ]) {
+      /* רק כתובות http/https נכנסות לפרומפט. אותו כלל כמו בממשק:
+         מחרוזת שנשמרה לפני שהסינון היה קיים לא תודלף למודל. */
+      const v = String(lk[k] || '');
+      if (/^https?:\/\//i.test(v)) presence.push(`${label}: ${v.slice(0, 200)}`);
+    }
+
     if (!preview) {
       const [wbSnap, ansSnap] = await Promise.all([
         db.collection('workbooks').get(),
@@ -249,6 +266,13 @@ export const askAdvisor = onCall(
 
     if (knowledge) parts.push('', '## החומר של אוריאן', knowledge);
     else parts.push('', '## החומר של אוריאן', '(ריק. אין חומר פעיל, ולכן סרבי לענות.)');
+
+    if (presence.length) {
+      parts.push('', '## מי שואלת אותך',
+        'זה מה שהיא סיפרה לנו על העסק שלה. התייחסי לזה כשזה רלוונטי,',
+        'אבל אל תמציאי מה שראית אצלה ברשתות. אין לך גישה לתוכן שלהן, רק לכתובת.',
+        presence.join('\n'));
+    }
 
     if (personalContext) {
       parts.push('', '## מה שהמשתמשת עצמה מילאה בחוברות העבודה',

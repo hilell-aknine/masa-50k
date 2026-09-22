@@ -114,6 +114,7 @@
 <script src="js/gate.js"></script>
 <script src="js/nav.js"></script>
 <script src="data/content.js"></script>
+<script src="js/social-links.js"></script>
 <script src="js/advisor-data.js"></script>
 <script>
 document.addEventListener('oriane:ready', function () {
@@ -129,7 +130,8 @@ document.addEventListener('oriane:ready', function () {
       var x = d.data();
       return { uid: d.id, name: x.full_name || '', email: x.email || '',
                role: x.role || 'student', access: x.access || '',
-               audience: x.audience || 'subscriber', last: x.last_seen_at };
+               audience: x.audience || 'subscriber', last: x.last_seen_at,
+               phone: x.phone || '', links: x.links || null };
     });
     drawUsers('');
   }).catch(function (e) {
@@ -234,6 +236,37 @@ document.addEventListener('oriane:ready', function () {
         ? '<div class="note">עוד לא הוגדרו שאלות בשום תחנה. אפשר להגדיר אותן ב<a href="workbook-builder.html">בונה חוברות העבודה</a>.</div>'
         : '') +
     '</div>';
+
+    /* ---------- הנוכחות הדיגיטלית ----------
+       🔴 כל קישור עובר safeHref לפני שהוא מרונדר כ-href.
+       המסך הזה נפתח בסשן האדמין של אוריאן, וקישור javascript:
+       שתלמידה הדביקה היה רץ אצלה עם ההרשאות שלה. */
+    var SL = window.SocialLinks;
+    if (SL) {
+      var lk = u.links || {};
+      var rows = SL.PLATFORMS.map(function (p) {
+        var safe = SL.safeHref(lk[p.key]);
+        if (!safe) return '';
+        return '<div class="qa"><div class="q">' + A.esc(p.label) + '</div>' +
+          '<div class="a"><a href="' + A.esc(safe) + '" target="_blank" rel="noopener noreferrer nofollow">' +
+          A.esc(SL.pretty(safe)) + '</a></div></div>';
+      }).filter(Boolean);
+
+      var blocked = SL.PLATFORMS.filter(function (p) {
+        return lk[p.key] && !SL.safeHref(lk[p.key]);
+      }).length;
+
+      html += '<div class="panel"><h2>הנוכחות הדיגיטלית שלה</h2>' +
+        (lk.business
+          ? '<div class="qa"><div class="q">מה העסק שלה עושה</div><div class="a">' + A.esc(lk.business) + '</div></div>'
+          : '') +
+        (u.phone ? '<div class="qa"><div class="q">טלפון</div><div class="a" dir="ltr">' + A.esc(u.phone) + '</div></div>' : '') +
+        (rows.length ? rows.join('') : '') +
+        (!rows.length && !lk.business && !u.phone
+          ? '<div class="empty">עוד לא מילאה פרטים.<br>היא יכולה להוסיף אותם באזור האישי שלה.</div>' : '') +
+        (blocked ? '<div class="note">' + blocked + ' קישורים לא מוצגים כי הם לא בפורמט תקין.</div>' : '') +
+      '</div>';
+    }
 
     /* ---------- חוברות העבודה ---------- */
     html += '<div class="panel"><h2>מה היא מילאה במסע</h2>';

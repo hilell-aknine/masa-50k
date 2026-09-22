@@ -280,6 +280,16 @@
         <input id="mail" type="email" readonly>
         <button class="save" id="save" type="button">שמירה</button>
       </div>
+
+      <!-- הנוכחות הדיגיטלית · נוסף 22.09.
+           מזין את היועצת הדיגיטלית ואת תיק המשתמשת, כדי שהתשובות
+           יהיו על העסק שלך ולא כלליות. -->
+      <div class="card">
+        <h2>הנוכחות הדיגיטלית שלי</h2>
+        <p class="help">כאן את מספרת לנו איפה העסק שלך חי באינטרנט. זה לא חובה, אבל ככל שתמלאי יותר, כך היועצת הדיגיטלית תוכל לענות לך על העסק שלך ממש ולא בכללי. אוריאן רואה את זה כשאתן נפגשות.</p>
+        <div id="linksBox"></div>
+        <button class="save" id="saveLinks" type="button">שמירת הנוכחות</button>
+      </div>
     </section>
 
     <!-- 3א. הגישה שלי · לקוחות פרימיום בלבד -->
@@ -381,6 +391,8 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/gate.js"></script>
 <script src="js/nav.js"></script>
+<!-- קישורי הנוכחות הדיגיטלית · כולל סינון http/https -->
+<script src="js/social-links.js"></script>
 <script src="data/content.js"></script>
 <script>
 document.addEventListener('oriane:ready', function (ev) {
@@ -456,6 +468,9 @@ document.addEventListener('oriane:ready', function (ev) {
     document.getElementById('greetHi').textContent = greetText + (name ? ', ' + name : '') + ' ✨';
     document.getElementById('name').value = name;
     document.getElementById('phone').value = p.phone || '';
+    // הנוכחות הדיגיטלית · נטען לפני היציאה המוקדמת של פרימיום למטה,
+    // אחרת לקוחת פרימיום הייתה רואה שדות ריקים גם אם מילאה אותם.
+    if (window.__fillLinks) window.__fillLinks(p.links);
 
     // "חבר מביא חבר" הוא מנגנון מסחרי, ולכן לא נבנה כלל ללקוחת פרימיום.
     // בלי היציאה הזו היה נוצר לה קישור לדף המכירה, גם אם מוסתר.
@@ -574,6 +589,66 @@ document.addEventListener('oriane:ready', function (ev) {
       toast('השמירה נכשלה'); console.error(e);
     }).then(function () { b.disabled = false; });
   });
+
+  // ---------- 2ב. הנוכחות הדיגיטלית ----------
+  // הקישורים מזינים את היועצת ואת תיק המשתמשת. הסינום ל-http/https
+  // חי ב-js/social-links.js, כי אוריאן פותחת את זה בסשן אדמין.
+  (function () {
+    var SL = window.SocialLinks;
+    var box = document.getElementById('linksBox');
+    if (!SL || !box) return;
+
+    box.innerHTML =
+      SL.FIELDS.map(function (f) {
+        return '<label for="lk-' + f.key + '">' + f.label + '</label>' +
+               '<input id="lk-' + f.key + '" type="text" maxlength="' + f.max + '" placeholder="' + f.help + '">';
+      }).join('') +
+      SL.PLATFORMS.map(function (p) {
+        return '<label for="lk-' + p.key + '">' + p.label + '</label>' +
+               '<input id="lk-' + p.key + '" type="text" dir="ltr" placeholder="' + p.ph + '">';
+      }).join('');
+
+    var get = function (k) {
+      var el = document.getElementById('lk-' + k);
+      return el ? el.value : '';
+    };
+
+    window.__fillLinks = function (links) {
+      links = links || {};
+      SL.FIELDS.forEach(function (f) {
+        var el = document.getElementById('lk-' + f.key);
+        if (el) el.value = links[f.key] || '';
+      });
+      SL.PLATFORMS.forEach(function (p) {
+        var el = document.getElementById('lk-' + p.key);
+        /* גם בהצגה מסננים. ערך פסול יכול לשבת במסד מלפני שהסינון
+           נכתב, או להיכתב ישירות מהקונסולה. בשדה טקסט הוא לא מסוכן,
+           אבל להחזיר למשתמשת מחרוזת שלא נשמור ממילא זה מבלבל. */
+        if (el) el.value = SL.safeHref(links[p.key]) || '';
+      });
+    };
+
+    document.getElementById('saveLinks').addEventListener('click', function () {
+      var b = this;
+      var clean = SL.collect(get);
+
+      /* מה שנפסל בסינון מדווח למשתמשת במקום להיעלם בשקט.
+         שדה שנמחק בלי הסבר נראה כמו באג. */
+      var rejected = SL.PLATFORMS.filter(function (p) {
+        return String(get(p.key) || '').trim() && !clean[p.key];
+      }).map(function (p) { return p.label; });
+
+      b.disabled = true;
+      ref.update({ links: clean }).then(function () {
+        window.__fillLinks(clean);   // מציג את הכתובת המנורמלת
+        toast(rejected.length
+          ? 'נשמר. לא הצלחנו לקרוא: ' + rejected.join(', ')
+          : 'הנוכחות נשמרה');
+      }).catch(function (e) {
+        toast('השמירה נכשלה'); console.error(e);
+      }).then(function () { b.disabled = false; });
+    });
+  })();
 
   // ---------- 3. מנוי ----------
   Array.prototype.forEach.call(document.querySelectorAll('.plan button[data-plan]'), function (btn) {

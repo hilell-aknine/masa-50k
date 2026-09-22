@@ -51,6 +51,23 @@ service cloud.firestore {
           && request.resource.data.get('audience', 'subscriber') == resource.data.get('audience', 'subscriber');
     }
 
+    // הנוכחות הדיגיטלית · רשימת מפתחות סגורה וגבולות אורך.
+    // חסר לגמרי = תקין, כי רוב המשתמשות לא ימלאו את זה.
+    function linksAreSane() {
+      return !('links' in request.resource.data)
+          || (request.resource.data.links is map
+              && request.resource.data.links.keys().hasOnly([
+                   'instagram','facebook','tiktok','youtube','linkedin','website','business'
+                 ])
+              && request.resource.data.links.get('business', '').size() <= 300
+              && request.resource.data.links.get('instagram', '').size() <= 300
+              && request.resource.data.links.get('facebook', '').size() <= 300
+              && request.resource.data.links.get('tiktok', '').size() <= 300
+              && request.resource.data.links.get('youtube', '').size() <= 300
+              && request.resource.data.links.get('linkedin', '').size() <= 300
+              && request.resource.data.links.get('website', '').size() <= 300);
+    }
+
     // ---------- פרופילים ----------
     match /profiles/{uid} {
       allow read: if request.auth.uid == uid || isAdmin();
@@ -75,8 +92,15 @@ service cloud.firestore {
                          || exists(/databases/$(database)/documents/invites/$(request.auth.token.email))
                        );
 
-      // עדכון עצמי: שם וטלפון בלבד. תפקיד וגישה מוקפאים.
-      allow update: if (request.auth.uid == uid && keepsProtectedFields())
+      // עדכון עצמי: שם, טלפון והנוכחות הדיגיטלית. תפקיד וגישה מוקפאים.
+      //
+      // links נבדק כאן ולא רק בממשק. בלי רשימת מפתחות סגורה אפשר
+      // היה לכתוב מאות שדות לתוך מסמך הפרופיל מהקונסולה, לנפח אותו
+      // ולשרוף קריאות — הפרופיל נקרא בכל טעינת דף ב-gate.js.
+      // ⚠️ הכללים לא בודקים שהערך הוא כתובת תקינה. הסינום ל-http/https
+      // חי ב-js/social-links.js ובצד השרת לפני שליחה למודל.
+      allow update: if (request.auth.uid == uid && keepsProtectedFields()
+                        && linksAreSane())
                     || isAdmin();
 
       allow delete: if isAdmin();
