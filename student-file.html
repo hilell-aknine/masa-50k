@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>תיק המשתמשת · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .wrap{max-width:960px;margin:0 auto;padding:26px 0 80px}
+  h1{font-size:26px;color:var(--text-strong)}
+  .sub{font-size:14px;color:var(--text-dim);margin-top:5px;line-height:1.6}
+  .backlink{display:inline-block;margin-bottom:14px;font-size:13.5px;color:var(--text-dim)}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:18px;margin-bottom:16px}
+  .panel h2{font-size:16px;color:var(--text-strong);margin-bottom:8px}
+  .panel p.help{font-size:13.5px;color:var(--text-dim);margin-bottom:12px;line-height:1.6}
+
+  input[type=search],select{width:100%;padding:12px 14px;font-size:15px;font-family:inherit;
+    background:var(--input-bg);color:var(--text);border:1px solid var(--line);border-radius:12px;min-height:46px}
+  input:focus,select:focus{outline:none;border-color:var(--btn-bg)}
+
+  button{padding:11px 17px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;min-height:44px;
+    background:var(--btn-bg);color:var(--btn-text);border:0;border-radius:var(--radius-pill)}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  button.sm{padding:7px 12px;font-size:12.5px;min-height:36px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+  .ulist{max-height:300px;overflow-y:auto;margin-top:10px}
+  .urow{display:flex;align-items:center;gap:10px;padding:11px 12px;border-bottom:1px solid var(--line);
+    cursor:pointer;border-radius:10px}
+  .urow:hover{background:var(--surface-2)}
+  .urow.on{background:var(--surface-2);border-color:var(--btn-bg)}
+  .urow .nm{font-size:14.5px;font-weight:600;color:var(--text-strong)}
+  .urow .em{font-size:12px;color:var(--text-dim);direction:ltr;text-align:right}
+  .urow .grow{flex:1;min-width:0}
+
+  .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .head .big{font-size:21px;font-weight:700;color:var(--text-strong)}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:14px}
+  .kv .k{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .kv .k b{display:block;font-size:19px;color:var(--text-strong);line-height:1.3}
+  .kv .k span{font-size:12px;color:var(--text-dim)}
+
+  .pill{display:inline-block;padding:4px 11px;border-radius:var(--radius-pill);font-size:11.5px;font-weight:700}
+  .pill.on{background:var(--btn-bg);color:var(--btn-text)}
+  .pill.off{background:var(--surface-3);color:var(--text-dim)}
+  .pill.warn{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+
+  .block{border:1px solid var(--line);border-radius:14px;margin-bottom:12px;background:var(--surface-2)}
+  .block .bh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:13px 15px;cursor:pointer}
+  .block .bh .t{font-size:14.5px;font-weight:700;color:var(--text-strong);flex:1;min-width:140px}
+  .block .bb{padding:0 15px 15px;display:none}
+  .block.open .bb{display:block}
+
+  .qa{border-top:1px solid var(--line);padding:12px 0}
+  .qa:first-child{border-top:0;padding-top:0}
+  .qa .q{font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:5px}
+  .qa .a{font-size:14.5px;color:var(--text);line-height:1.65;white-space:pre-wrap}
+  .qa .a.none{color:var(--text-faint);font-style:italic}
+
+  table{width:100%;border-collapse:collapse;margin-top:6px;font-size:13.5px}
+  th{text-align:right;font-size:12px;color:var(--text-dim);font-weight:600;padding:7px 8px;
+    border-bottom:1px solid var(--line)}
+  td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}
+
+  .msg{max-width:88%;padding:10px 13px;border-radius:13px;font-size:13.5px;line-height:1.6;
+    white-space:pre-wrap;margin-bottom:8px}
+  .msg.me{margin-inline-start:auto;background:var(--btn-bg);color:var(--btn-text)}
+  .msg.bot{background:var(--surface-3);color:var(--text)}
+  .msg .w{display:block;font-size:11px;opacity:.7;margin-top:5px}
+
+  .empty{padding:22px;text-align:center;color:var(--text-faint);font-size:14px;line-height:1.7}
+  .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--btn-bg);color:var(--btn-text);
+    padding:13px 18px;border-radius:var(--radius-card);font-size:14px;display:none;z-index:400;max-width:90vw}
+  .toast.on{display:block}
+  .toast.bad{background:var(--accent);color:#fff}
+  .credit{margin-top:30px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+  .note{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:12px;
+    font-size:12.5px;line-height:1.6;color:var(--text-dim)}
+  @media print{
+    .backlink,.actions,#picker,.credit{display:none!important}
+    .block .bb{display:block!important}
+    body{background:#fff;color:#000}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="admin.html">← חזרה לניהול</a>
+  <h1>תיק המשתמשת</h1>
+  <p class="sub">כל מה שמשתמשת אחת מילאה ושאלה, במסך אחד. נועד לשיחת ייעוץ: נכנסים, רואים איפה היא עומדת, מדברים.</p>
+
+  <div class="panel" id="picker">
+    <h2>בחירת משתמשת</h2>
+    <input type="search" id="q" placeholder="חיפוש לפי שם או מייל" autocomplete="off">
+    <div class="ulist" id="ulist"><div class="empty">טוען...</div></div>
+  </div>
+
+  <div id="file"></div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/nav.js"></script>
+<script src="data/content.js"></script>
+<script src="js/advisor-data.js"></script>
+<script>
+document.addEventListener('oriane:ready', function () {
+  'use strict';
+  var A = window.Advisor;
+  var $ = function (id) { return document.getElementById(id); };
+
+  var users = [], current = null;
+
+  /* ---------- רשימת משתמשות ---------- */
+  A.col('profiles').orderBy('created_at', 'desc').get().then(function (snap) {
+    users = snap.docs.map(function (d) {
+      var x = d.data();
+      return { uid: d.id, name: x.full_name || '', email: x.email || '',
+               role: x.role || 'student', access: x.access || '',
+               audience: x.audience || 'subscriber', last: x.last_seen_at };
+    });
+    drawUsers('');
+  }).catch(function (e) {
+    console.error(e);
+    $('ulist').innerHTML = '<div class="empty">טעינת המשתמשות נכשלה.</div>';
+  });
+
+  function drawUsers(term) {
+    term = (term || '').trim().toLowerCase();
+    var list = users.filter(function (u) {
+      return !term || (u.name + ' ' + u.email).toLowerCase().indexOf(term) !== -1;
+    });
+    if (!list.length) {
+      $('ulist').innerHTML = '<div class="empty">לא נמצאה משתמשת.</div>';
+      return;
+    }
+    $('ulist').innerHTML = list.map(function (u) {
+      return '<div class="urow' + (current && current.uid === u.uid ? ' on' : '') + '" data-uid="' + u.uid + '">' +
+        '<span class="grow"><span class="nm">' + A.esc(u.name || '(בלי שם)') + '</span>' +
+        '<div class="em">' + A.esc(u.email) + '</div></span>' +
+        '<span class="pill ' + (u.access === 'active' ? 'on' : 'off') + '">' +
+          (u.access === 'active' ? 'פעילה' : A.esc(u.access || 'ללא')) + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  $('q').addEventListener('input', function () { drawUsers(this.value); });
+  $('ulist').addEventListener('click', function (e) {
+    var r = e.target.closest('[data-uid]'); if (!r) return;
+    var u = users.filter(function (x) { return x.uid === r.getAttribute('data-uid'); })[0];
+    if (u) openFile(u);
+  });
+
+  /* ---------- פתיחת תיק ---------- */
+  function openFile(u) {
+    current = u;
+    drawUsers($('q').value);
+    $('file').innerHTML = '<div class="panel"><div class="empty">טוען את התיק...</div></div>';
+
+    /* ארבע שאילתות במקביל. כשלון של אחת לא מפיל את התיק כולו,
+       והמסך מראה במפורש מה לא נטען במקום להציג ריק ולהיראות
+       כאילו המשתמשת לא מילאה כלום. */
+    Promise.all([
+      A.col('workbooks').get().catch(fail),
+      A.db().collection(A.COL.answers).doc(u.uid).collection('stations').get().catch(fail),
+      A.db().collection(A.COL.chats).doc(u.uid).collection('messages')
+        .orderBy('created_at', 'asc').limit(300).get().catch(fail),
+      A.col('questions').where('uid', '==', u.uid).get().catch(fail)
+    ]).then(function (r) {
+      render(u, r[0], r[1], r[2], r[3]);
+    });
+  }
+  function fail(e) { console.error(e); return null; }
+
+  function render(u, wbSnap, ansSnap, chatSnap, qSnap) {
+    var wb = {};
+    if (wbSnap) wbSnap.docs.forEach(function (d) { wb[d.id] = d.data(); });
+
+    var ans = {};
+    if (ansSnap) ansSnap.docs.forEach(function (d) { ans[d.id] = d.data(); });
+
+    var chats = chatSnap ? chatSnap.docs.map(function (d) { return d.data(); }) : [];
+    var quest = qSnap ? qSnap.docs.map(function (d) { return d.data(); }) : [];
+
+    /* כמה שדות היא באמת מילאה, מתוך כמה שנשאלה */
+    var asked = 0, filled = 0;
+    A.stations().forEach(function (s) {
+      var w = wb[String(s.id)];
+      if (!w || !w.lessons) return;
+      w.lessons.forEach(function (l) {
+        (l.fields || []).forEach(function (f) {
+          asked++;
+          var v = ans[String(s.id)] && ans[String(s.id)].lessons &&
+                  ans[String(s.id)].lessons[String(l.index)] &&
+                  ans[String(s.id)].lessons[String(l.index)][f.id];
+          if (hasValue(v)) filled++;
+        });
+      });
+    });
+
+    var html = '<div class="panel">' +
+      '<div class="head"><span class="big">' + A.esc(u.name || '(בלי שם)') + '</span>' +
+        '<span class="pill ' + (u.access === 'active' ? 'on' : 'off') + '">' +
+          (u.access === 'active' ? 'גישה פעילה' : A.esc(u.access || 'ללא גישה')) + '</span>' +
+        (u.audience === 'premium' ? '<span class="pill warn">פרימיום</span>' : '') +
+        (u.role === 'admin' ? '<span class="pill warn">מנהלת</span>' : '') +
+      '</div>' +
+      '<div class="em" style="font-size:13px;color:var(--text-dim);direction:ltr;text-align:right">' +
+        A.esc(u.email) + '</div>' +
+      '<div class="kv">' +
+        '<div class="k"><b>' + filled + ' / ' + asked + '</b><span>שאלות שמילאה</span></div>' +
+        '<div class="k"><b>' + chats.filter(function (c) { return c.role === 'user'; }).length +
+          '</b><span>שאלות ליועצת</span></div>' +
+        '<div class="k"><b>' + quest.length + '</b><span>שאלות אלייך</span></div>' +
+        '<div class="k"><b>' + (u.last ? A.when(u.last).split(' ')[0] : '—') + '</b><span>נראתה לאחרונה</span></div>' +
+      '</div>' +
+      '<div class="actions">' +
+        '<button class="ghost sm" onclick="window.print()">הדפסה או שמירה כ-PDF</button>' +
+        '<button class="ghost sm" id="expand">פתיחת הכל</button>' +
+      '</div>' +
+      (asked === 0
+        ? '<div class="note">עוד לא הוגדרו שאלות בשום תחנה. אפשר להגדיר אותן ב<a href="workbook-builder.html">בונה חוברות העבודה</a>.</div>'
+        : '') +
+    '</div>';
+
+    /* ---------- חוברות העבודה ---------- */
+    html += '<div class="panel"><h2>מה היא מילאה במסע</h2>';
+    var any = false;
+    A.stations().forEach(function (s) {
+      var w = wb[String(s.id)];
+      if (!w || !w.lessons || !w.lessons.length) return;
+      var lessonsWithFields = w.lessons.filter(function (l) { return (l.fields || []).length; });
+      if (!lessonsWithFields.length) return;
+      any = true;
+
+      var sAns = ans[String(s.id)] || {};
+      var n = 0, tot = 0;
+      lessonsWithFields.forEach(function (l) {
+        (l.fields || []).forEach(function (f) {
+          tot++;
+          var v = sAns.lessons && sAns.lessons[String(l.index)] && sAns.lessons[String(l.index)][f.id];
+          if (hasValue(v)) n++;
+        });
+      });
+
+      html += '<div class="block' + (n ? ' open' : '') + '">' +
+        '<div class="bh"><span class="t">תחנה ' + s.id + ' · ' + A.esc(s.name) + '</span>' +
+          '<span class="pill ' + (n ? 'on' : 'off') + '">' + n + ' / ' + tot + '</span></div>' +
+        '<div class="bb">' +
+          lessonsWithFields.map(function (l) {
+            var la = (sAns.lessons && sAns.lessons[String(l.index)]) || {};
+            return '<div style="margin-bottom:14px">' +
+              '<div style="font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px">' +
+                A.esc(l.title) + '</div>' +
+              (l.fields || []).map(function (f) { return answerHtml(f, la[f.id]); }).join('') +
+            '</div>';
+          }).join('') +
+        '</div></div>';
+    });
+    html += any ? '' : '<div class="empty">אין עדיין חוברות עבודה מוגדרות עם שאלות.</div>';
+    html += '</div>';
+
+    /* ---------- שיחות עם היועצת ---------- */
+    html += '<div class="panel"><h2>שיחות עם היועצת הדיגיטלית</h2>';
+    html += chats.length
+      ? '<div class="block open"><div class="bh"><span class="t">' + chats.length + ' הודעות</span></div>' +
+        '<div class="bb">' + chats.map(function (c) {
+          return '<div class="msg ' + (c.role === 'user' ? 'me' : 'bot') + '">' + A.esc(c.body) +
+            '<span class="w">' + (c.station_id ? 'תחנה ' + c.station_id + ' · ' : '') +
+            A.when(c.created_at) + '</span></div>';
+        }).join('') + '</div></div>'
+      : '<div class="empty">עוד לא שאלה את היועצת כלום.<br>המנוע עדיין לא באוויר, אז זה צפוי.</div>';
+    html += '</div>';
+
+    /* ---------- שאלות אישיות לאוריאן ---------- */
+    html += '<div class="panel"><h2>שאלות שהיא שלחה אלייך</h2>';
+    html += quest.length
+      ? quest.map(function (q) {
+          return '<div class="qa">' +
+            '<div class="q">' + (q.stationId ? 'תחנה ' + q.stationId : 'כללי') + ' · ' + A.when(q.created_at) + '</div>' +
+            '<div class="a">' + A.esc(q.body) + '</div>' +
+            (q.answer ? '<div class="a" style="margin-top:8px;color:var(--text-dim)">התשובה שלך: ' +
+              A.esc(q.answer) + '</div>' : '<div class="a none" style="margin-top:6px">עוד לא ענית</div>') +
+          '</div>';
+        }).join('')
+      : '<div class="empty">לא שלחה שאלות.</div>';
+    html += '</div>';
+
+    $('file').innerHTML = html;
+
+    $('file').addEventListener('click', function (e) {
+      var h = e.target.closest('.bh');
+      if (h) h.parentNode.classList.toggle('open');
+    });
+    var ex = $('expand');
+    if (ex) ex.addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('.block'), function (b) { b.classList.add('open'); });
+    });
+
+    window.scrollTo({ top: $('file').offsetTop - 20, behavior: 'smooth' });
+  }
+
+  function hasValue(v) {
+    if (v === null || v === undefined) return false;
+    if (typeof v === 'string') return v.trim().length > 0;
+    if (Array.isArray(v)) {
+      return v.some(function (row) {
+        return row && Object.keys(row).some(function (k) {
+          return String(row[k] || '').trim().length > 0;
+        });
+      });
+    }
+    return true;
+  }
+
+  function answerHtml(f, v) {
+    var h = '<div class="qa"><div class="q">' + A.esc(f.label) + '</div>';
+    if (!hasValue(v)) return h + '<div class="a none">לא מילאה</div></div>';
+
+    if (f.type === 'table' && Array.isArray(v)) {
+      var cols = f.columns || [];
+      h += '<table><tr>' + cols.map(function (c) {
+        return '<th>' + A.esc(c.label) + '</th>';
+      }).join('') + '</tr>';
+      v.forEach(function (row) {
+        if (!row || !Object.keys(row).some(function (k) { return String(row[k] || '').trim(); })) return;
+        h += '<tr>' + cols.map(function (c) {
+          return '<td>' + A.esc(row[c.key] || '') + '</td>';
+        }).join('') + '</tr>';
+      });
+      h += '</table>';
+    } else {
+      h += '<div class="a">' + A.esc(v) + '</div>';
+    }
+    return h + '</div>';
+  }
+});
+</script>
+</body>
+</html>

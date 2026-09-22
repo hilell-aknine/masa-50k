@@ -97,8 +97,25 @@
 
       document.documentElement.setAttribute('data-audience', audience);
 
+      // ============================================================
       // מסכי ניהול דורשים תפקיד אדמין
-      if ((here === 'admin.html' || here === 'dashboard.html') && !window.ORIANE_USER.isAdmin) {
+      //
+      // ⚠️ הרשימה הזאת היא ההגנה היחידה בצד הלקוח על מסכי הניהול,
+      // והיא לפי שם קובץ. מסך ניהול חדש שלא נרשם כאן נפתח לכל
+      // תלמידה מחוברת. נוסף 22.09 יחד עם מרכז היועצת.
+      // כלל: יוצרים קובץ ניהול חדש → מוסיפים אותו כאן באותו קומיט.
+      //
+      // זו שכבה ויזואלית בלבד. האכיפה האמיתית היא ב-firestore.rules,
+      // ששם כל כתיבה של מנהלת מותנית ב-isAdmin().
+      // ============================================================
+      var ADMIN_PAGES = [
+        'admin.html',
+        'dashboard.html',
+        'advisor.html',          // מרכז היועצת הדיגיטלית
+        'workbook-builder.html', // בונה חוברות העבודה
+        'student-file.html'      // תיק המשתמשת
+      ];
+      if (ADMIN_PAGES.indexOf(here) !== -1 && !window.ORIANE_USER.isAdmin) {
         return out('not-admin');
       }
 

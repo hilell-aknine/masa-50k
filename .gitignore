@@ -15,3 +15,7 @@ CLIENT-CONTEXT.md
 .firebase/
 firebase-debug.log
 firestore-debug.log
+
+# תלויות של מנוע היועצת. נבנות בפריסה, לא נכנסות לריפו הציבורי.
+functions/node_modules/
+functions/*.local

@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>מרכז היועצת הדיגיטלית · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .wrap{max-width:960px;margin:0 auto;padding:26px 0 80px}
+  h1{font-size:26px;color:var(--text-strong)}
+  .sub{font-size:14px;color:var(--text-dim);margin-top:5px;line-height:1.6}
+
+  .tabs{display:flex;gap:7px;flex-wrap:wrap;margin:22px 0 18px;
+    border-bottom:1px solid var(--line);padding-bottom:12px}
+  .tabs button{background:transparent;color:var(--text-dim);border:1px solid var(--line);
+    border-radius:var(--radius-pill);padding:10px 16px;font-size:14px;font-weight:600;min-height:44px}
+  .tabs button.on{background:var(--btn-bg);color:var(--btn-text);border-color:transparent}
+  .tabs button .n{font-size:12px;opacity:.75;margin-inline-start:5px}
+  .tabpane{display:none}
+  .tabpane.on{display:block}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:18px;margin-bottom:16px}
+  .panel h2{font-size:16px;color:var(--text-strong);margin-bottom:8px}
+  .panel p.help{font-size:13.5px;color:var(--text-dim);margin-bottom:14px;line-height:1.6}
+
+  label.fl{display:block;font-size:13px;font-weight:600;color:var(--text-strong);margin:14px 0 6px}
+  label.fl small{display:block;font-weight:400;color:var(--text-dim);font-size:12px;margin-top:3px;line-height:1.5}
+  input[type=text],input[type=search],textarea,select{width:100%;padding:12px 14px;font-size:15px;
+    font-family:inherit;background:var(--input-bg);color:var(--text);border:1px solid var(--line);
+    border-radius:12px;min-height:46px}
+  textarea{min-height:120px;resize:vertical;line-height:1.65}
+  textarea.tall{min-height:200px}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--btn-bg)}
+
+  button{padding:12px 18px;font-size:14.5px;font-weight:600;font-family:inherit;cursor:pointer;
+    min-height:44px;background:var(--btn-bg);color:var(--btn-text);border:0;
+    border-radius:var(--radius-pill);transition:.15s}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  button.danger{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  button.sm{padding:8px 13px;font-size:13px;min-height:38px}
+  button:disabled{opacity:.5;cursor:default}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+  .item{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;
+    background:var(--surface-2)}
+  .item .top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:7px}
+  .item .ttl{font-size:15px;font-weight:700;color:var(--text-strong)}
+  .item .meta{font-size:12px;color:var(--text-dim)}
+  .item .prev{font-size:13.5px;color:var(--text-dim);line-height:1.6;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .item .row-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+
+  .pill{display:inline-block;padding:4px 11px;border-radius:var(--radius-pill);font-size:11.5px;font-weight:700}
+  .pill.on{background:var(--btn-bg);color:var(--btn-text)}
+  .pill.off{background:var(--surface-3);color:var(--text-dim)}
+  .pill.scope{background:transparent;color:var(--text-dim);border:1px solid var(--line)}
+
+  .budget{margin-top:12px}
+  .budget .bar{height:8px;border-radius:6px;background:var(--surface-3);overflow:hidden}
+  .budget .bar i{display:block;height:100%;background:var(--btn-bg);transition:width .3s}
+  .budget .bar i.warn{background:var(--accent)}
+  .budget .lbl{font-size:12px;color:var(--text-dim);margin-top:7px;line-height:1.55}
+
+  .empty{padding:26px;text-align:center;color:var(--text-faint);font-size:14.5px;line-height:1.7}
+  .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--btn-bg);color:var(--btn-text);
+    padding:13px 18px;border-radius:var(--radius-card);font-size:14px;display:none;z-index:400;max-width:90vw}
+  .toast.on{display:block}
+  .toast.bad{background:var(--accent);color:#fff}
+  .credit{margin-top:30px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+  .backlink{display:inline-block;margin-bottom:14px;font-size:13.5px;color:var(--text-dim)}
+
+  .chat{border:1px solid var(--line);border-radius:14px;background:var(--surface-2);
+    padding:14px;min-height:200px;max-height:460px;overflow-y:auto;
+    display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:86%;padding:11px 14px;border-radius:14px;font-size:14px;line-height:1.6;white-space:pre-wrap}
+  .msg.me{align-self:flex-end;background:var(--btn-bg);color:var(--btn-text)}
+  .msg.bot{align-self:flex-start;background:var(--surface-3);color:var(--text)}
+  .msg.sys{align-self:center;background:transparent;color:var(--text-faint);font-size:12.5px;text-align:center}
+  .srcs{font-size:11.5px;color:var(--text-faint);margin-top:7px;padding-top:7px;
+    border-top:1px solid var(--line)}
+
+  .note{border:1px solid var(--accent);border-radius:12px;padding:13px 15px;margin-bottom:14px;
+    font-size:13.5px;line-height:1.65;color:var(--text)}
+  .note b{color:var(--accent)}
+
+  @media(max-width:600px){
+    .tabs{gap:6px}
+    .tabs button{flex:1 1 auto;padding:10px 12px;font-size:13px}
+    .actions button{flex:1 1 auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="admin.html">← חזרה לניהול</a>
+  <h1>מרכז היועצת הדיגיטלית</h1>
+  <p class="sub">כאן את מלמדת את היועצת. כל מה שתכתבי כאן הוא מה שהיא יודעת, ורק ממנו היא עונה.</p>
+
+  <div class="tabs" id="tabs">
+    <button data-p="docs" class="on">מסמכי ידע <span class="n" id="n-docs"></span></button>
+    <button data-p="persona">אישיות והנחיות</button>
+    <button data-p="stations">מיפוי תחנות <span class="n" id="n-st"></span></button>
+    <button data-p="qa">שאלות ותשובות <span class="n" id="n-qa"></span></button>
+    <button data-p="play">מבחן חי</button>
+  </div>
+
+  <!-- ============ מסמכי ידע ============ -->
+  <div class="tabpane on" id="p-docs">
+    <div class="panel">
+      <h2 id="doc-h">מסמך ידע חדש</h2>
+      <p class="help">כל מה שאת רוצה שהיועצת תדע. אפשר להדביק טקסט או להעלות קובץ טקסט. מסמך כללי תקף בכל המסע, ומסמך של תחנה נשלף רק כשהשאלה נוגעת לתחנה הזאת.</p>
+
+      <label class="fl">שם המסמך</label>
+      <input type="text" id="d-title" placeholder="לדוגמה: איך בונים משפך מוצרים מבוסס פרימיום" maxlength="120">
+
+      <label class="fl">לאן זה שייך</label>
+      <select id="d-scope">
+        <option value="global">כללי · תקף בכל המסע</option>
+        <option value="station">תחנה מסוימת</option>
+      </select>
+
+      <div id="d-stwrap" style="display:none">
+        <label class="fl">איזו תחנה</label>
+        <select id="d-station"></select>
+      </div>
+
+      <label class="fl">התוכן
+        <small>אפשר להדביק כאן ישירות, או להעלות קובץ טקסט למטה והוא ייכנס לשדה הזה.</small>
+      </label>
+      <textarea id="d-body" class="tall" placeholder="הדביקי כאן את התוכן..."></textarea>
+      <div class="budget">
+        <div class="lbl" id="d-count">0 תווים</div>
+      </div>
+
+      <label class="fl">העלאת קובץ
+        <small>קבצי טקסט בלבד כרגע: txt, md, csv. קובץ PDF או וורד עדיין לא נתמך, צריך להעתיק ממנו ולהדביק.</small>
+      </label>
+      <input type="file" id="d-file" accept=".txt,.md,.csv,text/plain">
+
+      <label class="fl">מצב</label>
+      <select id="d-status">
+        <option value="active">פעיל · היועצת משתמשת בו</option>
+        <option value="draft">טיוטה · לא נכנס לתשובות</option>
+      </select>
+
+      <div class="actions">
+        <button id="d-save">שמירת המסמך</button>
+        <button id="d-clear" class="ghost">ניקוי</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>המסמכים של היועצת</h2>
+      <div class="budget">
+        <div class="bar"><i id="bud-bar" style="width:0%"></i></div>
+        <div class="lbl" id="bud-lbl">טוען...</div>
+      </div>
+      <div id="doc-list" style="margin-top:16px"><div class="empty">טוען...</div></div>
+    </div>
+  </div>
+
+  <!-- ============ אישיות ============ -->
+  <div class="tabpane" id="p-persona">
+    <div class="panel">
+      <h2>האישיות של היועצת</h2>
+      <p class="help">זה מה שמגדיר איך היא מדברת ומה מותר לה. זה נשלח בכל שיחה, לפני כל מסמך ידע.</p>
+
+      <label class="fl">איך קוראים לה</label>
+      <input type="text" id="p-name" maxlength="60">
+
+      <label class="fl">ההנחיה הראשית
+        <small>מי היא, על מה היא עונה, ואיך נראית תשובה טובה.</small>
+      </label>
+      <textarea id="p-prompt" class="tall"></textarea>
+
+      <label class="fl">גבולות · מה אסור לה
+        <small>שורה לכל כלל. זה מה שמונע ממנה להבטיח הכנסות או להמציא נתונים.</small>
+      </label>
+      <textarea id="p-bound"></textarea>
+
+      <label class="fl">מה היא אומרת כשאין לה תשובה
+        <small>המשפט המדויק שייצא כשהשאלה לא מכוסה בחומר שלך. זה מה שמונע ממנה להמציא.</small>
+      </label>
+      <textarea id="p-refuse"></textarea>
+
+      <div class="actions">
+        <button id="p-save">שמירת האישיות</button>
+        <button id="p-reset" class="ghost">חזרה לברירת המחדל</button>
+      </div>
+      <div class="lbl" id="p-when" style="font-size:12px;color:var(--text-faint);margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- ============ מיפוי תחנות ============ -->
+  <div class="tabpane" id="p-stations">
+    <div class="panel">
+      <h2>מה היועצת יודעת על כל תחנה</h2>
+      <p class="help">זה מה שמאפשר לה להגיד "את תקועה בזה, התחנה שאת צריכה היא X". בלי זה היא עונה נכון אבל בלי לכוון אותך במסע.</p>
+      <label class="fl">בחרי תחנה</label>
+      <select id="st-pick"></select>
+    </div>
+
+    <div class="panel">
+      <h2 id="st-title">—</h2>
+
+      <label class="fl">על מה התחנה הזאת, במשפט
+        <small>במילים שלך. זה מה שהיועצת אומרת כשהיא מפנה לתחנה.</small>
+      </label>
+      <textarea id="st-summary"></textarea>
+
+      <label class="fl">מה יוצאת ממנה עם
+        <small>שורה לכל תוצאה.</small>
+      </label>
+      <textarea id="st-goals"></textarea>
+
+      <label class="fl">אם נתקעים כאן
+        <small>מה היועצת אומרת למי שתקועה בתחנה הזאת, ולאן היא מפנה.</small>
+      </label>
+      <textarea id="st-stuck"></textarea>
+
+      <label class="fl">התחנה הבאה שכדאי ללכת אליה</label>
+      <select id="st-next"></select>
+
+      <div class="actions">
+        <button id="st-save">שמירת התחנה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ שאלות ותשובות ============ -->
+  <div class="tabpane" id="p-qa">
+    <div class="panel">
+      <h2 id="qa-h">תשובה מדויקת חדשה</h2>
+      <p class="help">שאלה שחוזרת הרבה, ואת רוצה שהיועצת תענה עליה בדיוק כמוך. תשובה שנכתבת כאן גוברת על כל מה שהיא תרכיב לבד.</p>
+
+      <label class="fl">השאלה כמו שהן שואלות אותה</label>
+      <textarea id="q-q" style="min-height:80px"></textarea>
+
+      <label class="fl">התשובה שלך</label>
+      <textarea id="q-a"></textarea>
+
+      <label class="fl">שייך לתחנה</label>
+      <select id="q-station"></select>
+
+      <div class="actions">
+        <button id="q-save">שמירה</button>
+        <button id="q-clear" class="ghost">ניקוי</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>התשובות שלך</h2>
+      <div id="qa-list"><div class="empty">טוען...</div></div>
+    </div>
+  </div>
+
+  <!-- ============ מבחן חי ============ -->
+  <div class="tabpane" id="p-play">
+    <div class="panel">
+      <h2>מבחן חי</h2>
+      <p class="help">שאלי אותה משהו ותראי מה היא עונה בפועל, ועל סמך אילו מסמכים. זה המקום לדייק אותה לפני שתלמידה אמיתית שואלת.</p>
+
+      <div id="play-warn"></div>
+
+      <label class="fl">מאיזו תחנה שואלים</label>
+      <select id="pl-station"></select>
+
+      <div class="chat" id="pl-chat" style="margin-top:14px">
+        <div class="msg sys">כתבי שאלה למטה כדי להתחיל</div>
+      </div>
+
+      <label class="fl">השאלה</label>
+      <textarea id="pl-input" style="min-height:80px" placeholder="לדוגמה: אני לא מצליחה להבין מי קהל היעד שלי, מאיפה מתחילים?"></textarea>
+      <div class="actions">
+        <button id="pl-send">שליחה ליועצת</button>
+        <button id="pl-reset" class="ghost">ניקוי השיחה</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/nav.js"></script>
+<script src="data/content.js"></script>
+<script src="js/advisor-data.js"></script>
+<script>
+document.addEventListener('oriane:ready', function (ev) {
+  'use strict';
+  var A = window.Advisor, me = ev.detail;
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------- טאבים ---------- */
+  $('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-p]'); if (!b) return;
+    Array.prototype.forEach.call($('tabs').children, function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    Array.prototype.forEach.call(document.querySelectorAll('.tabpane'), function (p) { p.classList.remove('on'); });
+    $('p-' + b.getAttribute('data-p')).classList.add('on');
+  });
+
+  /* ---------- אכלוס בוררי תחנות ---------- */
+  A.stationSelect($('d-station'));
+  A.stationSelect($('st-pick'));
+  A.stationSelect($('pl-station'), { anyLabel: 'כללי · לא קשור לתחנה' });
+  A.stationSelect($('q-station'), { anyLabel: 'כללי · תקף בכל המסע' });
+  A.stationSelect($('st-next'),  { anyLabel: 'בלי הפניה' });
+
+  /* ============================================================
+     מסמכי ידע
+     ============================================================ */
+  var editingDoc = null;
+
+  $('d-scope').addEventListener('change', function () {
+    $('d-stwrap').style.display = this.value === 'station' ? 'block' : 'none';
+  });
+
+  $('d-body').addEventListener('input', function () {
+    $('d-count').textContent = this.value.length.toLocaleString('he-IL') + ' תווים · כ-' +
+      A.estTokens(this.value.length).toLocaleString('he-IL') + ' טוקנים';
+  });
+
+  /* קריאת קובץ בדפדפן. לא נוגעים ב-Storage בכוונה: מה שנשלח
+     למודל הוא טקסט, ולכן שמירת הקובץ המקורי רק מוסיפה תלות
+     ושטח חשוף בלי להוסיף שום דבר לתשובות. */
+  $('d-file').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    if (f.size > 1024 * 1024) { A.toast('הקובץ גדול מדי. עד מגה אחד.', true); this.value = ''; return; }
+    if (/\.pdf$|\.docx?$/i.test(f.name)) {
+      A.toast('קובץ PDF או וורד עדיין לא נתמך. העתיקי ממנו והדביקי.', true);
+      this.value = ''; return;
+    }
+    var r = new FileReader();
+    r.onload = function () {
+      $('d-body').value = r.result;
+      $('d-body').dispatchEvent(new Event('input'));
+      if (!$('d-title').value.trim()) $('d-title').value = f.name.replace(/\.[^.]+$/, '');
+      A.toast('הקובץ נטען לשדה התוכן');
+    };
+    r.onerror = function () { A.toast('קריאת הקובץ נכשלה', true); };
+    r.readAsText(f, 'utf-8');
+    this.value = '';
+  });
+
+  function docClear() {
+    editingDoc = null;
+    $('doc-h').textContent = 'מסמך ידע חדש';
+    $('d-title').value = ''; $('d-body').value = '';
+    $('d-scope').value = 'global'; $('d-stwrap').style.display = 'none';
+    $('d-status').value = 'active';
+    $('d-body').dispatchEvent(new Event('input'));
+  }
+  $('d-clear').addEventListener('click', docClear);
+
+  $('d-save').addEventListener('click', function () {
+    var title = $('d-title').value.trim();
+    var body  = $('d-body').value.trim();
+    if (title.length < 2) return A.toast('צריך שם למסמך', true);
+    if (body.length < 20) return A.toast('התוכן קצר מדי', true);
+
+    var scope = $('d-scope').value;
+    var data = {
+      title: title,
+      body: body,
+      scope: scope,
+      station_id: scope === 'station' ? parseInt($('d-station').value, 10) : null,
+      status: $('d-status').value,
+      char_count: body.length,
+      updated_at: A.now(),
+      updated_by: me.email
+    };
+
+    var b = this; b.disabled = true;
+    var p = editingDoc
+      ? A.col('docs').doc(editingDoc).update(data)
+      : A.col('docs').add(Object.assign({ created_at: A.now() }, data));
+
+    A.write(p, editingDoc ? 'המסמך עודכן' : 'המסמך נשמר')
+      .then(docClear)
+      .catch(function () {})
+      .then(function () { b.disabled = false; });
+  });
+
+  A.col('docs').orderBy('updated_at', 'desc').onSnapshot(function (snap) {
+    var docs = snap.docs;
+    $('n-docs').textContent = docs.length ? '(' + docs.length + ')' : '';
+
+    var activeChars = 0;
+    docs.forEach(function (d) {
+      if (d.data().status === 'active') activeChars += (d.data().char_count || 0);
+    });
+    var tok = A.estTokens(activeChars);
+    var pct = Math.min(100, Math.round(tok / A.BUDGET_TOKENS * 100));
+    var bar = $('bud-bar');
+    bar.style.width = pct + '%';
+    bar.className = pct >= 85 ? 'warn' : '';
+    $('bud-lbl').innerHTML = 'חומר פעיל: כ-' + tok.toLocaleString('he-IL') + ' טוקנים מתוך ' +
+      A.BUDGET_TOKENS.toLocaleString('he-IL') + ' (' + pct + '%).' +
+      (pct >= 85
+        ? '<br><b style="color:var(--accent)">החומר מתקרב לתקרה. מעבר לה חלק מהמסמכים לא ייכנסו לתשובה, בשקט. שווה להעביר מסמכים כלליים לתחנה ספציפית.</b>'
+        : '');
+
+    if (!docs.length) {
+      $('doc-list').innerHTML = '<div class="empty">עוד אין מסמכים.<br>בלי חומר היועצת לא יודעת כלום ותסרב לענות.</div>';
+      return;
+    }
+
+    $('doc-list').innerHTML = docs.map(function (d) {
+      var x = d.data();
+      var scopeLbl = x.scope === 'station'
+        ? 'תחנה ' + x.station_id + ' · ' + A.stationName(x.station_id)
+        : 'כללי';
+      return '<div class="item">' +
+        '<div class="top">' +
+          '<span class="ttl">' + A.esc(x.title) + '</span>' +
+          '<span class="pill ' + (x.status === 'active' ? 'on' : 'off') + '">' +
+            (x.status === 'active' ? 'פעיל' : 'טיוטה') + '</span>' +
+          '<span class="pill scope">' + A.esc(scopeLbl) + '</span>' +
+        '</div>' +
+        '<div class="prev">' + A.esc(x.body) + '</div>' +
+        '<div class="meta" style="margin-top:7px">' +
+          (x.char_count || 0).toLocaleString('he-IL') + ' תווים · עודכן ' + A.when(x.updated_at) +
+        '</div>' +
+        '<div class="row-actions">' +
+          '<button class="ghost sm" data-edit="' + d.id + '">עריכה</button>' +
+          '<button class="ghost sm" data-tog="' + d.id + '" data-to="' +
+            (x.status === 'active' ? 'draft' : 'active') + '">' +
+            (x.status === 'active' ? 'העברה לטיוטה' : 'הפעלה') + '</button>' +
+          '<button class="danger sm" data-del="' + d.id + '">מחיקה</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }, function (e) { console.error(e); $('doc-list').innerHTML = '<div class="empty">טעינת המסמכים נכשלה.</div>'; });
+
+  $('doc-list').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+
+    var id = b.getAttribute('data-edit');
+    if (id) {
+      A.col('docs').doc(id).get().then(function (s) {
+        var x = s.data();
+        editingDoc = id;
+        $('doc-h').textContent = 'עריכת מסמך';
+        $('d-title').value = x.title || '';
+        $('d-body').value = x.body || '';
+        $('d-scope').value = x.scope || 'global';
+        $('d-stwrap').style.display = x.scope === 'station' ? 'block' : 'none';
+        if (x.station_id) $('d-station').value = x.station_id;
+        $('d-status').value = x.status || 'active';
+        $('d-body').dispatchEvent(new Event('input'));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      return;
+    }
+
+    id = b.getAttribute('data-tog');
+    if (id) {
+      A.write(A.col('docs').doc(id).update({ status: b.getAttribute('data-to'), updated_at: A.now() }), 'עודכן');
+      return;
+    }
+
+    id = b.getAttribute('data-del');
+    if (id && confirm('למחוק את המסמך? אי אפשר לשחזר.')) {
+      A.write(A.col('docs').doc(id).delete(), 'נמחק');
+    }
+  });
+
+  /* ============================================================
+     אישיות
+     ============================================================ */
+  function fillPersona(x) {
+    $('p-name').value   = x.display_name  || '';
+    $('p-prompt').value = x.system_prompt || '';
+    $('p-bound').value  = x.boundaries    || '';
+    $('p-refuse').value = x.refusal       || '';
+    $('p-when').textContent = x.updated_at ? ('עודכן לאחרונה ' + A.when(x.updated_at)) : '';
+  }
+
+  A.col('config').doc(A.PERSONA_ID).onSnapshot(function (s) {
+    /* מסמך חסר = פעם ראשונה. ממלאים את הטופס בברירת מחדל אבל
+       לא כותבים למסד, כדי שרענון לא ידרוס טקסט שהיא כתבה. */
+    fillPersona(s.exists ? s.data() : A.PERSONA_DEFAULT);
+  }, function (e) { console.error(e); });
+
+  $('p-save').addEventListener('click', function () {
+    var b = this; b.disabled = true;
+    A.write(A.col('config').doc(A.PERSONA_ID).set({
+      display_name:  $('p-name').value.trim(),
+      system_prompt: $('p-prompt').value.trim(),
+      boundaries:    $('p-bound').value.trim(),
+      refusal:       $('p-refuse').value.trim(),
+      updated_at:    A.now(),
+      updated_by:    me.email
+    }, { merge: true }), 'האישיות נשמרה')
+     .catch(function () {})
+     .then(function () { b.disabled = false; });
+  });
+
+  $('p-reset').addEventListener('click', function () {
+    if (confirm('להחזיר את כל השדות לברירת המחדל? השינויים שלך בטופס יימחקו.')) {
+      fillPersona(A.PERSONA_DEFAULT);
+      A.toast('הוחזר לברירת מחדל. עדיין לא נשמר.');
+    }
+  });
+
+  /* ============================================================
+     מיפוי תחנות
+     ============================================================ */
+  var stCount = 0;
+
+  function loadStation(id) {
+    $('st-title').textContent = 'תחנה ' + id + ' · ' + A.stationName(id);
+    A.col('stations').doc(String(id)).get().then(function (s) {
+      var x = s.exists ? s.data() : {};
+      $('st-summary').value = x.summary || '';
+      $('st-goals').value   = (x.goals || []).join('\n');
+      $('st-stuck').value   = x.stuck_hint || '';
+      $('st-next').value    = x.next_station_id ? String(x.next_station_id) : '';
+    }).catch(function (e) { console.error(e); });
+  }
+
+  $('st-pick').addEventListener('change', function () { loadStation(this.value); });
+  if ($('st-pick').options.length) loadStation($('st-pick').value);
+
+  $('st-save').addEventListener('click', function () {
+    var id = $('st-pick').value;
+    var b = this; b.disabled = true;
+    A.write(A.col('stations').doc(String(id)).set({
+      station_id: parseInt(id, 10),
+      name: A.stationName(id),
+      summary: $('st-summary').value.trim(),
+      goals: $('st-goals').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
+      stuck_hint: $('st-stuck').value.trim(),
+      next_station_id: $('st-next').value ? parseInt($('st-next').value, 10) : null,
+      updated_at: A.now()
+    }, { merge: true }), 'התחנה נשמרה')
+     .catch(function () {})
+     .then(function () { b.disabled = false; });
+  });
+
+  A.col('stations').onSnapshot(function (snap) {
+    stCount = snap.docs.filter(function (d) { return (d.data().summary || '').length > 0; }).length;
+    $('n-st').textContent = stCount ? '(' + stCount + '/' + A.stations().length + ')' : '';
+  }, function (e) { console.error(e); });
+
+  /* ============================================================
+     שאלות ותשובות
+     ============================================================ */
+  var editingQa = null;
+
+  function qaClear() {
+    editingQa = null;
+    $('qa-h').textContent = 'תשובה מדויקת חדשה';
+    $('q-q').value = ''; $('q-a').value = ''; $('q-station').value = '';
+  }
+  $('q-clear').addEventListener('click', qaClear);
+
+  $('q-save').addEventListener('click', function () {
+    var q = $('q-q').value.trim(), a = $('q-a').value.trim();
+    if (q.length < 5) return A.toast('השאלה קצרה מדי', true);
+    if (a.length < 5) return A.toast('התשובה קצרה מדי', true);
+    var data = {
+      question: q, answer: a,
+      station_id: $('q-station').value ? parseInt($('q-station').value, 10) : null,
+      status: 'active', updated_at: A.now()
+    };
+    var b = this; b.disabled = true;
+    var p = editingQa
+      ? A.col('qa').doc(editingQa).update(data)
+      : A.col('qa').add(Object.assign({ created_at: A.now() }, data));
+    A.write(p, editingQa ? 'עודכן' : 'נשמר')
+      .then(qaClear).catch(function () {})
+      .then(function () { b.disabled = false; });
+  });
+
+  A.col('qa').orderBy('updated_at', 'desc').onSnapshot(function (snap) {
+    $('n-qa').textContent = snap.docs.length ? '(' + snap.docs.length + ')' : '';
+    if (!snap.docs.length) {
+      $('qa-list').innerHTML = '<div class="empty">עוד אין תשובות מדויקות.<br>זה שימושי לשאלות שחוזרות הרבה.</div>';
+      return;
+    }
+    $('qa-list').innerHTML = snap.docs.map(function (d) {
+      var x = d.data();
+      return '<div class="item">' +
+        '<div class="top"><span class="ttl">' + A.esc(x.question) + '</span>' +
+          '<span class="pill scope">' +
+            (x.station_id ? 'תחנה ' + x.station_id : 'כללי') + '</span></div>' +
+        '<div class="prev">' + A.esc(x.answer) + '</div>' +
+        '<div class="row-actions">' +
+          '<button class="ghost sm" data-qedit="' + d.id + '">עריכה</button>' +
+          '<button class="danger sm" data-qdel="' + d.id + '">מחיקה</button>' +
+        '</div></div>';
+    }).join('');
+  }, function (e) { console.error(e); });
+
+  $('qa-list').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var id = b.getAttribute('data-qedit');
+    if (id) {
+      A.col('qa').doc(id).get().then(function (s) {
+        var x = s.data();
+        editingQa = id;
+        $('qa-h').textContent = 'עריכת תשובה';
+        $('q-q').value = x.question || ''; $('q-a').value = x.answer || '';
+        $('q-station').value = x.station_id ? String(x.station_id) : '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      return;
+    }
+    id = b.getAttribute('data-qdel');
+    if (id && confirm('למחוק את התשובה?')) A.write(A.col('qa').doc(id).delete(), 'נמחק');
+  });
+
+  /* ============================================================
+     מבחן חי
+     ============================================================
+     הקריאה יוצאת ל-Cloud Function ולא ישירות למודל, כי מפתח
+     ה-API של אוריאן לא יכול לשבת ב-JS של הדפדפן. מפתח חשוף שם
+     נגנב תוך יום ומישהו אחר מוציא את הכסף מהחשבון שלה.
+     כל עוד הפונקציה לא נפרסה, המסך אומר את זה במפורש במקום
+     להיכשל בשקט ולהיראות כמו באג. */
+  var fns = null;
+  try { fns = firebase.app().functions('us-central1'); } catch (e) { console.error(e); }
+
+  function warn(html) { $('play-warn').innerHTML = html ? '<div class="note">' + html + '</div>' : ''; }
+
+  warn('<b>שימי לב:</b> המבחן החי עובד רק אחרי שהלל פורס את מנוע היועצת לשרת. ' +
+       'עד אז אפשר להכין כאן את כל החומר, האישיות והתחנות, וזה יישמר.');
+
+  function bubble(text, who, sources) {
+    var d = document.createElement('div');
+    d.className = 'msg ' + who;
+    d.textContent = text;
+    if (sources && sources.length) {
+      var s = document.createElement('div');
+      s.className = 'srcs';
+      s.textContent = 'נשען על: ' + sources.join(' · ');
+      d.appendChild(s);
+    }
+    var c = $('pl-chat');
+    if (c.querySelector('.msg.sys')) c.innerHTML = '';
+    c.appendChild(d); c.scrollTop = c.scrollHeight;
+    return d;
+  }
+
+  $('pl-reset').addEventListener('click', function () {
+    $('pl-chat').innerHTML = '<div class="msg sys">כתבי שאלה למטה כדי להתחיל</div>';
+  });
+
+  $('pl-send').addEventListener('click', function () {
+    var q = $('pl-input').value.trim();
+    if (q.length < 3) return A.toast('כתבי שאלה', true);
+    if (!fns) return A.toast('אין חיבור לשרת', true);
+
+    bubble(q, 'me');
+    $('pl-input').value = '';
+    var b = this; b.disabled = true;
+    var typing = bubble('היועצת חושבת…', 'sys');
+
+    fns.httpsCallable('askAdvisor')({
+      question: q,
+      stationId: $('pl-station').value ? parseInt($('pl-station').value, 10) : null,
+      preview: true          // מבחן של מנהלת. לא נשמר בתיק של אף תלמידה.
+    }).then(function (r) {
+      typing.remove();
+      var d = r.data || {};
+      bubble(d.answer || '(תשובה ריקה)', 'bot', d.sources);
+      warn('');
+    }).catch(function (e) {
+      typing.remove();
+      console.error(e);
+      if (e && (e.code === 'functions/not-found' || e.code === 'not-found')) {
+        warn('<b>מנוע היועצת עוד לא נפרס.</b> הפונקציה <code>askAdvisor</code> לא קיימת בשרת. ' +
+             'החומר שהכנת נשמר, והמבחן יעבוד ברגע שהלל יריץ את הפריסה.');
+        bubble('אי אפשר לבדוק עדיין. המנוע לא באוויר.', 'sys');
+      } else {
+        bubble('השליחה נכשלה: ' + (e && e.message ? e.message : 'שגיאה'), 'sys');
+      }
+    }).then(function () { b.disabled = false; });
+  });
+
+});
+</script>
+</body>
+</html>

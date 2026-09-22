@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>בונה חוברות העבודה · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .wrap{max-width:960px;margin:0 auto;padding:26px 0 80px}
+  h1{font-size:26px;color:var(--text-strong)}
+  .sub{font-size:14px;color:var(--text-dim);margin-top:5px;line-height:1.6}
+  .backlink{display:inline-block;margin-bottom:14px;font-size:13.5px;color:var(--text-dim)}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);
+    padding:18px;margin-bottom:16px}
+  .panel h2{font-size:16px;color:var(--text-strong);margin-bottom:8px}
+  .panel p.help{font-size:13.5px;color:var(--text-dim);margin-bottom:14px;line-height:1.6}
+
+  label.fl{display:block;font-size:13px;font-weight:600;color:var(--text-strong);margin:14px 0 6px}
+  label.fl small{display:block;font-weight:400;color:var(--text-dim);font-size:12px;margin-top:3px;line-height:1.5}
+  input[type=text],textarea,select{width:100%;padding:11px 13px;font-size:14.5px;font-family:inherit;
+    background:var(--input-bg);color:var(--text);border:1px solid var(--line);border-radius:12px;min-height:44px}
+  textarea{min-height:80px;resize:vertical;line-height:1.6}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--btn-bg)}
+
+  button{padding:11px 17px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;min-height:44px;
+    background:var(--btn-bg);color:var(--btn-text);border:0;border-radius:var(--radius-pill);transition:.15s}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  button.danger{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  button.sm{padding:7px 12px;font-size:12.5px;min-height:36px}
+  button:disabled{opacity:.5;cursor:default}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+  .lesson{border:1px solid var(--line);border-radius:14px;margin-bottom:14px;background:var(--surface-2)}
+  .lesson > .lh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;cursor:pointer}
+  .lesson > .lh .ln{font-size:15px;font-weight:700;color:var(--text-strong);flex:1;min-width:150px}
+  .lesson > .lb{padding:0 16px 16px;display:none}
+  .lesson.open > .lb{display:block}
+  .lesson .chev{color:var(--text-dim);font-size:13px}
+
+  .field{border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:10px;background:var(--surface)}
+  .field .fh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+  .field .fh .ft{font-size:12px;font-weight:700;color:var(--text-dim);
+    border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+  .field .fh .grow{flex:1}
+  .cols{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+  .cols .c{display:flex;gap:5px;align-items:center;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:10px;padding:5px 7px}
+  .cols .c input{min-height:34px;padding:5px 9px;font-size:13px;width:150px}
+  .cols .c button{min-height:30px;padding:2px 9px;font-size:16px;line-height:1}
+
+  .pill{display:inline-block;padding:4px 11px;border-radius:var(--radius-pill);font-size:11.5px;font-weight:700}
+  .pill.on{background:var(--btn-bg);color:var(--btn-text)}
+  .pill.off{background:var(--surface-3);color:var(--text-dim)}
+
+  .empty{padding:22px;text-align:center;color:var(--text-faint);font-size:14px;line-height:1.7}
+  .toast{position:fixed;bottom:18px;inset-inline-start:18px;background:var(--btn-bg);color:var(--btn-text);
+    padding:13px 18px;border-radius:var(--radius-card);font-size:14px;display:none;z-index:400;max-width:90vw}
+  .toast.on{display:block}
+  .toast.bad{background:var(--accent);color:#fff}
+  .credit{margin-top:30px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+  .note{border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:14px;
+    font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+  .sticky{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+    padding:12px 0;margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;z-index:50}
+  @media(max-width:600px){ .cols .c input{width:110px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="admin.html">← חזרה לניהול</a>
+  <h1>בונה חוברות העבודה</h1>
+  <p class="sub">השאלות שהתלמידה ממלאת מתחת לכל שיעור. מה שהיא כותבת כאן נשמר בתיק שלה, ומזין את היועצת הדיגיטלית.</p>
+
+  <div class="panel">
+    <label class="fl">בחרי תחנה</label>
+    <select id="pick"></select>
+    <div class="note" id="stat" style="margin-top:14px">—</div>
+  </div>
+
+  <div id="lessons"><div class="empty">טוען...</div></div>
+
+  <div class="sticky">
+    <button id="save">שמירת החוברת</button>
+    <button id="reload" class="ghost">ביטול השינויים</button>
+  </div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/nav.js"></script>
+<script src="data/content.js"></script>
+<script src="js/advisor-data.js"></script>
+<script>
+document.addEventListener('oriane:ready', function () {
+  'use strict';
+  var A = window.Advisor;
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* המודל בזיכרון. נשמר למסד רק בלחיצה על שמירה, כדי שאוריאן
+     תוכל לשחק עם המבנה בלי שכל הקלדה תיכתב לתלמידות. */
+  var model = { station_id: null, lessons: [] };
+
+  A.stationSelect($('pick'));
+
+  /* ---------- בנייה מחדש של המודל מהתחנה + מה שכבר שמור ---------- */
+  function load(stationId) {
+    var lessons = A.lessonsOf(stationId);
+    A.col('workbooks').doc(String(stationId)).get().then(function (s) {
+      var saved = s.exists ? (s.data().lessons || []) : [];
+
+      /* מקור האמת לרשימת השיעורים הוא content.js. מה שנשמר כאן הוא
+         רק השדות. אם אוריאן הוסיפה שיעור לתחנה, הוא מופיע כאן ריק
+         במקום להיעלם, ואם שיעור הוסר השדות שלו פשוט לא נטענים. */
+      model = {
+        station_id: parseInt(stationId, 10),
+        lessons: lessons.map(function (l, i) {
+          var prev = saved.filter(function (p) { return p.index === i; })[0] || {};
+          return {
+            index: i,
+            title: l.n || l.title || ('שיעור ' + (i + 1)),
+            intro: prev.intro || '',
+            enabled: prev.enabled !== false,
+            fields: (prev.fields || []).map(function (f) {
+              return {
+                id: f.id || A.uid(), type: f.type || 'short',
+                label: f.label || '', help: f.help || '',
+                required: !!f.required,
+                columns: f.columns || [], rows: f.rows || 3
+              };
+            })
+          };
+        })
+      };
+
+      if (!lessons.length) {
+        $('lessons').innerHTML =
+          '<div class="panel"><div class="empty">בתחנה הזאת עוד אין שיעורים ב-<code>data/content.js</code>.<br>' +
+          'ברגע שיעלה לה תוכן, השיעורים יופיעו כאן לבד.</div></div>';
+        $('stat').textContent = 'אין שיעורים בתחנה הזאת.';
+        return;
+      }
+      render();
+    }).catch(function (e) {
+      console.error(e);
+      A.toast('טעינת החוברת נכשלה', true);
+    });
+  }
+
+  /* ---------- ציור ---------- */
+  function render() {
+    var total = model.lessons.reduce(function (n, l) { return n + l.fields.length; }, 0);
+    var withQ = model.lessons.filter(function (l) { return l.fields.length; }).length;
+    $('stat').innerHTML = 'תחנה ' + model.station_id + ' · ' + A.esc(A.stationName(model.station_id)) +
+      ' · ' + model.lessons.length + ' שיעורים · ' + withQ + ' עם שאלות · ' + total + ' שאלות בסך הכל.' +
+      (total === 0 ? '<br>שיעור בלי שאלות פשוט לא מציג חוברת לתלמידה.' : '');
+
+    $('lessons').innerHTML = model.lessons.map(function (l, li) {
+      return '<div class="lesson' + (l.fields.length ? ' open' : '') + '" data-li="' + li + '">' +
+        '<div class="lh" data-toggle="' + li + '">' +
+          '<span class="ln">' + (li + 1) + ' · ' + A.esc(l.title) + '</span>' +
+          '<span class="pill ' + (l.fields.length ? 'on' : 'off') + '">' +
+            (l.fields.length ? l.fields.length + ' שאלות' : 'ריק') + '</span>' +
+          '<span class="chev">▾</span>' +
+        '</div>' +
+        '<div class="lb">' +
+          '<label class="fl">משפט פתיחה לחוברת<small>אופציונלי. מה התלמידה אמורה לעשות כאן.</small></label>' +
+          '<textarea data-intro="' + li + '" style="min-height:60px">' + A.esc(l.intro) + '</textarea>' +
+          '<div style="margin-top:14px">' + l.fields.map(function (f, fi) {
+            return fieldHtml(l, f, li, fi);
+          }).join('') + '</div>' +
+          '<div class="actions">' +
+            '<button class="ghost sm" data-add="short" data-li="' + li + '">+ שורה אחת</button>' +
+            '<button class="ghost sm" data-add="long" data-li="' + li + '">+ טקסט ארוך</button>' +
+            '<button class="ghost sm" data-add="table" data-li="' + li + '">+ טבלה</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function fieldHtml(l, f, li, fi) {
+    var typeLbl = { short: 'שורה אחת', long: 'טקסט ארוך', table: 'טבלה' }[f.type] || f.type;
+    var h = '<div class="field" data-li="' + li + '" data-fi="' + fi + '">' +
+      '<div class="fh">' +
+        '<span class="ft">' + typeLbl + '</span>' +
+        '<span class="grow"></span>' +
+        '<button class="ghost sm" data-up="1" ' + (fi === 0 ? 'disabled' : '') + '>↑</button>' +
+        '<button class="ghost sm" data-down="1" ' + (fi === l.fields.length - 1 ? 'disabled' : '') + '>↓</button>' +
+        '<button class="danger sm" data-delf="1">מחיקה</button>' +
+      '</div>' +
+      '<input type="text" data-lbl="1" placeholder="מה שואלים? לדוגמה: מי שלושת הלקוחות האידיאליים שלך" value="' + A.esc(f.label) + '">' +
+      '<input type="text" data-help="1" style="margin-top:7px" placeholder="הסבר קצר מתחת לשאלה (אופציונלי)" value="' + A.esc(f.help) + '">';
+
+    if (f.type === 'table') {
+      h += '<div class="cols">' + (f.columns || []).map(function (c, ci) {
+        return '<span class="c"><input type="text" data-col="' + ci + '" value="' + A.esc(c.label) + '" placeholder="שם עמודה">' +
+               '<button class="ghost" data-delcol="' + ci + '" title="הסרת עמודה">×</button></span>';
+      }).join('') + '<button class="ghost sm" data-addcol="1">+ עמודה</button></div>' +
+      '<label class="fl">כמה שורות<small>כמה שורות ריקות התלמידה מקבלת. היא תוכל להוסיף עוד.</small></label>' +
+      '<input type="text" data-rows="1" inputmode="numeric" value="' + (f.rows || 3) + '" style="max-width:110px">';
+    }
+
+    h += '<label class="fl" style="display:flex;align-items:center;gap:8px;margin-top:12px">' +
+         '<input type="checkbox" data-req="1" ' + (f.required ? 'checked' : '') +
+         ' style="width:auto;min-height:auto;margin:0"> חובה למלא</label>';
+    return h + '</div>';
+  }
+
+  /* ---------- קריאת הטופס חזרה למודל ----------
+     נקרא לפני כל ציור מחדש ולפני שמירה. בלי זה כל הוספת שדה
+     מוחקת את מה שהוקלד ולא נשמר עדיין. */
+  function sync() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-intro]'), function (t) {
+      var li = +t.getAttribute('data-intro');
+      if (model.lessons[li]) model.lessons[li].intro = t.value;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.field'), function (el) {
+      var li = +el.getAttribute('data-li'), fi = +el.getAttribute('data-fi');
+      var f = model.lessons[li] && model.lessons[li].fields[fi];
+      if (!f) return;
+      f.label = el.querySelector('[data-lbl]').value;
+      f.help  = el.querySelector('[data-help]').value;
+      f.required = el.querySelector('[data-req]').checked;
+      var rows = el.querySelector('[data-rows]');
+      if (rows) f.rows = Math.max(1, Math.min(20, parseInt(rows.value, 10) || 3));
+      var cols = el.querySelectorAll('[data-col]');
+      if (cols.length) {
+        f.columns = Array.prototype.map.call(cols, function (c, i) {
+          return { key: (f.columns[i] && f.columns[i].key) || A.uid(), label: c.value };
+        });
+      }
+    });
+  }
+
+  /* ---------- אירועים ---------- */
+  $('lessons').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+
+    if (!b) {
+      var head = e.target.closest('[data-toggle]');
+      if (head) head.parentNode.classList.toggle('open');
+      return;
+    }
+
+    var li = b.getAttribute('data-li');
+
+    if (b.hasAttribute('data-add')) {
+      sync();
+      var t = b.getAttribute('data-add');
+      model.lessons[+li].fields.push({
+        id: A.uid(), type: t, label: '', help: '', required: false,
+        columns: t === 'table' ? [{ key: A.uid(), label: 'שם הלקוח' }, { key: A.uid(), label: 'מה הוא צריך' }] : [],
+        rows: 3
+      });
+      render(); return;
+    }
+
+    var fieldEl = b.closest('.field');
+    if (!fieldEl) return;
+    var fli = +fieldEl.getAttribute('data-li'), ffi = +fieldEl.getAttribute('data-fi');
+    var arr = model.lessons[fli].fields;
+
+    if (b.hasAttribute('data-delf')) {
+      sync(); arr.splice(ffi, 1); render(); return;
+    }
+    if (b.hasAttribute('data-up') && ffi > 0) {
+      sync(); arr.splice(ffi - 1, 0, arr.splice(ffi, 1)[0]); render(); return;
+    }
+    if (b.hasAttribute('data-down') && ffi < arr.length - 1) {
+      sync(); arr.splice(ffi + 1, 0, arr.splice(ffi, 1)[0]); render(); return;
+    }
+    if (b.hasAttribute('data-addcol')) {
+      sync(); arr[ffi].columns.push({ key: A.uid(), label: '' }); render(); return;
+    }
+    if (b.hasAttribute('data-delcol')) {
+      sync(); arr[ffi].columns.splice(+b.getAttribute('data-delcol'), 1); render(); return;
+    }
+  });
+
+  $('pick').addEventListener('change', function () { load(this.value); });
+  $('reload').addEventListener('click', function () {
+    if (confirm('לבטל את כל מה שלא נשמר?')) load($('pick').value);
+  });
+
+  $('save').addEventListener('click', function () {
+    sync();
+
+    /* שדה בלי שאלה הוא שדה שהתלמידה רואה ריק ולא מבינה מה למלא.
+       עוצרים כאן ולא שומרים חצי חוברת. */
+    var bad = null;
+    model.lessons.forEach(function (l) {
+      l.fields.forEach(function (f, i) {
+        if (!bad && !f.label.trim()) bad = l.title + ' · שאלה ' + (i + 1);
+      });
+    });
+    if (bad) return A.toast('יש שאלה בלי טקסט: ' + bad, true);
+
+    var b = this; b.disabled = true;
+    A.write(A.col('workbooks').doc(String(model.station_id)).set({
+      station_id: model.station_id,
+      name: A.stationName(model.station_id),
+      lessons: model.lessons,
+      updated_at: A.now()
+    }, { merge: true }), 'החוברת נשמרה')
+     .then(render).catch(function () {})
+     .then(function () { b.disabled = false; });
+  });
+
+  if ($('pick').options.length) load($('pick').value);
+  else $('lessons').innerHTML = '<div class="panel"><div class="empty">לא נטענו תחנות.</div></div>';
+});
+</script>
+</body>
+</html>

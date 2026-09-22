@@ -224,6 +224,73 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ============================================================
+    // היועצת הדיגיטלית · 22.09.2026
+    //
+    // חלוקת האחריות כאן:
+    //   מה שמגדיר את היועצת  → מנהלת כותבת, תלמידה קוראת בלבד.
+    //   מה שהתלמידה מייצרת   → היא כותבת רק אצל עצמה, מנהלת קוראת הכל.
+    //
+    // התלמידה חייבת גישת קריאה להגדרות, אחרת הממשק לא יודע אילו
+    // שדות להציג בחוברת העבודה. היא לא יכולה לשנות שם כלום.
+    // ============================================================
+
+    // ---------- אישיות היועצת ----------
+    match /advisor_config/{docId} {
+      allow read:  if hasAccess() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ---------- מסמכי הידע ----------
+    // ⚠️ קריאה למנהלת בלבד, בכוונה. זה החומר הגולמי של אוריאן והוא
+    // הקניין שלה. התלמידה פוגשת אותו רק דרך תשובות היועצת, שנבנות
+    // בצד שרת. חשיפת האוסף הזה ללקוחה = מסירת הקורס כקובץ.
+    match /advisor_docs/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ---------- שאלות ותשובות מדויקות ----------
+    match /advisor_qa/{qaId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ---------- מה היועצת יודעת על כל תחנה ----------
+    match /advisor_stations/{stationId} {
+      allow read:  if hasAccess() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ---------- שיחות מול היועצת ----------
+    // ⚠️ create מוגבל ל-role של המשתמשת בלבד. בלי זה אפשר לשתול
+    // הודעת 'assistant' מזויפת מהדפדפן, ואז תיק המשתמשת שאוריאן
+    // פותחת בשיחת ייעוץ מציג דברים שהיועצת מעולם לא אמרה.
+    // תשובות היועצת נכתבות בצד שרת, שעוקף את הכללים האלה.
+    match /advisor_chats/{uid}/messages/{msgId} {
+      allow read:   if request.auth.uid == uid || isAdmin();
+      allow create: if request.auth.uid == uid && hasAccess()
+                    && request.resource.data.role == 'user'
+                    && request.resource.data.body is string
+                    && request.resource.data.body.size() > 0
+                    && request.resource.data.body.size() <= 2000;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // ---------- מבנה חוברות העבודה ----------
+    match /workbooks/{stationId} {
+      allow read:  if hasAccess() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ---------- תשובות התלמידה בחוברת ----------
+    // היא כותבת ומוחקת רק אצל עצמה. אוריאן קוראת הכל, וזה מה שמזין
+    // את תיק המשתמשת. אוריאן לא כותבת בשם התלמידה בכוונה, כדי
+    // שהתיק ישקף מה התלמידה באמת מילאה.
+    match /workbook_answers/{uid}/stations/{stationId} {
+      allow read:  if request.auth.uid == uid || isAdmin();
+      allow write: if request.auth.uid == uid && hasAccess();
+    }
+
     // ---------- ברירת מחדל: חסום ----------
     match /{document=**} {
       allow read, write: if false;
