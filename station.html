@@ -46,44 +46,75 @@
     .gains li{position:relative;font-size:14px;color:var(--text);padding:6px 24px 6px 0;line-height:1.6}
     .gains li::before{content:"✓";position:absolute;inset-inline-start:0;top:6px;color:var(--btn-bg);font-weight:800;font-size:13px}
 
-    /* חוברת עבודה */
-    /* קרוסלת שיעורים בתוך תחנה */
-    .lessons{max-width:var(--maxw);margin:20px auto 0}
-    .lessons .lh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:11px}
-    .lessons h3{font-size:14.5px;color:var(--text-strong);font-weight:700}
-    .lessons .hint{font-size:11.5px;color:var(--text-faint)}
-    .lesson-rail{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;scrollbar-width:thin}
-    .lesson-rail::-webkit-scrollbar{height:6px}
-    .lesson-rail::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:20px}
-    .lcard{flex:0 0 208px;scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);
-      border-radius:var(--radius-card);overflow:hidden;cursor:pointer;transition:.16s;text-align:start}
-    .lcard:hover{border-color:var(--accent);transform:translateY(-2px)}
-    .lcard.on{border-color:var(--btn-bg);box-shadow:0 0 0 1px var(--btn-bg) inset}
-    .lcard .thumb{position:relative;width:100%;aspect-ratio:16/9;background:var(--surface-3);
-      background-size:cover;background-position:center}
-    .lcard .thumb .num{position:absolute;inset-inline-start:8px;top:8px;min-width:22px;height:22px;
-      border-radius:11px;background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:700;
-      display:grid;place-items:center;padding:0 7px}
-    .lcard .thumb .min{position:absolute;inset-inline-end:8px;bottom:8px;background:rgba(0,0,0,.7);
-      color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:5px}
-    /* עיגול ירוק עם וי · מופיע על שיעור שנצפה בפועל (80%+ מהסרטון),
-       בקשת אוריאן 16.09. עומד לצד "num" בפינה הנגדית של התמונה הממוזערת. */
-    .lcard .thumb .done-badge{position:absolute;inset-inline-end:8px;top:8px;width:22px;height:22px;
-      border-radius:50%;background:#22c55e;color:#fff;font-size:13px;font-weight:800;
-      display:none;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.4)}
-    .lcard .thumb .done-badge.on{display:flex}
-    .lcard .thumb .play{position:absolute;inset:0;display:grid;place-items:center;
-      color:#fff;font-size:26px;opacity:0;transition:.16s;text-shadow:0 2px 10px rgba(0,0,0,.6)}
-    .lcard:hover .thumb .play{opacity:1}
-    .lcard .body{padding:11px 12px}
-    .lcard .nm{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.4}
-    .lcard.on .nm{color:var(--text-strong);font-weight:700}
-    .lcard .st{display:block;font-size:11px;color:var(--text-faint);margin-top:4px}
+    /* ============================================================
+       Layout חדש · וידאו + מפת פרק בצד (בקשת אוריאן 24.09.2026,
+       לפי הדגמה שהיא צילמה ממערכת קורסים אחרת): שני טורים בדסקטופ
+       — וידאו/פרטים מימין (75%), מפת הפרק הצפה משמאל (25%).
+       במובייל חוזר לטור אחד: וידאו קודם, מפת הפרק אחריו.
+       ============================================================ */
+    .station-layout{display:grid;grid-template-columns:1fr 320px;gap:26px;align-items:start;margin-top:6px}
+    @media(max-width:900px){ .station-layout{grid-template-columns:1fr} }
+    .station-layout.no-map{grid-template-columns:1fr}
+
+    .st-sub{font-size:14.5px;color:var(--text-dim);margin:6px auto 16px;line-height:1.6}
+
+    .video-wrap{position:relative}
+    /* תג "שיעור ראשי" · מוצג מעל הנגן כששיעור 1 של התחנה מתנגן */
+    .video-badge{position:absolute;top:10px;inset-inline-start:10px;z-index:2;display:none;align-items:center;gap:5px;
+      background:rgba(0,0,0,.62);color:#fcc1cb;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px}
+    .video-badge.on{display:inline-flex}
+    .video-badge .ic{width:.9em;height:.9em}
+
+    /* שורת פרטי השיעור המנוגן + פעולות · מתחת לנגן */
+    .lesson-meta{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+      margin-top:16px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line)}
+    .lesson-meta .lm-title{font-size:16.5px;font-weight:800;color:var(--text-strong);line-height:1.4}
+    .lesson-meta .lm-row{display:flex;align-items:center;gap:14px;margin-top:8px;font-size:12.5px;color:var(--text-dim);flex-wrap:wrap}
+    .lesson-meta .lm-row span{display:inline-flex;align-items:center;gap:5px}
+    .lesson-meta .lm-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .btn-mark{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:11px 18px;
+      border-radius:var(--radius-pill);border:1px solid var(--btn-bg);color:var(--btn-bg);background:transparent;
+      cursor:pointer;min-height:44px;white-space:nowrap}
+    .btn-mark.on{background:var(--btn-bg);color:var(--btn-text);border-color:var(--btn-bg)}
+
     .workbook{margin:18px auto 0}
-    .btn-wb{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:12px 20px;border-radius:var(--radius-pill);min-height:44px;text-decoration:none}
+    .btn-wb{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:11px 18px;border-radius:var(--radius-pill);min-height:44px;text-decoration:none;white-space:nowrap}
     .btn-wb.on{background:var(--surface-2);color:var(--text-strong);border:1px solid var(--line)}
     .btn-wb.off{background:var(--surface);color:var(--text-dim);border:1px solid var(--line);opacity:.6;cursor:not-allowed}
+
+    /* ---------- מפת הפרק (סייד-בר) ---------- */
+    .station-map{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:18px}
+    .sm-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+    .sm-head h3{font-size:14.5px;font-weight:800;color:var(--text-strong)}
+    .sm-head .sm-count{font-size:11px;color:var(--text-dim);white-space:nowrap}
+    .sm-progress{height:6px;background:var(--input-bg);border-radius:20px;overflow:hidden;margin:10px 0 18px}
+    .sm-progress>span{display:block;height:100%;width:0;background:var(--btn-bg);border-radius:20px;transition:width .4s}
+    .sm-list{position:relative}
+    .sm-item{position:relative;display:flex;gap:12px;padding-bottom:20px;cursor:pointer}
+    .sm-item:last-child{padding-bottom:0}
+    /* קו מחבר אנכי בין הנקודות · מיושר לפי מרכז ה-dot (24px), בצד ימין
+       בפועל כי הפריסה RTL הופכת את הפריט הראשון בפלקס לימני. */
+    .sm-item::before{content:"";position:absolute;top:26px;bottom:0;right:11px;width:2px;background:var(--line)}
+    .sm-item:last-child::before{display:none}
+    .sm-dot{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;z-index:1;
+      background:var(--input-bg);border:2px solid var(--line);color:var(--text-dim);font-size:11px;transition:.15s}
+    .sm-item.done .sm-dot{background:#22c55e;border-color:#22c55e;color:#fff}
+    .sm-item.current .sm-dot{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-text)}
+    .sm-item:hover .sm-dot{border-color:var(--btn-bg)}
+    .sm-body{flex:1;min-width:0;padding-top:1px}
+    .sm-name{display:block;font-size:13.5px;font-weight:600;color:var(--text)}
+    .sm-item.current .sm-name{color:var(--text-strong);font-weight:800}
+    .sm-min{display:block;font-size:11.5px;color:var(--text-faint);margin-top:3px}
+    .sm-star{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--btn-bg);margin-top:3px}
+    .sm-star .ic{width:.9em;height:.9em}
+    .sm-nav{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+    .sm-next{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--btn-bg);color:var(--btn-text);
+      font-weight:800;font-size:14px;padding:13px 18px;border-radius:var(--radius-pill);border:none;cursor:pointer;
+      text-decoration:none;min-height:46px}
+    .sm-next.off{opacity:.4;pointer-events:none}
+    .sm-prev{text-align:center;font-size:12.5px;color:var(--text-dim);text-decoration:none;padding:6px}
+    .sm-prev:hover{color:var(--text-strong)}
+    .sm-prev.off{opacity:.35;pointer-events:none}
 
     /* פעולות */
     .actions{margin:30px auto 0;display:flex;flex-direction:column;gap:12px}
@@ -267,14 +298,16 @@
     // ---------- תחנה פתוחה ----------
     document.title = 'תחנה ' + station.id + ' · המסע ל-50K';
 
+    var hasLessons = !!(station.lessons && station.lessons.length);
+
     // אזור וידאו
     var videoHtml;
     // אם יש שיעורים, הנגן פותח את השיעור שנבחר בכתובת
     var openId = station.youtubeId;
-    if (station.lessons && station.lessons.length) {
-      var li = Math.max(0, (parseInt(params.get('l'), 10) || 1) - 1);
-      if (li >= station.lessons.length) li = 0;
-      openId = station.lessons[li].youtubeId || openId;
+    var lessonIdx = Math.max(0, (parseInt(params.get('l'), 10) || 1) - 1);
+    if (hasLessons) {
+      if (lessonIdx >= station.lessons.length) lessonIdx = 0;
+      openId = station.lessons[lessonIdx].youtubeId || openId;
     }
     if (openId) {
       videoHtml =
@@ -288,42 +321,49 @@
       videoHtml =
         '<div class="video ph"><div class="phtxt"><span data-ic="play"></span> כאן ייכנס הסרטון של התחנה</div></div>';
     }
+    // תג "שיעור ראשי" מעל הנגן · מוצג כששיעור 1 של התחנה מתנגן (בקשת אוריאן 24.09)
+    var videoWrapHtml =
+      '<div class="video-wrap">' +
+        (hasLessons ? '<div class="video-badge' + (lessonIdx === 0 ? ' on' : '') + '" id="videoBadge"><span data-ic="star"></span> שיעור ראשי</div>' : '') +
+        videoHtml +
+      '</div>';
 
-    // קרוסלת שיעורים · לחיצה נכנסת לשיעור ספציפי (?l=N בכתובת)
-    var lessonIdx = Math.max(0, (parseInt(params.get('l'), 10) || 1) - 1);
-    var lessonsHtml = '';
-    if (station.lessons && station.lessons.length) {
-      if (lessonIdx >= station.lessons.length) lessonIdx = 0;
-      lessonsHtml =
-        '<div class="lessons">' +
-          '<div class="lh">' +
-            '<h3>שיעורי התחנה · ' + station.lessons.length + '</h3>' +
-            '<span class="hint">גללו לצדדים</span>' +
+    // מסיר מ-l.n את המספור הפנימי הקיים ("1 · שם") כדי לבנות מספור
+    // "פרק.שיעור" (למשל 7.1) כמו בהדגמה של אוריאן, בלי לשכפל אותו.
+    function cleanLessonName(n) { return String(n || '').replace(/^\d+\s*[·.]\s*/, ''); }
+    function lessonLabel(i) { return station.id + '.' + (i + 1) + ' · ' + esc(cleanLessonName(station.lessons[i].n)); }
+
+    // ---------- שורת פרטי השיעור המנוגן + כפתורי פעולה (מתחת לנגן) ----------
+    var wbHtml = station.workbookUrl
+      ? '<a class="btn-wb on" href="' + esc(station.workbookUrl) + '" download target="_blank" rel="noopener"><span data-ic="book"></span> הורד חוברת עבודה</a>'
+      : '<span class="btn-wb off"><span data-ic="book"></span> חוברת עבודה · תתווסף</span>';
+
+    var lessonMetaHtml = '';
+    if (hasLessons) {
+      var curLesson = station.lessons[lessonIdx];
+      var isDoneNow = window.OrianeLessons && window.OrianeLessons.isWatched(station.id, lessonIdx);
+      lessonMetaHtml =
+        '<div class="lesson-meta">' +
+          '<div class="lm-left">' +
+            '<h2 class="lm-title" id="lmTitle">' + lessonLabel(lessonIdx) + '</h2>' +
+            '<div class="lm-row" id="lmRow">' +
+              (SHOW_DURATIONS ? '<span><span data-ic="clock"></span>' + esc(curLesson.min) + ' דק׳</span>' : '') +
+              '<span><span data-ic="compass"></span> רמת התקדמות: ' + esc(station.chapterTitle) + '</span>' +
+            '</div>' +
           '</div>' +
-          '<div class="lesson-rail" id="lrail">' +
-            station.lessons.map(function (l, i) {
-              var thumb = 'https://i.ytimg.com/vi/' + encodeURIComponent(l.youtubeId) + '/mqdefault.jpg';
-              return '<div class="lcard' + (i === lessonIdx ? ' on' : '') + '" data-i="' + i + '" ' +
-                          'data-yt="' + esc(l.youtubeId) + '">' +
-                       '<div class="thumb" style="background-image:url(' + thumb + ')">' +
-                         '<span class="num">' + (i + 1) + '</span>' +
-                         '<span class="done-badge' + (window.OrianeLessons && window.OrianeLessons.isWatched(station.id, i) ? ' on' : '') + '" data-done-i="' + i + '">✓</span>' +
-                         (SHOW_DURATIONS ? '<span class="min">' + esc(l.min) + ' דק׳</span>' : '') +
-                         '<span class="play">▶</span>' +
-                       '</div>' +
-                       '<div class="body"><span class="nm">' + esc(l.n) + '</span>' +
-                         '<span class="st">' + (i === lessonIdx ? 'מנוגן עכשיו' : 'לחצו לצפייה') + '</span>' +
-                       '</div>' +
-                     '</div>';
-            }).join('') +
+          '<div class="lm-actions">' +
+            '<button class="btn-mark' + (isDoneNow ? ' on' : '') + '" id="markDoneBtn" type="button">' +
+              '<span data-ic="check"></span><span id="markDoneTxt">' + (isDoneNow ? 'סומן כהושלם' : 'סימון כהושלם') + '</span>' +
+            '</button>' +
+            wbHtml +
           '</div>' +
         '</div>';
     }
 
-    // תיאור
+    // תיאור · מוצג כתקציר מתחת לכותרת הראשית (בקשת אוריאן 24.09, לפי ההדגמה)
     var descHtml = station.desc
-      ? '<p class="st-desc">' + esc(station.desc) + '</p>'
-      : '<p class="st-desc empty">תיאור התחנה יתווסף עם התוכן</p>';
+      ? '<p class="st-sub">' + esc(station.desc) + '</p>'
+      : '<p class="st-sub" style="opacity:.6;font-style:italic">תיאור התחנה יתווסף עם התוכן</p>';
 
     // מה תפיק מהתחנה (מסגרת כללית, ללא תוכן שיעור ספציפי)
     var gains = [
@@ -340,17 +380,45 @@
         '</ul>' +
       '</div>';
 
-    // חוברת עבודה
-    var wbHtml = station.workbookUrl
-      ? '<a class="btn-wb on" href="' + esc(station.workbookUrl) + '" download target="_blank" rel="noopener"><span data-ic="book"></span> הורד חוברת עבודה</a>'
-      : '<span class="btn-wb off"><span data-ic="book"></span> חוברת עבודה · תתווסף</span>';
-
-    // משך
-    var durHtml = (SHOW_DURATIONS && station.durationMin)
+    // משך (רק לתחנת וידאו יחיד בלי שיעורים · עם שיעורים המשך מוצג ב-lesson-meta)
+    var durHtml = (!hasLessons && SHOW_DURATIONS && station.durationMin)
       ? '<div class="st-dur"><span data-ic="clock"></span> כ-' + esc(station.durationMin) + ' דק׳</div>'
       : '';
 
-    // ניווט קודם/הבא
+    // ---------- מפת הפרק (סייד-בר) · מחליפה את קרוסלת השיעורים הישנה ----------
+    var mapHtml = '';
+    if (hasLessons) {
+      var totalLessons = station.lessons.length;
+      var doneCountSidebar = station.lessons.filter(function (_, i) {
+        return window.OrianeLessons && window.OrianeLessons.isWatched(station.id, i);
+      }).length;
+      var percent = totalLessons ? Math.round(doneCountSidebar / totalLessons * 100) : 0;
+
+      var itemsHtml = station.lessons.map(function (l, i) {
+        var isDone = window.OrianeLessons && window.OrianeLessons.isWatched(station.id, i);
+        var isCurrent = i === lessonIdx;
+        var stateCls = isDone ? ' done' : (isCurrent ? ' current' : '');
+        var dotInner = isDone ? '<span data-ic="check"></span>' : (isCurrent ? '<span data-ic="play"></span>' : (i + 1));
+        return '<div class="sm-item' + stateCls + '" data-i="' + i + '" data-yt="' + esc(l.youtubeId) + '">' +
+                 '<div class="sm-dot" data-dot-i="' + i + '">' + dotInner + '</div>' +
+                 '<div class="sm-body">' +
+                   '<span class="sm-name">' + lessonLabel(i) + '</span>' +
+                   (SHOW_DURATIONS ? '<span class="sm-min">' + esc(l.min) + ' דק׳</span>' : '') +
+                   (i === 0 ? '<span class="sm-star"><span data-ic="star"></span> שיעור ראשי</span>' : '') +
+                 '</div>' +
+               '</div>';
+      }).join('');
+
+      mapHtml =
+        '<aside class="station-map">' +
+          '<div class="sm-head"><h3>מפת הפרק</h3><span class="sm-count">' + doneCountSidebar + ' מתוך ' + totalLessons + ' הושלמו</span></div>' +
+          '<div class="sm-progress"><span id="smProgressFill" style="width:' + percent + '%"></span></div>' +
+          '<div class="sm-list" id="smList">' + itemsHtml + '</div>' +
+          '<div class="sm-nav" id="smNav"></div>' +
+        '</aside>';
+    }
+
+    // ניווט קודם/הבא · ברמת התחנה (מדרגה שלמה), נשאר בתחתית הדף
     var prevId = station.id - 1;
     var nextId = station.id + 1;
     var prevHtml = prevId >= 1
@@ -387,21 +455,51 @@
         '<span class="ctitle">' + esc(station.chapterTitle) + '</span>' +
       '</div>' +
       '<h1 class="st-title">תחנה ' + station.id + ' · ' + esc(station.name) + '</h1>' +
-      durHtml +
-      videoHtml +
-      lessonsHtml +
       descHtml +
-      gainsHtml +
-      '<div class="workbook">' + wbHtml + '</div>' +
-      // חוברת העבודה האינטראקטיבית · js/workbook-form.js מתלבש על זה.
-      // מסתיר את עצמו לבד כשאוריאן עוד לא הגדירה שאלות לתחנה.
-      '<div id="wbForm" data-station="' + station.id + '"></div>' +
+      '<div class="station-layout' + (hasLessons ? '' : ' no-map') + '">' +
+        '<div class="station-main">' +
+          durHtml +
+          videoWrapHtml +
+          lessonMetaHtml +
+          gainsHtml +
+          (!hasLessons ? '<div class="workbook">' + wbHtml + '</div>' : '') +
+          // חוברת העבודה האינטראקטיבית · js/workbook-form.js מתלבש על זה.
+          // מסתיר את עצמו לבד כשאוריאן עוד לא הגדירה שאלות לתחנה.
+          '<div id="wbForm" data-station="' + station.id + '"></div>' +
+        '</div>' +
+        mapHtml +
+      '</div>' +
       commentsHtml +
       '<div class="actions">' +
         '<button class="btn-primary" id="finishBtn">סיימתי את התחנה ✓ · לתחנה הבאה</button>' +
         '<a class="btn-secondary" href="index.html">→ חזרה למפה</a>' +
       '</div>' +
       '<div class="stepnav">' + prevHtml + nextHtml + '</div>';
+
+    // ---------- ניווט "לשיעור הבא/הקודם" במפת הפרק (חוצה גם תחנות) ----------
+    if (hasLessons) {
+      function lessonPageUrl(stationId, li) { return 'station.html?id=' + stationId + '&l=' + (li + 1); }
+      var prevStation = stations.find(function (s) { return s.id === prevId; });
+      var prevStationLastLesson = (prevStation && prevStation.lessons && prevStation.lessons.length) ? prevStation.lessons.length - 1 : null;
+
+      var nextUrl = (lessonIdx + 1 < station.lessons.length)
+        ? lessonPageUrl(station.id, lessonIdx + 1)
+        : ((nextId <= total && (!PROGRESS_LOCK_ENABLED || nextId <= done + 1)) ? 'station.html?id=' + nextId : null);
+      var prevUrl = (lessonIdx - 1 >= 0)
+        ? lessonPageUrl(station.id, lessonIdx - 1)
+        : (prevId >= 1 ? ('station.html?id=' + prevId + (prevStationLastLesson != null ? '&l=' + (prevStationLastLesson + 1) : '')) : null);
+
+      var smNav = document.getElementById('smNav');
+      if (smNav) {
+        smNav.innerHTML =
+          (nextUrl
+            ? '<a class="sm-next" href="' + nextUrl + '">לשיעור הבא <span data-ic="play"></span></a>'
+            : '<span class="sm-next off">לשיעור הבא</span>') +
+          (prevUrl
+            ? '<a class="sm-prev" href="' + prevUrl + '">← לשיעור הקודם</a>'
+            : '<span class="sm-prev off">← לשיעור הקודם</span>');
+      }
+    }
 
     // ---------- מעקב צפייה אמיתית · וי ירוק אחרי 80% מהסרטון ----------
     // בקשת אוריאן 16.09: "האימוג'י הזה ייצבע ברגע שהיוזר צפה ב-80%
@@ -412,14 +510,42 @@
     var ytPollTimer = null;
     var currentLessonIdx = lessonIdx;
 
+    // מעדכן את מפת הפרק (dot ירוק + progress bar + מונה) בלי רענון דף,
+    // גם כשהסימון מגיע מהצפייה האוטומטית וגם מלחיצה ידנית על הכפתור.
+    function refreshMapProgress() {
+      if (!hasLessons) return;
+      var doneNow = station.lessons.filter(function (_, i) {
+        return window.OrianeLessons && window.OrianeLessons.isWatched(station.id, i);
+      }).length;
+      var totalLessons = station.lessons.length;
+      var pct = totalLessons ? Math.round(doneNow / totalLessons * 100) : 0;
+      var countEl = document.querySelector('.sm-count');
+      if (countEl) countEl.textContent = doneNow + ' מתוך ' + totalLessons + ' הושלמו';
+      var fillEl = document.getElementById('smProgressFill');
+      if (fillEl) fillEl.style.width = pct + '%';
+    }
+
     function markLessonWatched(idx) {
       if (idx == null || !window.OrianeLessons) return;
       var already = window.OrianeLessons.isWatched(station.id, idx);
       window.OrianeLessons.markWatched(station.id, idx);
-      if (!already) {
-        var badge = document.querySelector('.done-badge[data-done-i="' + idx + '"]');
-        if (badge) badge.classList.add('on');
+      if (already) return;
+      var item = document.querySelector('.sm-item[data-i="' + idx + '"]');
+      if (item) {
+        item.classList.add('done');
+        item.classList.remove('current');
+        var dot = item.querySelector('.sm-dot');
+        if (dot) dot.innerHTML = window.icHTML ? window.icHTML('check') : '✓';
       }
+      if (idx === currentLessonIdx) {
+        var markBtn = document.getElementById('markDoneBtn');
+        if (markBtn) {
+          markBtn.classList.add('on');
+          var txt = document.getElementById('markDoneTxt');
+          if (txt) txt.textContent = 'סומן כהושלם';
+        }
+      }
+      refreshMapProgress();
     }
 
     function startYtWatchPolling() {
@@ -461,12 +587,21 @@
       }
     }
 
-    // ---------- כניסה לשיעור ספציפי מהקרוסלה ----------
-    var cards = document.querySelectorAll('.lcard');
-    Array.prototype.forEach.call(cards, function (el) {
+    // ---------- כפתור "סימון כהושלם" · סימון ידני מיידי, לצד המעקב האוטומטי ----------
+    var markDoneBtn = document.getElementById('markDoneBtn');
+    if (markDoneBtn) {
+      markDoneBtn.addEventListener('click', function () {
+        markLessonWatched(currentLessonIdx);
+      });
+    }
+
+    // ---------- כניסה לשיעור ספציפי ממפת הפרק ----------
+    var smItems = document.querySelectorAll('.sm-item');
+    Array.prototype.forEach.call(smItems, function (el) {
       el.addEventListener('click', function () {
         var i = parseInt(el.getAttribute('data-i'), 10);
         var yt = el.getAttribute('data-yt');
+        var lesson = station.lessons[i];
         currentLessonIdx = i;
 
         // מעדיף להחליף וידאו דרך ה-player (jsapi) כדי שהמעקב אחרי 80%
@@ -478,12 +613,34 @@
           if (frame) frame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(yt) + '?autoplay=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
         }
 
-        Array.prototype.forEach.call(cards, function (o) {
-          o.classList.remove('on');
-          var st = o.querySelector('.st'); if (st) st.textContent = 'לחצו לצפייה';
+        // מצב "current" עובר לפריט הנוכחי בלבד (מי שכבר "done" נשאר done)
+        Array.prototype.forEach.call(smItems, function (o) {
+          if (!o.classList.contains('done')) {
+            o.classList.remove('current');
+            var d = o.querySelector('.sm-dot');
+            if (d) d.textContent = parseInt(o.getAttribute('data-i'), 10) + 1;
+          }
         });
-        el.classList.add('on');
-        var st = el.querySelector('.st'); if (st) st.textContent = 'מנוגן עכשיו';
+        if (!el.classList.contains('done')) {
+          el.classList.add('current');
+          var dot = el.querySelector('.sm-dot');
+          if (dot) dot.innerHTML = window.icHTML ? window.icHTML('play') : '▶';
+        }
+
+        // תג "שיעור ראשי" מעל הנגן · מוצג רק כששיעור 1 מתנגן
+        var badge = document.getElementById('videoBadge');
+        if (badge) badge.classList.toggle('on', i === 0);
+
+        // שורת פרטי השיעור מתעדכנת לשיעור החדש
+        var lmTitle = document.getElementById('lmTitle');
+        if (lmTitle) lmTitle.textContent = station.id + '.' + (i + 1) + ' · ' + (lesson.n || '').replace(/^\d+\s*[·.]\s*/, '');
+        var markBtn = document.getElementById('markDoneBtn');
+        if (markBtn) {
+          var isDoneNow = window.OrianeLessons && window.OrianeLessons.isWatched(station.id, i);
+          markBtn.classList.toggle('on', !!isDoneNow);
+          var txt = document.getElementById('markDoneTxt');
+          if (txt) txt.textContent = isDoneNow ? 'סומן כהושלם' : 'סימון כהושלם';
+        }
 
         // הכתובת משקפת את השיעור, כך שאפשר לשלוח קישור ישיר אליו
         try {
