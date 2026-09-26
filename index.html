@@ -332,7 +332,9 @@
   /* ברירת המחדל היא 0 ולא 3.
      קודם היא סימנה שלוש תחנות כ"הושלם" למי שלא צפתה בכלום,
      ושניים מהם בכלל ריקים מווידאו. */
-  let done = +(localStorage.getItem(KEY) || 0);
+  /* נקרא דרך OrianeLessons ולא ישירות מ-localStorage, כי מ-26.09
+     ההתקדמות מסונכרנת מול השרת והמודול הוא המקור היחיד. */
+  let done = window.OrianeLessons ? window.OrianeLessons.stationDone() : +(localStorage.getItem(KEY) || 0);
   done = Math.max(0, Math.min(TOTAL, done));
 
   /* האם בתחנה יש בכלל חומר · לפי מה שקיים באמת ב-data/content.js,
@@ -624,6 +626,15 @@
   }
 
   render();
+
+  /* ההתקדמות מהשרת מגיעה אחרי הציור הראשון, כי היא תלויה באימות.
+     בלי הציור החוזר הזה תלמידה שנכנסה ממכשיר חדש הייתה רואה אפס
+     ואז המספרים היו קופצים, או גרוע מזה, נשארים אפס עד רענון. */
+  document.addEventListener('oriane:progress-synced', function (e) {
+    var d = (e.detail && e.detail.stationDone) || 0;
+    done = Math.max(0, Math.min(TOTAL, d));
+    render();
+  });
 
   /* ---------- מודאל הפתיח ----------
      הצופה נשאר על המפה. הכפתור התחתון מוביל לתחנה 1, בדיוק כפי

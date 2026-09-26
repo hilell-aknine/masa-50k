@@ -265,7 +265,11 @@
     var total = stations.length;
     var station = stations.find(function(s){ return s.id == id; });
 
-    var done = parseInt(localStorage.getItem(PROGRESS_KEY), 10);
+    // נקרא דרך OrianeLessons, שהוא המקור היחיד מאז שההתקדמות
+    // עברה לשרת (26.09). נפילה חזרה ל-localStorage אם המודול חסר.
+    var done = window.OrianeLessons
+      ? window.OrianeLessons.stationDone()
+      : parseInt(localStorage.getItem(PROGRESS_KEY), 10);
     // ברירת מחדל 0 ולא 3, אחרת שלוש תחנות נחשבות מושלמות בלי שנצפו.
     if (isNaN(done)) done = 0;
 
@@ -664,7 +668,11 @@
 
     // ---------- סיום תחנה ----------
     document.getElementById('finishBtn').addEventListener('click', function(){
-      localStorage.setItem(PROGRESS_KEY, Math.max(done, station.id));
+      /* המודול כותב מקומית מיידית ודוחף לשרת ברקע. הניווט מיד
+         אחריו בטוח: הכתיבה המקומית כבר קרתה, והדחיפה שלא הספיקה
+         תעלה במיזוג בטעינה הבאה. */
+      if (window.OrianeLessons) window.OrianeLessons.markStationDone(station.id);
+      else localStorage.setItem(PROGRESS_KEY, Math.max(done, station.id));
       location.href = 'index.html';
     });
 

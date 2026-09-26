@@ -179,14 +179,17 @@ document.addEventListener('oriane:ready', function () {
       A.db().collection(A.COL.answers).doc(u.uid).collection('stations').get().catch(fail),
       A.db().collection(A.COL.chats).doc(u.uid).collection('messages')
         .orderBy('created_at', 'asc').limit(300).get().catch(fail),
-      A.col('questions').where('uid', '==', u.uid).get().catch(fail)
+      A.col('questions').where('uid', '==', u.uid).get().catch(fail),
+      /* התקדמות · קיימת מ-26.09, כשעברה מהמכשיר לשרת.
+         למשתמשת שלא נכנסה מאז תחזור ריקה, וזה נתון בפני עצמו. */
+      A.db().collection('progress').doc(u.uid).collection('stations').get().catch(fail)
     ]).then(function (r) {
-      render(u, r[0], r[1], r[2], r[3]);
+      render(u, r[0], r[1], r[2], r[3], r[4]);
     });
   }
   function fail(e) { console.error(e); return null; }
 
-  function render(u, wbSnap, ansSnap, chatSnap, qSnap) {
+  function render(u, wbSnap, ansSnap, chatSnap, qSnap, progSnap) {
     var wb = {};
     if (wbSnap) wbSnap.docs.forEach(function (d) { wb[d.id] = d.data(); });
 
@@ -195,6 +198,23 @@ document.addEventListener('oriane:ready', function () {
 
     var chats = chatSnap ? chatSnap.docs.map(function (d) { return d.data(); }) : [];
     var quest = qSnap ? qSnap.docs.map(function (d) { return d.data(); }) : [];
+
+    /* ---------- התקדמות אמיתית ----------
+       ⚠️ ההתקדמות נשמרת בשרת רק מ-26.09.2026. תיק ריק כאן אצל
+       משתמשת ותיקה אינו "לא צפתה בכלום", אלא "לא נכנסה מאז
+       שהמעקב עלה". ההבחנה הזאת נכתבת על המסך בכוונה, כדי
+       שאוריאן לא תסיק מסקנה הפוכה על תלמידה. */
+    var prog = progSnap ? progSnap.docs.map(function (d) { return d.data() || {}; }) : [];
+    var watchedTotal = prog.reduce(function (n, p) {
+      return n + (Array.isArray(p.lessons) ? p.lessons.length : 0);
+    }, 0);
+    var stationsTouched = prog.filter(function (p) {
+      return (Array.isArray(p.lessons) && p.lessons.length) || p.done;
+    }).length;
+    var lastProgress = prog.reduce(function (t, p) {
+      var ms = (p.updated_at && p.updated_at.toMillis) ? p.updated_at.toMillis() : 0;
+      return ms > t ? ms : t;
+    }, 0);
 
     /* כמה שדות היא באמת מילאה, מתוך כמה שנשאלה */
     var asked = 0, filled = 0;
@@ -226,6 +246,7 @@ document.addEventListener('oriane:ready', function () {
         '<div class="k"><b>' + chats.filter(function (c) { return c.role === 'user'; }).length +
           '</b><span>שאלות ליועצת</span></div>' +
         '<div class="k"><b>' + quest.length + '</b><span>שאלות אלייך</span></div>' +
+        '<div class="k"><b>' + watchedTotal + '</b><span>שיעורים שצפתה</span></div>' +
         '<div class="k"><b>' + (u.last ? A.when(u.last).split(' ')[0] : '—') + '</b><span>נראתה לאחרונה</span></div>' +
       '</div>' +
       '<div class="actions">' +
@@ -269,6 +290,48 @@ document.addEventListener('oriane:ready', function () {
     }
 
     /* ---------- חוברות העבודה ---------- */
+    /* ---------- איפה היא נמצאת במסע ---------- */
+    (function () {
+      var names = {};
+      var all = (window.COURSE && window.COURSE.allStations) || [];
+      all.forEach(function (s) { names[String(s.id)] = s.name; });
+      var lessonCount = {};
+      all.forEach(function (s) {
+        lessonCount[String(s.id)] = Array.isArray(s.lessons) ? s.lessons.length : (s.youtubeId ? 1 : 0);
+      });
+
+      var rows = prog.slice().sort(function (a, b) {
+        return (Number(a.station_id) || 0) - (Number(b.station_id) || 0);
+      }).map(function (p) {
+        var sid = String(p.station_id);
+        var seen = Array.isArray(p.lessons) ? p.lessons.length : 0;
+        var tot = lessonCount[sid] || 0;
+        return '<div class="qa"><div class="q">תחנה ' + A.esc(sid) + ' · ' +
+          A.esc(names[sid] || '(תחנה שכבר לא קיימת במבנה)') + '</div>' +
+          '<div class="a">' + seen + (tot ? ' מתוך ' + tot : '') + ' שיעורים' +
+          (p.done ? ' · סימנה שסיימה' : '') + '</div></div>';
+      });
+
+      html += '<div class="panel"><h2>איפה היא נמצאת במסע</h2>' +
+        (rows.length
+          ? rows.join('') +
+            '<div class="qa"><div class="q">סך הכל</div><div class="a">' +
+              watchedTotal + ' שיעורים ב-' + stationsTouched + ' תחנות' +
+              /* A.when מצפה ל-toDate, לא ל-toMillis. עטיפה לא נכונה
+                 כאן מחזירה מחרוזת ריקה בשקט במקום תאריך. */
+              (lastProgress ? ' · התקדמות אחרונה ' + A.esc(A.when({ toDate: function () { return new Date(lastProgress); } })) : '') +
+            '</div></div>'
+          : '<div class="empty">אין עדיין נתוני התקדמות.</div>') +
+        /* ⚠️ המשפט הזה חייב להישאר כאן. בלעדיו תיק ריק נקרא
+           כמו "היא לא נגעה בקורס", וזו מסקנה שגויה שעלולה
+           להוביל לפנייה לא נעימה לתלמידה משלמת. */
+        '<div class="note">מעקב ההתקדמות עלה לשרת ב-26.09.2026. ' +
+        'תיק ריק אצל מי שנרשמה לפני כן אינו אומר שהיא לא צפתה, ' +
+        'אלא שהיא לא נכנסה מאז. הצפייה הישנה נשמרה על המכשיר שלה ' +
+        'ותיספר ברגע שתיכנס שוב.</div>' +
+      '</div>';
+    })();
+
     html += '<div class="panel"><h2>מה היא מילאה במסע</h2>';
     var any = false;
     A.stations().forEach(function (s) {

@@ -134,8 +134,22 @@
       return db.collection('advisor_chats').doc(me.uid).collection('messages')
         .orderBy('created_at', 'asc').limit(60).get()
         .then(function (snap) {
-          snap.docs.forEach(function (d) {
-            var x = d.data();
+          /* שאלה ותשובה נכתבות ב-batch אחד ולכן נושאות את אותה
+             חותמת זמן. מיון לפי created_at בלבד משאיר את הסדר
+             ביניהן לא מוגדר, ולפעמים התשובה הוצגה מעל השאלה.
+             seq שובר את השוויון. רשומות ישנות בלי seq נופלות
+             חזרה לפי תפקיד. המיון כאן ולא בשאילתה, כדי לא
+             לדרוש אינדקס מורכב בפיירסטור. */
+          var rows = snap.docs.map(function (d) { return d.data(); });
+          rows.sort(function (a, b) {
+            var ta = (a.created_at && a.created_at.toMillis) ? a.created_at.toMillis() : 0;
+            var tb = (b.created_at && b.created_at.toMillis) ? b.created_at.toMillis() : 0;
+            if (ta !== tb) return ta - tb;
+            var sa = (a.seq != null) ? a.seq : (a.role === 'user' ? 0 : 1);
+            var sb = (b.seq != null) ? b.seq : (b.role === 'user' ? 0 : 1);
+            return sa - sb;
+          });
+          rows.forEach(function (x) {
             paint(x.body, x.role === 'user' ? 'me' : 'bot');
           });
           return snap.size;

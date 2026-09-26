@@ -38,6 +38,16 @@ const MODEL = 'gpt-4o-mini';
 const MAX_DOC_CHARS = 120000;   // תקרת חומר. מעבר לה חותכים מפורשות ומדווחים, לא בשקט.
 const MAX_ANSWER_TOKENS = 700;
 
+/* ---- זיכרון שיחה (בקשת אוריאן 26.09) ----
+   עד היום נשלחו למודל רק ההנחיה והשאלה הנוכחית. השיחה נשמרה
+   ב-advisor_chats והוצגה על המסך, ולכן המשתמשת ראתה שיחה רציפה
+   בזמן שהיועצת ענתה בכל פעם כזרה. "אמרתי לך קודם" לא עבד.
+
+   התקרות כאן הן תקרות עלות, לא קישוט: כל תור נוסף נשלח מחדש
+   בכל שאלה, ולכן היסטוריה בלי גבול מייקרת כל שאלה עם הזמן. */
+const MAX_HISTORY_MSGS = 12;     // שישה תורות. מספיק להקשר, לא מספיק כדי לנפח.
+const MAX_HISTORY_CHARS = 6000;  // נחתך מהישן לחדש, כך שהאחרון תמיד נשמר.
+
 /* ============================================================
    מחירון · דולר למיליון טוקנים
    ------------------------------------------------------------
@@ -227,6 +237,49 @@ export const askAdvisor = onCall(
       personalContext = answersToText(workbooks, answers, stations).slice(0, 8000);
     }
 
+    /* ---- 3.5 זיכרון השיחה ----
+       preview לא מקבל היסטוריה בכוונה: מבחן של אוריאן צריך להיות
+       נקי וחוזר על עצמו, ואסור לו לדלות מהתיק של תלמידה כלשהי.
+
+       ⚠️ שתי הרשומות של תור אחד נכתבות ב-batch ולכן נושאות את
+       *אותה* חותמת זמן בדיוק. מיון לפי created_at בלבד משאיר את
+       הסדר בין שאלה לתשובה לא מוגדר, ותשובה שמקדימה את שאלתה
+       מלמדת את המודל דפוס הפוך. seq הוא השובר-שוויון.
+       המיון נעשה כאן ולא בשאילתה, כדי לא לדרוש אינדקס מורכב. */
+    let history = [];
+    if (!preview) {
+      const histSnap = await db.collection('advisor_chats').doc(uid)
+        .collection('messages')
+        .orderBy('created_at', 'desc')
+        .limit(MAX_HISTORY_MSGS)
+        .get();
+
+      const rows = histSnap.docs.map(d => d.data()).reverse();
+      rows.sort((a, b) => {
+        const ta = a.created_at?.toMillis?.() ?? 0;
+        const tb = b.created_at?.toMillis?.() ?? 0;
+        if (ta !== tb) return ta - tb;
+        /* רשומות ישנות נכתבו בלי seq. נפילה חזרה לפי תפקיד
+           שומרת על "שאלה ואז תשובה" גם בהן. */
+        const sa = a.seq ?? (a.role === 'user' ? 0 : 1);
+        const sb = b.seq ?? (b.role === 'user' ? 0 : 1);
+        return sa - sb;
+      });
+
+      /* חיתוך מהישן לחדש. הפוך היה מוחק דווקא את מה שנאמר
+         לפני רגע, שזה ההקשר היחיד שבאמת חסר למודל. */
+      let budgetChars = MAX_HISTORY_CHARS;
+      const kept = [];
+      for (let i = rows.length - 1; i >= 0; i--) {
+        const body = String(rows[i].body || '');
+        if (!body) continue;
+        if (budgetChars - body.length < 0) break;
+        budgetChars -= body.length;
+        kept.unshift({ role: rows[i].role === 'user' ? 'user' : 'assistant', content: body });
+      }
+      history = kept;
+    }
+
     /* ---- 4. הרכבת הפרומפט ---- */
     let knowledge = '';
     let used = [];
@@ -280,6 +333,14 @@ export const askAdvisor = onCall(
         personalContext);
     }
 
+    if (history.length) {
+      parts.push('', '## רצף השיחה',
+        'ההודעות הקודמות בשיחה הזאת מופיעות לפנייך כהודעות רגילות.',
+        'המשיכי מהן. אל תציגי את עצמך שוב, אל תחזרי על מה שכבר אמרת,',
+        'וכשהיא כותבת "זה" או "מה שאמרת קודם" — זה מה שהיא מתכוונת אליו.',
+        'החומר של אוריאן עדיין הגבול היחיד. זיכרון של שיחה אינו היתר להמציא.');
+    }
+
     const systemPrompt = parts.join('\n');
 
     /* ---- 5. קריאה למודל ---- */
@@ -298,6 +359,7 @@ export const askAdvisor = onCall(
           temperature: 0.4,
           messages: [
             { role: 'system', content: systemPrompt },
+            ...history,
             { role: 'user', content: question }
           ]
         })
@@ -338,10 +400,16 @@ export const askAdvisor = onCall(
       /* batch כדי ששאלה ותשובה ינחתו יחד. אחרת כשל בין השתיים
          משאיר בתיק שאלה בלי תשובה ונראה כאילו היועצת התעלמה. */
       const batch = db.batch();
-      batch.set(col.doc(), { role: 'user', body: question, station_id: stationId, created_at: now });
+      /* seq שובר את השוויון בין שתי הרשומות, שנושאות את אותה
+         חותמת זמן מה-batch. בלעדיו הסדר בין שאלה לתשובה אינו
+         מוגדר, גם בטעינת ההיסטוריה למודל וגם בתצוגה על המסך. */
+      batch.set(col.doc(), {
+        role: 'user', body: question, station_id: stationId,
+        seq: 0, created_at: now
+      });
       batch.set(col.doc(), {
         role: 'assistant', body: answer, station_id: stationId,
-        sources: used, model: MODEL, created_at: now
+        sources: used, model: MODEL, seq: 1, created_at: now
       });
       await batch.commit();
     }
