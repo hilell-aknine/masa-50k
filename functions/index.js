@@ -22,6 +22,20 @@
    ------
    firebase functions:secrets:set ORIANE_OPENAI_API_KEY
    firebase deploy --only functions
+
+   ── מעבר לג'מיני (החלטת אוריאן והלל 25.09) ──────────────────
+   המפתח של ג'מיני יושב על החשבון של אוריאן, כמו כל מפתח AI בפורטל.
+   כשהוא מגיע, שני צעדים ופריסה:
+     1. firebase functions:secrets:set ORIANE_GEMINI_API_KEY
+     2. ליצור את functions/.env עם השורה:  ADVISOR_GEMINI=on
+     3. firebase deploy --only functions
+   בלי שני הצעדים האלה הכל נשאר על OpenAI בדיוק כמו היום.
+
+   למה דגל ולא פשוט "אם יש מפתח": סוד שמוצהר בפונקציה חייב להיות
+   קיים ברגע הפריסה, אחרת הפריסה נכשלת. הצהרה מראש על סוד שעוד
+   לא קיים הייתה שוברת את הפריסה הבאה של הלל. לכן הסוד של ג'מיני
+   מוצהר רק כשהדגל דלוק, והדגל נקרא גם בזמן הפריסה וגם בזמן ריצה.
+   החזרה ל-OpenAI: למחוק את השורה ולפרוס.
    ============================================================ */
 
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
@@ -30,11 +44,44 @@ import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 const OPENAI_KEY = defineSecret('ORIANE_OPENAI_API_KEY');
+const GEMINI_KEY = defineSecret('ORIANE_GEMINI_API_KEY');
+
+/* הדגל נקרא מ-functions/.env, שפיירבייס טוען גם בגילוי הפונקציות
+   בזמן פריסה וגם בזמן ריצה. */
+const GEMINI_ON = String(process.env.ADVISOR_GEMINI || '').toLowerCase() === 'on';
+const GEMINI_MODEL = process.env.ADVISOR_GEMINI_MODEL || 'gemini-2.5-flash';
+/* ב-2.5 Flash "חשיבה" אוכלת מתוך max_tokens ועלולה להחזיר תשובה
+   ריקה. 'none' מכבה אותה. ניתן לשינוי בלי קוד אם הדגם יתחלף. */
+const GEMINI_REASONING = process.env.ADVISOR_GEMINI_REASONING || 'none';
 
 initializeApp();
 const db = getFirestore();
 
-const MODEL = 'gpt-4o-mini';
+const OPENAI_MODEL = 'gpt-4o-mini';
+
+/* בחירת מנוע. שני הספקים מדברים באותו פורמט (לג'מיני יש נקודת
+   קצה תואמת OpenAI), ולכן כל שאר הפונקציה — פרומפט, היסטוריה,
+   ספירת טוקנים ורישום עלות — זהה לשניהם. */
+function pickEngine() {
+  if (GEMINI_ON) {
+    const key = (() => { try { return GEMINI_KEY.value(); } catch (e) { return ''; } })();
+    if (key) {
+      return {
+        provider: 'gemini', model: GEMINI_MODEL, key,
+        url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+        extra: GEMINI_REASONING ? { reasoning_effort: GEMINI_REASONING } : {}
+      };
+    }
+    /* דגל דלוק בלי מפתח = תקלת הגדרה. לא נופלים בשקט ל-OpenAI,
+       כי אז אוריאן משלמת לספק שהיא חשבה שכבר עזבה. */
+    console.error('[advisor] ADVISOR_GEMINI=on אבל ORIANE_GEMINI_API_KEY ריק');
+    return null;
+  }
+  return {
+    provider: 'openai', model: OPENAI_MODEL, key: OPENAI_KEY.value(),
+    url: 'https://api.openai.com/v1/chat/completions', extra: {}
+  };
+}
 const MAX_DOC_CHARS = 120000;   // תקרת חומר. מעבר לה חותכים מפורשות ומדווחים, לא בשקט.
 const MAX_ANSWER_TOKENS = 700;
 
@@ -57,7 +104,10 @@ const MAX_HISTORY_CHARS = 6000;  // נחתך מהישן לחדש, כך שהאח�
    ============================================================ */
 const PRICING_FALLBACK = {
   'gpt-4o-mini': { in: 0.15, out: 0.60 },
-  'gpt-4o':      { in: 2.50, out: 10.00 }
+  'gpt-4o':      { in: 2.50, out: 10.00 },
+  /* מחירון ג'מיני (ללא חשיבה). הערכה בלבד, כמו השאר. */
+  'gemini-2.5-flash':      { in: 0.30, out: 2.50 },
+  'gemini-2.5-flash-lite': { in: 0.10, out: 0.40 }
 };
 
 const BUDGET_FALLBACK = { monthly_limit_usd: 20, hard_stop: true };
@@ -136,7 +186,7 @@ function answersToText(workbooks, answers, stations) {
 /* ---------- הפונקציה ---------- */
 
 export const askAdvisor = onCall(
-  { secrets: [OPENAI_KEY], region: 'us-central1', cors: true, timeoutSeconds: 60, memory: '512MiB' },
+  { secrets: GEMINI_ON ? [OPENAI_KEY, GEMINI_KEY] : [OPENAI_KEY], region: 'us-central1', cors: true, timeoutSeconds: 60, memory: '512MiB' },
   async (req) => {
     /* ---- 1. אימות · נכשל-סגור ---- */
     if (!req.auth) throw new HttpsError('unauthenticated', 'צריך להתחבר');
@@ -344,19 +394,23 @@ export const askAdvisor = onCall(
     const systemPrompt = parts.join('\n');
 
     /* ---- 5. קריאה למודל ---- */
+    const engine = pickEngine();
+    if (!engine) throw new HttpsError('failed-precondition', 'מנוע היועצת לא מוגדר כרגע');
+    const MODEL = engine.model;
     let answer;
     let usage = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
     try {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      const res = await fetch(engine.url, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${OPENAI_KEY.value()}`,
+          'Authorization': `Bearer ${engine.key}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           model: MODEL,
           max_tokens: MAX_ANSWER_TOKENS,
           temperature: 0.4,
+          ...engine.extra,
           messages: [
             { role: 'system', content: systemPrompt },
             ...history,
@@ -367,7 +421,7 @@ export const askAdvisor = onCall(
 
       if (!res.ok) {
         const body = await res.text();
-        console.error('[advisor] openai', res.status, body.slice(0, 500));
+        console.error('[advisor]', engine.provider, res.status, body.slice(0, 500));
         /* מחזירים הודעה כללית ללקוח. גוף השגיאה של הספק עלול
            להכיל פרטי חשבון, והוא לא אמור להגיע לדפדפן. */
         throw new HttpsError('internal', 'מנוע היועצת לא זמין כרגע');
@@ -409,8 +463,25 @@ export const askAdvisor = onCall(
       });
       batch.set(col.doc(), {
         role: 'assistant', body: answer, station_id: stationId,
-        sources: used, model: MODEL, seq: 1, created_at: now
+        sources: used, model: MODEL, provider: engine.provider, seq: 1, created_at: now
       });
+      /* סיכום לתלמידה · 28.09 · מזין את מסך "כל התלמידות".
+         בלעדיו המסך היה צריך לפתוח את תת-האוסף של כל תלמידה רק
+         כדי לספור שאלות. כאן זה מונה אחד שנקרא בשאילתה אחת.
+         באותו batch כמו ההודעות, כך שהמונה לא יכול לסטות מהן.
+         last_questions שומר את חמש האחרונות, החדשה ראשונה. */
+      const sumRef = db.collection('advisor_chats').doc(uid);
+      const sumSnap = await sumRef.get();
+      const prevQs = (sumSnap.exists && Array.isArray(sumSnap.data().last_questions))
+        ? sumSnap.data().last_questions : [];
+      batch.set(sumRef, {
+        uid,
+        questions: FieldValue.increment(1),
+        last_at: now,
+        last_station_id: stationId,
+        last_questions: [{ q: question.slice(0, 300), station_id: stationId, at: new Date() }]
+          .concat(prevQs).slice(0, 5)
+      }, { merge: true });
       await batch.commit();
     }
 
@@ -424,7 +495,7 @@ export const askAdvisor = onCall(
       const batch2 = db.batch();
       batch2.set(db.collection('advisor_usage').doc(), {
         uid, email: prof.email || '', name: prof.full_name || '',
-        station_id: stationId, model: MODEL, provider: 'openai',
+        station_id: stationId, model: MODEL, provider: engine.provider,
         prompt_tokens: usage.prompt_tokens,
         completion_tokens: usage.completion_tokens,
         total_tokens: usage.total_tokens,

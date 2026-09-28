@@ -185,7 +185,8 @@ document.addEventListener('oriane:ready', function () {
   var usd = money, usd2 = money;
   var num = function (n) { return (n || 0).toLocaleString('he-IL'); };
 
-  var PRICING_DEFAULT = { 'gpt-4o-mini': { in: 0.15, out: 0.60 }, 'gpt-4o': { in: 2.50, out: 10.00 } };
+  var PRICING_DEFAULT = { 'gpt-4o-mini': { in: 0.15, out: 0.60 }, 'gpt-4o': { in: 2.50, out: 10.00 },
+    'gemini-2.5-flash': { in: 0.30, out: 2.50 }, 'gemini-2.5-flash-lite': { in: 0.10, out: 0.40 } };
   var pricing = null, budget = { monthly_limit_usd: 20, hard_stop: true };
 
   $('mtitle').textContent = 'החודש · ' + ym();

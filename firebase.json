@@ -9,7 +9,7 @@
   ],
   "hosting": {
     "public": ".",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "functions/**", "supabase/**", "sandbox/**", "design/**", "content-source/**", "brand/**", "**/*.md", "**/*.rules", "**/*.env", "project_config.json"],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "functions/**", "supabase/**", "sandbox/**", "tools/**", "design/**", "content-source/**", "brand/**", "**/*.md", "**/*.rules", "**/*.env", "project_config.json"],
     "headers": [
       {
         "source": "**/*.html",

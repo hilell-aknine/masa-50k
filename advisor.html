@@ -395,7 +395,17 @@ document.addEventListener('oriane:ready', function (ev) {
   });
 
   A.col('docs').orderBy('updated_at', 'desc').onSnapshot(function (snap) {
-    var docs = snap.docs;
+    /* 28.09 · התמלולים הם מסמך לכל שיעור (27), והם נכתבים באצווה אחת
+       עם אותה חותמת זמן. מיון לפי זמן בלבד היה מערבב אותם. לכן:
+       כלליים קודם, ואז לפי תחנה ומיקום השיעור, ובתוך אלה העדכני קודם. */
+    var docs = snap.docs.slice().sort(function (a, b) {
+      var x = a.data(), y = b.data();
+      var gx = x.scope === 'station' ? 1 : 0, gy = y.scope === 'station' ? 1 : 0;
+      if (gx !== gy) return gx - gy;
+      var sx = Number(x.station_id) || 0, sy = Number(y.station_id) || 0;
+      if (sx !== sy) return sx - sy;
+      return (Number(x.lesson_pos) || 0) - (Number(y.lesson_pos) || 0);
+    });
     $('n-docs').textContent = docs.length ? '(' + docs.length + ')' : '';
 
     var activeChars = 0;
