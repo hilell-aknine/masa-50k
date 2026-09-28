@@ -91,7 +91,7 @@
 </head>
 <body>
 <div class="wrap">
-  <a class="backlink" href="admin.html">← חזרה לניהול</a>
+  <a class="backlink" href="students.html">← לכל התלמידות</a>
   <h1>תיק המשתמשת</h1>
   <p class="sub">כל מה שמשתמשת אחת מילאה ושאלה, במסך אחד. נועד לשיחת ייעוץ: נכנסים, רואים איפה היא עומדת, מדברים.</p>
 
@@ -117,7 +117,13 @@
 <script src="js/social-links.js"></script>
 <script src="js/advisor-data.js"></script>
 <script>
-document.addEventListener('oriane:ready', function () {
+/* אם השער נפתח לפני שהסקריפט הזה נטען, האירוע כבר עבר. מתחילים מיד. */
+(function (start) {
+  var done = false;
+  function once() { if (!done) { done = true; start(); } }
+  if (window.ORIANE_USER && !document.getElementById('gate-hide')) once();
+  else document.addEventListener('oriane:ready', once);
+})(function () {
   'use strict';
   var A = window.Advisor;
   var $ = function (id) { return document.getElementById(id); };
@@ -134,6 +140,12 @@ document.addEventListener('oriane:ready', function () {
                phone: x.phone || '', links: x.links || null };
     });
     drawUsers('');
+    /* פתיחה ישירה מהמסך "כל התלמידות" · 28.09 */
+    var want = new URLSearchParams(location.search).get('uid');
+    if (want) {
+      var u = users.filter(function (x) { return x.uid === want; })[0];
+      if (u) openFile(u);
+    }
   }).catch(function (e) {
     console.error(e);
     $('ulist').innerHTML = '<div class="empty">טעינת המשתמשות נכשלה.</div>';

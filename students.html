@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>כל התלמידות · המסע ל-50K</title>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  /* ============================================================
+     כל התלמידות · 28.09.2026
+     מסך אחד שמרכז את כל מי שבמסע: פרטים, התקדמות, מה שאלה את
+     היועצת, ומי "חמה" להצעת ליווי אישי. קריאה בלבד, אין כאן
+     שום כתיבה למסד. לחיצה על תלמידה פותחת את התיק המלא שלה.
+     ============================================================ */
+  .wrap{max-width:1080px;margin:0 auto;padding:26px 0 80px}
+  h1{font-size:26px;color:var(--text-strong)}
+  .sub{font-size:14px;color:var(--text-dim);margin-top:5px;line-height:1.6}
+  .backlink{display:inline-block;margin-bottom:14px;font-size:13.5px;color:var(--text-dim)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 14px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:13px 15px}
+  .stat b{display:block;font-size:24px;color:var(--text-strong);line-height:1.2}
+  .stat span{font-size:12.5px;color:var(--text-dim)}
+  .stat.hot b{color:var(--accent)}
+  @media(max-width:620px){ .stats{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+  .rule{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+    border-inline-start:3px solid var(--accent);border-radius:12px;padding:11px 14px;margin-bottom:14px;
+    font-size:13px;line-height:1.65;color:var(--text-dim)}
+  .rule b{color:var(--text-strong)}
+
+  .tools{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:10px;margin-bottom:10px}
+  @media(max-width:620px){ .tools{grid-template-columns:minmax(0,1fr)} }
+  input[type=search],select{width:100%;padding:12px 14px;font-size:15px;font-family:inherit;
+    background:var(--input-bg);color:var(--text);border:1px solid var(--line);border-radius:12px;min-height:46px}
+  input:focus,select:focus{outline:none;border-color:var(--btn-bg)}
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .chip{padding:8px 13px;border-radius:var(--radius-pill);border:1px solid var(--line);background:var(--surface);
+    color:var(--text);font:600 13px/1.2 inherit;font-family:inherit;cursor:pointer;min-height:38px}
+  .chip.on{background:var(--btn-bg);color:var(--btn-text);border-color:var(--btn-bg)}
+  .chip .n{opacity:.7;font-weight:500;margin-inline-start:4px}
+  .chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);margin-inline-start:auto;
+    min-height:38px;cursor:pointer}
+  .count{font-size:13px;color:var(--text-dim);margin-bottom:8px}
+
+  /* ---------- שורת תלמידה ----------
+     שולחן עבודה: חמש עמודות. טלפון: כרטיס מוערם. */
+  .row{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1.15fr) minmax(0,1fr) minmax(0,.8fr);
+    gap:14px;align-items:start;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius-card);padding:15px 16px;margin-bottom:10px;cursor:pointer;
+    transition:border-color .15s}
+  .row:hover{border-color:var(--btn-bg)}
+  .row.is-hot{border-inline-start:3px solid var(--accent)}
+  .row .lbl{display:none;font-size:11.5px;color:var(--text-faint);margin-bottom:3px}
+  .nm{font-size:15.5px;font-weight:700;color:var(--text-strong);text-decoration:none;word-break:break-word}
+  .nm:hover{text-decoration:underline}
+  .pills{display:inline-flex;gap:5px;flex-wrap:wrap;vertical-align:middle;margin-inline-start:6px}
+  .pill{display:inline-block;padding:3px 9px;border-radius:var(--radius-pill);font-size:11px;font-weight:700;line-height:1.5}
+  .pill.hot{background:var(--accent);color:#fff}
+  .pill.prem{background:transparent;color:var(--text-dim);border:1px solid var(--line)}
+  .pill.off{background:var(--surface-3);color:var(--text-dim)}
+  .contact{margin-top:6px;font-size:12.5px;color:var(--text-dim);line-height:1.7;word-break:break-all}
+  .contact a{color:var(--text-dim)}
+  .ltr{direction:ltr;unicode-bidi:isolate}
+
+  .biz{font-size:13px;color:var(--text);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;
+    -webkit-box-orient:vertical;overflow:hidden}
+  .biz.none{color:var(--text-faint)}
+  .nets{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+  .net{font-size:11.5px;padding:3px 9px;border-radius:var(--radius-pill);background:var(--surface-2);
+    border:1px solid var(--line);color:var(--text);text-decoration:none}
+  .net:hover{border-color:var(--btn-bg)}
+
+  .st{font-size:13px;color:var(--text-strong);font-weight:600;line-height:1.45}
+  .st.none{color:var(--text-faint);font-weight:500}
+  .bar{height:7px;border-radius:99px;background:var(--surface-3);overflow:hidden;margin:7px 0 5px}
+  .bar i{display:block;height:100%;background:var(--btn-bg);border-radius:99px}
+  .row.is-hot .bar i{background:var(--accent)}
+  .pnum{font-size:12px;color:var(--text-dim)}
+
+  .dates{font-size:12.5px;color:var(--text-dim);line-height:1.8}
+  .dates b{color:var(--text);font-weight:600}
+
+  .why{grid-column:1/-1;font-size:12.5px;color:var(--accent);margin-top:-4px}
+  .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:11px}
+  .btn{padding:8px 13px;font:600 13px/1.2 inherit;font-family:inherit;border-radius:var(--radius-pill);
+    border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;min-height:38px;
+    text-decoration:none;display:inline-flex;align-items:center}
+  .btn.primary{background:var(--btn-bg);color:var(--btn-text);border-color:var(--btn-bg)}
+  .btn:hover{border-color:var(--btn-bg)}
+
+  .qs{grid-column:1/-1;display:none;background:var(--surface-2);border-radius:12px;padding:12px 14px}
+  .row.q-open .qs{display:block}
+  .qi{padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.6;color:var(--text)}
+  .qi:last-child{border-bottom:0}
+  .qi .m{display:block;font-size:11.5px;color:var(--text-faint);margin-top:2px}
+  .qempty{font-size:13px;color:var(--text-dim);line-height:1.7}
+
+  .empty{padding:30px 18px;text-align:center;color:var(--text-dim);font-size:14px;line-height:1.8;
+    background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius-card)}
+  .note{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:14px;
+    font-size:12.5px;line-height:1.65;color:var(--text-dim);background:var(--surface)}
+  .credit{margin-top:30px;text-align:center;font-size:12.5px;color:var(--text-faint)}
+
+  @media(max-width:760px){
+    .row{grid-template-columns:minmax(0,1fr);gap:11px;padding:14px}
+    .row .lbl{display:block}
+    .why{margin-top:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="admin.html">← חזרה לניהול</a>
+  <h1>כל התלמידות</h1>
+  <p class="sub">מי במסע, איפה כל אחת נמצאת, מה היא שאלה את היועצת, ולמי כדאי להציע ליווי אישי. לחיצה על תלמידה פותחת את התיק המלא שלה.</p>
+
+  <div class="stats">
+    <div class="stat"><b id="s-total">–</b><span>תלמידות</span></div>
+    <div class="stat"><b id="s-active">–</b><span id="s-active-l">פעילות בשבועיים האחרונים</span></div>
+    <div class="stat hot"><b id="s-hot">–</b><span>חמות להצעת ליווי</span></div>
+    <div class="stat"><b id="s-avg">–</b><span>התקדמות ממוצעת</span></div>
+  </div>
+
+  <div class="rule" id="rule"></div>
+
+  <div class="tools">
+    <input type="search" id="q" placeholder="חיפוש לפי שם, מייל, טלפון או עסק" autocomplete="off">
+    <select id="sort" aria-label="מיון"></select>
+  </div>
+
+  <div class="chips" id="chips">
+    <button class="chip on" data-f="all">הכל<span class="n" id="n-all"></span></button>
+    <button class="chip" data-f="hot">חמות<span class="n" id="n-hot"></span></button>
+    <button class="chip" data-f="quiet">לא נכנסו שבועיים<span class="n" id="n-quiet"></span></button>
+    <button class="chip" data-f="new">טרם התחילו<span class="n" id="n-new"></span></button>
+    <label class="chk"><input type="checkbox" id="admins"> להציג גם מנהלות</label>
+  </div>
+
+  <div class="count" id="count"></div>
+  <div id="list"><div class="empty">טוענת את התלמידות...</div></div>
+
+  <div class="note" id="caveat">
+    מעקב ההתקדמות עלה לשרת ב-26.09.2026. אפס שיעורים אצל מי שנרשמה לפני כן לא אומר שהיא לא צפתה,
+    אלא שהיא לא נכנסה מאז. הצפייה הישנה נשמרה על המכשיר שלה ותיספר ברגע שתיכנס שוב.
+    <br>המסך הזה גלוי למנהלות בלבד, ורק לקריאה.
+  </div>
+
+  <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/nav.js"></script>
+<script src="data/content.js"></script>
+<script src="js/social-links.js"></script>
+<script src="js/advisor-data.js"></script>
+<script src="js/students-data.js"></script>
+<script>
+/* ⚠️ gate.js יורה oriane:ready פעם אחת. אם האימות חזר לפני שהסקריפט
+   הזה נטען (רשת איטית, התחברות שמורה), המאזין מפספס את האירוע והמסך
+   נשאר על "טוענת" לנצח. לכן: אם השער כבר נפתח, מתחילים מיד. */
+(function (start) {
+  var done = false;
+  function once() { if (!done) { done = true; start(); } }
+  if (window.ORIANE_USER && !document.getElementById('gate-hide')) once();
+  else document.addEventListener('oriane:ready', once);
+})(function () {
+  'use strict';
+  var A = window.Advisor, D = window.StudentsData, SL = window.SocialLinks;
+  var $ = function (id) { return document.getElementById(id); };
+  var stations = A.stations();
+  var shape = D.courseShape(stations);
+  var NOW = Date.now();
+
+  var rows = [], filter = 'all', anyChats = false;
+
+  $('rule').innerHTML = '<span aria-hidden="true">●</span><div><b>איך נקבעת "חמה"?</b> ' +
+    A.esc(D.ruleText()) + ' הכלל מסמן למי כדאי להציע ליווי אישי. הוא לא שופט אף אחת.</div>';
+  $('s-active-l').textContent = 'נכנסו ב-' + D.RULE.ACTIVE_DAYS + ' הימים האחרונים';
+
+  D.SORTS.forEach(function (s) {
+    var o = document.createElement('option');
+    o.value = s.v; o.textContent = 'מיון: ' + s.label;
+    $('sort').appendChild(o);
+  });
+
+  function stationName(id) {
+    var s = stations.filter(function (x) { return String(x.id) === String(id); })[0];
+    return s ? s.name : '';
+  }
+
+  /* ---------- טעינה ----------
+     שתי שאילתות לכל המסך (פרופילים + סיכומי שיחות), ועוד שאילתה
+     אחת לכל תלמידה עבור ההתקדמות. אין שאילתה משותפת לכל אוספי
+     ה-stations, כי "stations" הוא גם שם של תת-אוסף ההערות הפרטיות,
+     שגם מנהלת לא רשאית לקרוא. כשל באחת לא מפיל את המסך. */
+  Promise.all([
+    A.col('profiles').get(),
+    A.col('chats').get().catch(function (e) { console.warn('[students] chats', e && e.code); return null; })
+  ]).then(function (r) {
+    var chatSum = {};
+    if (r[1]) r[1].docs.forEach(function (d) { chatSum[d.id] = d.data() || {}; });
+    anyChats = Object.keys(chatSum).length > 0;
+
+    var profs = r[0].docs.map(function (d) { return { uid: d.id, x: d.data() || {} }; });
+    return Promise.all(profs.map(function (p) {
+      return A.db().collection('progress').doc(p.uid).collection('stations').get()
+        .then(function (s) { return s.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }); })
+        .catch(function () { return null; })
+        .then(function (prog) { return build(p.uid, p.x, prog, chatSum[p.uid]); });
+    }));
+  }).then(function (built) {
+    rows = built;
+    draw();
+  }).catch(function (e) {
+    console.error(e);
+    $('list').innerHTML = '<div class="empty">טעינת התלמידות נכשלה.<br>' +
+      (e && e.code === 'permission-denied' ? 'המסך הזה פתוח למנהלות בלבד.' : 'כדאי לרענן את הדף.') + '</div>';
+  });
+
+  function build(uid, x, prog, chat) {
+    var progress = D.progressOf(prog || [], shape);
+    var row = {
+      uid: uid,
+      name: x.full_name || '',
+      email: x.email || '',
+      phone: x.phone || '',
+      links: x.links || {},
+      role: x.role || 'student',
+      access: x.access || '',
+      audience: x.audience === 'premium' ? 'premium' : 'subscriber',
+      joinedMs: D.ms(x.created_at),
+      lastSeenMs: D.ms(x.last_seen_at),
+      progress: progress,
+      progressFailed: prog === null,
+      questions: (chat && chat.questions) || 0,
+      lastQuestions: (chat && Array.isArray(chat.last_questions)) ? chat.last_questions : []
+    };
+    row.hot = D.hotOf(row, NOW);
+    return row;
+  }
+
+  /* ---------- ציור ---------- */
+  function visibleBase() {
+    var withAdmins = $('admins').checked;
+    return rows.filter(function (r) { return withAdmins || r.role !== 'admin'; });
+  }
+
+  function passes(r) {
+    if (filter === 'hot') return r.hot.hot;
+    if (filter === 'quiet') return !r.hot.active;
+    if (filter === 'new') return r.progress.done === 0;
+    return true;
+  }
+
+  function draw() {
+    var base = visibleBase();
+
+    var active = base.filter(function (r) { return r.hot.active; }).length;
+    var hot = base.filter(function (r) { return r.hot.hot; }).length;
+    var avg = base.length ? Math.round(base.reduce(function (n, r) { return n + r.progress.pct; }, 0) / base.length) : 0;
+    $('s-total').textContent = base.length;
+    $('s-active').textContent = active;
+    $('s-hot').textContent = hot;
+    $('s-avg').textContent = avg + '%';
+    $('n-all').textContent = base.length;
+    $('n-hot').textContent = hot;
+    $('n-quiet').textContent = base.filter(function (r) { return !r.hot.active; }).length;
+    $('n-new').textContent = base.filter(function (r) { return r.progress.done === 0; }).length;
+
+    var term = $('q').value;
+    var list = D.sort(base.filter(passes).filter(function (r) { return D.matches(r, term); }), $('sort').value);
+
+    $('count').textContent = list.length === base.length
+      ? list.length + ' תלמידות'
+      : 'מוצגות ' + list.length + ' מתוך ' + base.length;
+
+    if (!base.length) {
+      $('list').innerHTML = '<div class="empty">עוד אין תלמידות במסע.<br>ברגע שמישהי תירשם, היא תופיע כאן.</div>';
+      return;
+    }
+    if (!list.length) {
+      $('list').innerHTML = '<div class="empty">אף תלמידה לא מתאימה לחיפוש או לסינון.</div>';
+      return;
+    }
+    $('list').innerHTML = list.map(rowHtml).join('');
+  }
+
+  function rowHtml(r) {
+    var p = r.progress;
+    var fileHref = 'student-file.html?uid=' + encodeURIComponent(r.uid);
+
+    var pills = '';
+    if (r.hot.hot) pills += '<span class="pill hot">חמה</span>';
+    if (r.audience === 'premium') pills += '<span class="pill prem">פרימיום</span>';
+    if (r.role === 'admin') pills += '<span class="pill prem">מנהלת</span>';
+    if (r.access !== 'active') pills += '<span class="pill off">' + (r.access === 'pending' ? 'ממתינה לאישור' : 'גישה סגורה') + '</span>';
+
+    var tel = String(r.phone || '').replace(/[^\d+]/g, '');
+    var contact =
+      (r.email ? '<div class="ltr">' + A.esc(r.email) + '</div>' : '') +
+      (tel ? '<div><a class="ltr" href="tel:' + A.esc(tel) + '">' + A.esc(r.phone) + '</a></div>' : '');
+
+    /* 🔴 כל קישור לרשת עובר safeHref. תלמידה ממלאת את השדות האלה
+       בעצמה, והמסך נפתח בסשן של מנהלת. */
+    var nets = SL ? SL.PLATFORMS.map(function (pl) {
+      var safe = SL.safeHref(r.links[pl.key]);
+      return safe ? '<a class="net" href="' + A.esc(safe) + '" target="_blank" rel="noopener noreferrer nofollow">' +
+        A.esc(pl.label) + '</a>' : '';
+    }).join('') : '';
+    var biz = r.links.business
+      ? '<div class="biz">' + A.esc(r.links.business) + '</div>'
+      : '<div class="biz none">לא סיפרה עדיין על העסק</div>';
+
+    var st;
+    if (r.progressFailed) st = '<div class="st none">ההתקדמות לא נטענה</div>';
+    else if (p.finished) st = '<div class="st">סיימה את המסע</div>';
+    else if (p.current) st = '<div class="st">תחנה ' + p.current + ' · ' + A.esc(stationName(p.current)) + '</div>';
+    else st = '<div class="st none">עוד לא התחילה</div>';
+
+    var dates =
+      '<div>הצטרפה <b>' + (r.joinedMs ? new Date(r.joinedMs).toLocaleDateString('he-IL') : '—') + '</b></div>' +
+      '<div>נכנסה <b>' + (r.lastSeenMs ? A.esc(D.ago(r.lastSeenMs, NOW)) : 'עוד לא נכנסה') + '</b></div>';
+
+    var qBtnLabel = r.questions ? 'מה שאלה את היועצת (' + r.questions + ')' : 'שאלות ליועצת';
+
+    return '<div class="row' + (r.hot.hot ? ' is-hot' : '') + '" data-uid="' + A.esc(r.uid) + '">' +
+      '<div><span class="lbl">תלמידה</span>' +
+        '<a class="nm" href="' + fileHref + '">' + A.esc(r.name || '(בלי שם)') + '</a>' +
+        (pills ? '<span class="pills">' + pills + '</span>' : '') +
+        '<div class="contact">' + contact + '</div></div>' +
+      '<div><span class="lbl">העסק והרשתות</span>' + biz +
+        (nets ? '<div class="nets">' + nets + '</div>' : '') + '</div>' +
+      '<div><span class="lbl">התקדמות</span>' + st +
+        '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + p.pct + '">' +
+          '<i style="width:' + p.pct + '%"></i></div>' +
+        '<div class="pnum">' + p.done + ' מתוך ' + p.total + ' שיעורים · ' + p.pct + '%</div></div>' +
+      '<div><span class="lbl">כניסות</span><div class="dates">' + dates + '</div></div>' +
+      (r.hot.hot ? '<div class="why">למה חמה: ' + A.esc(r.hot.reasons.join(' · ')) + '</div>' : '') +
+      '<div class="qs" id="qs-' + A.esc(r.uid) + '"></div>' +
+      '<div class="acts">' +
+        '<button class="btn" type="button" data-q="' + A.esc(r.uid) + '">' + A.esc(qBtnLabel) + '</button>' +
+        '<a class="btn primary" href="' + fileHref + '">לתיק המלא</a>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function questionsHtml(r) {
+    if (r.lastQuestions.length) {
+      return r.lastQuestions.map(function (q) {
+        var t = q.at && (q.at.toDate ? q.at.toDate() : new Date(q.at));
+        return '<div class="qi">' + A.esc(q.q) + '<span class="m">' +
+          (q.station_id ? 'תחנה ' + A.esc(q.station_id) + ' · ' : '') +
+          (t && !isNaN(t) ? A.esc(D.ago(t.getTime(), NOW)) : '') + '</span></div>';
+      }).join('') +
+      (r.questions > r.lastQuestions.length
+        ? '<div class="qempty" style="margin-top:6px">מוצגות ' + r.lastQuestions.length + ' האחרונות מתוך ' +
+          r.questions + '. כל השיחה בתיק המלא.</div>' : '');
+    }
+    return '<div class="qempty">עוד לא שאלה את היועצת כלום.' +
+      (anyChats ? '' : '<br>היועצת הדיגיטלית עדיין לא פעילה, ולכן אין שאלות אצל אף תלמידה. ' +
+        'ברגע שתעלה, השאלות האחרונות של כל אחת יופיעו כאן לבד.') + '</div>';
+  }
+
+  /* ---------- אירועים ---------- */
+  $('q').addEventListener('input', draw);
+  $('sort').addEventListener('change', draw);
+  $('admins').addEventListener('change', draw);
+  $('chips').addEventListener('click', function (e) {
+    var c = e.target.closest('[data-f]'); if (!c) return;
+    filter = c.getAttribute('data-f');
+    Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (x) {
+      x.classList.toggle('on', x === c);
+    });
+    draw();
+  });
+
+  $('list').addEventListener('click', function (e) {
+    var qb = e.target.closest('[data-q]');
+    if (qb) {
+      var uid = qb.getAttribute('data-q');
+      var row = qb.closest('.row');
+      var r = rows.filter(function (x) { return x.uid === uid; })[0];
+      var box = $('qs-' + uid);
+      if (r && box && !row.classList.contains('q-open')) box.innerHTML = questionsHtml(r);
+      row.classList.toggle('q-open');
+      return;
+    }
+    if (e.target.closest('a,button,.qs')) return;   // קישור או כפתור עושים את שלהם
+    var rr = e.target.closest('.row');
+    if (rr) location.href = 'student-file.html?uid=' + encodeURIComponent(rr.getAttribute('data-uid'));
+  });
+});
+</script>
+</body>
+</html>
