@@ -43,12 +43,14 @@ import { defineSecret } from 'firebase-functions/params';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
-const OPENAI_KEY = defineSecret('ORIANE_OPENAI_API_KEY');
-const GEMINI_KEY = defineSecret('ORIANE_GEMINI_API_KEY');
-
 /* הדגל נקרא מ-functions/.env, שפיירבייס טוען גם בגילוי הפונקציות
    בזמן פריסה וגם בזמן ריצה. */
 const GEMINI_ON = String(process.env.ADVISOR_GEMINI || '').toLowerCase() === 'on';
+
+const OPENAI_KEY = defineSecret('ORIANE_OPENAI_API_KEY');
+/* מוגדר רק כשהדגל דלוק: defineSecret רושם את הסוד במניפסט, ופריסה
+   נכשלת כשהסוד לא קיים ב-Secret Manager (נתפס בפריסה 28.09). */
+const GEMINI_KEY = GEMINI_ON ? defineSecret('ORIANE_GEMINI_API_KEY') : null;
 const GEMINI_MODEL = process.env.ADVISOR_GEMINI_MODEL || 'gemini-2.5-flash';
 /* ב-2.5 Flash "חשיבה" אוכלת מתוך max_tokens ועלולה להחזיר תשובה
    ריקה. 'none' מכבה אותה. ניתן לשינוי בלי קוד אם הדגם יתחלף. */
